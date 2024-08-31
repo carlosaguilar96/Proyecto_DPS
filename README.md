@@ -9,9 +9,11 @@ Proyecto de cátedra para la materia Diseño y Programación de Software Multipl
 - Velasco Flores, Luis Pablo         (VF202313)   G01T
 
 **Planificación en Trello**
+
 Enlace: 
 
 **Mockups**
+
 Enlace: https://www.figma.com/design/8Kqi38FRhuuhb65F0PPwoj/Cine?node-id=0-1&t=Z5Af17YmYkXMnGWK-0
 
 **Licencia Creative Commons**
