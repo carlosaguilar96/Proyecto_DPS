@@ -12,7 +12,7 @@ Proyecto de cátedra para la materia Diseño y Programación de Software Multipl
 Enlace: 
 
 **Mockups**
-Enlace: 
+Enlace: https://www.figma.com/design/8Kqi38FRhuuhb65F0PPwoj/Cine?node-id=0-1&t=Z5Af17YmYkXMnGWK-0
 
 **Licencia Creative Commons**
 
