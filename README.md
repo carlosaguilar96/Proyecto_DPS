@@ -15,6 +15,7 @@ Enlace:
 Enlace: 
 
 **Licencia Creative Commons**
+
 Aplicación móvil genérica para la reserva, compra y gestión de los boletos a las funciones disponibles de un cine © 2024 está licenciada bajo la  ATRIBUCIÓN/RECONOCIMIENTO-NOCOMERCIAL-SINDERIVADOS 4.0 INTERNACIONAL (CC BY-NC-ND 4.0) 
 
 
