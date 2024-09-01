@@ -10,7 +10,7 @@ Proyecto de cátedra para la materia Diseño y Programación de Software Multipl
 
 **Planificación en Trello**
 
-Enlace: 
+Enlace: https://trello.com/invite/b/64c03ef2cd393c82c63f5e42/ATTI67ecbb07d5777904c45ba754cab92953FCE0499A/proyecto-de-catedra-diseno-y-programacion-de-software-multiplaforma
 
 **Mockups**
 
