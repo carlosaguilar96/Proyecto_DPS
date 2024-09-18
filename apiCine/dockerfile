@@ -1,23 +1,22 @@
-FROM php:8.2-fpm
 
-#Instalación de librarías y dependencias.
+FROM php:8.2.4-apache
+RUN a2enmod rewrite
 RUN apt-get update && apt-get install -y \
-    libsqlite3-dev \
-    libonig-dev \
-    libzip-dev \
+    git \
+    zip \
     unzip \
-    && docker-php-ext-install pdo pdo_sqlite
+    && docker-php-ext-install pdo_mysql
+RUN docker-php-ext-install mysqli
+
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+RUN composer require laravel/socialite
 
 #Directorio en el que se trabajará dentro del docker
 WORKDIR /var/www
 
 #Se copia todo lo de la carpeta actual al directorio /var/www
 COPY . .
-
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
-# Se instala composer
-RUN composer install 
 
 #Se establece que habrá un script "entrypoint.sh"
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
