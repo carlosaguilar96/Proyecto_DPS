@@ -8,9 +8,10 @@ use App\Models\Funcion;
 
 class FuncionController extends Controller
 {
-    public function store(Request $request){
+    public function store(Request $request)
+    {
 
-        $validator = Validator::make($request->all() , [
+        $validator = Validator::make($request->all(), [
             "codPelicula" => "required",
             "codSala" => "required",
             "idioma" => "required",
@@ -23,7 +24,7 @@ class FuncionController extends Controller
             "precioTEVIP" => "required"
         ]);
 
-        if($validator->fails()){
+        if ($validator->fails()) {
             $data = [
                 'message' => 'Error en la validación',
                 'errors' => $validator->errors(),
@@ -33,7 +34,7 @@ class FuncionController extends Controller
             return response()->json($data, 400);
         }
 
-        try{
+        try {
             $funcion = Funcion::create([
                 "codPelicula" => $request->codPelicula,
                 "codSala" => $request->codSala,
@@ -46,7 +47,7 @@ class FuncionController extends Controller
                 "precioNinoVIP" => $request->precioNinoVIP,
                 "precioTEVIP" => $request->precioTEVIP
             ]);
-        } catch(\Exception $error){
+        } catch (\Exception $error) {
             $data = [
                 'message' => 'Error al crear la función: ' . $error->getMessage(),
                 'status' => 500
@@ -63,7 +64,8 @@ class FuncionController extends Controller
         return response()->json($data, 201);
     }
 
-    public function index(){
+    public function index()
+    {
         $funciones = Funcion::all();
         $data = [
             'funciones' => $funciones,
@@ -72,9 +74,10 @@ class FuncionController extends Controller
         return response()->json($data, 200);
     }
 
-    public function show($id){
+    public function show($id)
+    {
         $funcion = Funcion::find($id);
-        if(!$funcion){
+        if (!$funcion) {
             $data = [
                 'message' => 'Función no encontrada',
                 'status' => 404
@@ -88,18 +91,19 @@ class FuncionController extends Controller
         return response()->json($data, 200);
     }
 
-    public function destroy($id){
+    public function destroy($id)
+    {
         $funcion = Funcion::find($id);
-        if(!$funcion){
+        if (!$funcion) {
             $data = [
                 'message' => 'Función no encontrada',
                 'status' => 404
             ];
             return response()->json($data, 404);
         }
-        try{
+        try {
             $funcion->delete();
-        }catch(\Exception $error){
+        } catch (\Exception $error) {
             $data = [
                 'message' => 'Error al eliminar la función: ' . $error->getMessage(),
                 'status' => 500
@@ -109,6 +113,68 @@ class FuncionController extends Controller
         }
         $data = [
             'message' => "Función de código $id eliminada",
+            'status' => 200
+        ];
+        return response()->json($data, 200);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $funcion = Funcion::find($id);
+        if (!$funcion) {
+            $data = [
+                'message' => 'Función no encontrada',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        }
+        $validator = Validator::make($request->all(), [
+            "codPelicula" => "required",
+            "codSala" => "required",
+            "idioma" => "required",
+            "fechaHora" => "required",
+            "precioAdulto" => "required",
+            "precioNino" => "required",
+            "precioTE" => "required",
+            "precioAdultoVIP" => "required",
+            "precioNinoVIP" => "required",
+            "precioTEVIP" => "required"
+        ]);
+
+        if ($validator->fails()) {
+            $data = [
+                'message' => 'Error en la validación',
+                'errors' => $validator->errors(),
+                'status' => 400
+            ];
+
+            return response()->json($data, 400);
+        }
+        $funcion->codPelicula = $request->codPelicula;
+        $funcion->codSala = $request->codSala;
+        $funcion->idioma = $request->idioma;
+        $funcion->fechaHora = $request->fechaHora;
+        $funcion->precioAdulto = $request->precioAdulto;
+        $funcion->precioNino = $request->precioNino;
+        $funcion->precioTE = $request->precioTE;
+        $funcion->precioAdultoVIP = $request->precioAdultoVIP;
+        $funcion->precioNinoVIP = $request->precioNinoVIP;
+        $funcion->precioTEVIP = $request->precioTEVIP;
+
+        try{
+            $funcion->save();
+        }catch(\Exception $error){
+            $data = [
+                'message' => 'Error al actualizar la función: ' . $error->getMessage(),
+                'status' => 500
+            ];
+
+            return response()->json($data, 500);
+        }
+
+        $data = [
+            'message' => 'Función actualizada',
+            'funcion' => $funcion,
             'status' => 200
         ];
         return response()->json($data, 200);

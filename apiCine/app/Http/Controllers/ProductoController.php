@@ -8,15 +8,16 @@ use Illuminate\Support\Facades\Validator;
 
 class ProductoController extends Controller
 {
-    public function store(Request $request){
+    public function store(Request $request)
+    {
 
-        $validator = Validator::make($request->all() , [
+        $validator = Validator::make($request->all(), [
             "nombre" => 'required',
             "precioRegular"  => 'required',
             "miniatura"  => 'required',
         ]);
 
-        if($validator->fails()){
+        if ($validator->fails()) {
             $data = [
                 'message' => 'Error en la validación',
                 'errors' => $validator->errors(),
@@ -26,13 +27,13 @@ class ProductoController extends Controller
             return response()->json($data, 400);
         }
 
-        try{
+        try {
             $producto = Producto::create([
                 'nombre' => $request->nombre,
                 'precioRegular'  => $request->precioRegular,
-                'miniatura'  => $request->miniatura      
+                'miniatura'  => $request->miniatura
             ]);
-        } catch(\Exception $error){
+        } catch (\Exception $error) {
             $data = [
                 'message' => 'Error al crear el producto: ' . $error->getMessage(),
                 'status' => 500
@@ -49,7 +50,8 @@ class ProductoController extends Controller
         return response()->json($data, 201);
     }
 
-    public function index(){
+    public function index()
+    {
         $productos = Producto::all();
         $data = [
             'productos' => $productos,
@@ -58,9 +60,10 @@ class ProductoController extends Controller
         return response()->json($data, 200);
     }
 
-    public function show($id){
+    public function show($id)
+    {
         $producto = Producto::find($id);
-        if(!$producto){
+        if (!$producto) {
             $data = [
                 'message' => 'Producto no encontrado',
                 'status' => 404
@@ -74,18 +77,19 @@ class ProductoController extends Controller
         return response()->json($data, 200);
     }
 
-    public function destroy($id){
+    public function destroy($id)
+    {
         $producto = Producto::find($id);
-        if(!$producto){
+        if (!$producto) {
             $data = [
                 'message' => 'Producto no encontrado',
                 'status' => 404
             ];
             return response()->json($data, 404);
         }
-        try{
+        try {
             $producto->delete();
-        }catch(\Exception $error){
+        } catch (\Exception $error) {
             $data = [
                 'message' => 'Error al eliminar el producto: ' . $error->getMessage(),
                 'status' => 500
@@ -95,6 +99,57 @@ class ProductoController extends Controller
         }
         $data = [
             'message' => "Producto de código $id eliminado",
+            'status' => 200
+        ];
+        return response()->json($data, 200);
+    }
+
+    public function update(Request $request, $id)
+    {
+
+        $producto = Producto::find($id);
+        if (!$producto) {
+            $data = [
+                'message' => 'Producto no encontrado',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        }
+
+        $validator = Validator::make($request->all(), [
+            "nombre" => 'required',
+            "precioRegular"  => 'required',
+            "miniatura"  => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            $data = [
+                'message' => 'Error en la validación',
+                'errors' => $validator->errors(),
+                'status' => 400
+            ];
+
+            return response()->json($data, 400);
+        }
+
+        $producto->nombre = $request->nombre;
+        $producto->precioRegular = $request->precioRegular;
+        $producto->miniatura  = $request->miniatura;
+
+        try{
+            $producto->save();
+        }catch(\Exception $error){
+            $data = [
+                'message' => 'Error al actualizar el producto: ' . $error->getMessage(),
+                'status' => 500
+            ];
+
+            return response()->json($data, 500);
+        }
+
+        $data = [
+            'message' => 'Producto actualizado',
+            'producto' => $producto,
             'status' => 200
         ];
         return response()->json($data, 200);

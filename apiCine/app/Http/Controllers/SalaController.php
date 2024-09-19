@@ -8,15 +8,16 @@ use Illuminate\Support\Facades\Validator;
 
 class SalaController extends Controller
 {
-    public function store(Request $request){
+    public function store(Request $request)
+    {
 
-        $validator = Validator::make($request->all() , [
+        $validator = Validator::make($request->all(), [
             "capacidad" => 'required',
             "sucursal" => 'required',
             "tipo" => 'required',
         ]);
 
-        if($validator->fails()){
+        if ($validator->fails()) {
             $data = [
                 'message' => 'Error en la validación',
                 'errors' => $validator->errors(),
@@ -26,13 +27,13 @@ class SalaController extends Controller
             return response()->json($data, 400);
         }
 
-        try{
+        try {
             $sala = Sala::create([
                 "capacidad" => $request->capacidad,
                 "sucursal" => $request->sucursal,
                 "tipo" => $request->tipo,
             ]);
-        } catch(\Exception $error){
+        } catch (\Exception $error) {
             $data = [
                 'message' => 'Error al crear la sala: ' . $error->getMessage(),
                 'status' => 500
@@ -49,7 +50,8 @@ class SalaController extends Controller
         return response()->json($data, 201);
     }
 
-    public function index(){
+    public function index()
+    {
         $salas = Sala::all();
         $data = [
             'salas' => $salas,
@@ -58,9 +60,10 @@ class SalaController extends Controller
         return response()->json($data, 200);
     }
 
-    public function show($id){
+    public function show($id)
+    {
         $sala = Sala::find($id);
-        if(!$sala){
+        if (!$sala) {
             $data = [
                 'message' => 'Sala no encontrada',
                 'status' => 404
@@ -74,18 +77,19 @@ class SalaController extends Controller
         return response()->json($data, 200);
     }
 
-    public function destroy($id){
+    public function destroy($id)
+    {
         $sala = Sala::find($id);
-        if(!$sala){
+        if (!$sala) {
             $data = [
                 'message' => 'Sala no encontrada',
                 'status' => 404
             ];
             return response()->json($data, 404);
         }
-        try{
+        try {
             $sala->delete();
-        }catch(\Exception $error){
+        } catch (\Exception $error) {
             $data = [
                 'message' => 'Error al eliminar la sala: ' . $error->getMessage(),
                 'status' => 500
@@ -95,6 +99,55 @@ class SalaController extends Controller
         }
         $data = [
             'message' => "Sala de código $id eliminada",
+            'status' => 200
+        ];
+        return response()->json($data, 200);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $sala = Sala::find($id);
+        if (!$sala) {
+            $data = [
+                'message' => 'Sala no encontrada',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        }
+        $validator = Validator::make($request->all(), [
+            "capacidad" => 'required',
+            "sucursal" => 'required',
+            "tipo" => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            $data = [
+                'message' => 'Error en la validación',
+                'errors' => $validator->errors(),
+                'status' => 400
+            ];
+
+            return response()->json($data, 400);
+        }
+
+        $sala->capacidad = $request->capacidad;
+        $sala->sucursal = $request->sucursal;
+        $sala->tipo = $request->tipo;
+
+        try{
+            $sala->save();
+        }catch(\Exception $error){
+            $data = [
+                'message' => 'Error al actualizar la sala: ' . $error->getMessage(),
+                'status' => 500
+            ];
+
+            return response()->json($data, 500);
+        }
+
+        $data = [
+            'message' => 'Sala actualizada',
+            'sala' => $sala,
             'status' => 200
         ];
         return response()->json($data, 200);
