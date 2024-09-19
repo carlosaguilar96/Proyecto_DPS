@@ -62,4 +62,55 @@ class FuncionController extends Controller
 
         return response()->json($data, 201);
     }
+
+    public function index(){
+        $funciones = Funcion::all();
+        $data = [
+            'funciones' => $funciones,
+            'status' => 200
+        ];
+        return response()->json($data, 200);
+    }
+
+    public function show($id){
+        $funcion = Funcion::find($id);
+        if(!$funcion){
+            $data = [
+                'message' => 'Función no encontrada',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        }
+        $data = [
+            'funcion' => $funcion,
+            'status' => 200
+        ];
+        return response()->json($data, 200);
+    }
+
+    public function destroy($id){
+        $funcion = Funcion::find($id);
+        if(!$funcion){
+            $data = [
+                'message' => 'Función no encontrada',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        }
+        try{
+            $funcion->delete();
+        }catch(\Exception $error){
+            $data = [
+                'message' => 'Error al eliminar la función: ' . $error->getMessage(),
+                'status' => 500
+            ];
+
+            return response()->json($data, 500);
+        }
+        $data = [
+            'message' => "Función de código $id eliminada",
+            'status' => 200
+        ];
+        return response()->json($data, 200);
+    }
 }

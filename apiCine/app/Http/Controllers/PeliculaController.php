@@ -54,4 +54,55 @@ class PeliculaController extends Controller
 
         return response()->json($data, 201);
     }
+
+    public function index(){
+        $peliculas = Pelicula::all();
+        $data = [
+            'peliculas' => $peliculas,
+            'status' => 200
+        ];
+        return response()->json($data, 200);
+    }
+
+    public function show($id){
+        $pelicula = Pelicula::find($id);
+        if(!$pelicula){
+            $data = [
+                'message' => 'Película no encontrada',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        }
+        $data = [
+            'pelicula' => $pelicula,
+            'status' => 200
+        ];
+        return response()->json($data, 200);
+    }
+
+    public function destroy($id){
+        $pelicula = Pelicula::find($id);
+        if(!$pelicula){
+            $data = [
+                'message' => 'Película no encontrada',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        }
+        try{
+            $pelicula->delete();
+        }catch(\Exception $error){
+            $data = [
+                'message' => 'Error al eliminar la película: ' . $error->getMessage(),
+                'status' => 500
+            ];
+
+            return response()->json($data, 500);
+        }
+        $data = [
+            'message' => "Película de código $id eliminada",
+            'status' => 200
+        ];
+        return response()->json($data, 200);
+    }
 }

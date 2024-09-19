@@ -56,4 +56,56 @@ class UsuarioController extends Controller
 
         return response()->json($data, 201);
     }
+
+    public function index(){
+        $usuarios = Usuario::all();
+        $data = [
+            'usuarios' => $usuarios,
+            'status' => 200
+        ];
+        return response()->json($data, 200);
+    }
+
+
+    public function show($id){
+        $usuario = Usuario::find($id);
+        if(!$usuario){
+            $data = [
+                'message' => 'Usuario no encontrado',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        }
+        $data = [
+            'usuario' => $usuario,
+            'status' => 200
+        ];
+        return response()->json($data, 200);
+    }
+
+    public function destroy($id){
+        $usuario = Usuario::find($id);
+        if(!$usuario){
+            $data = [
+                'message' => 'Usuario no encontrado',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        }
+        try{
+            $usuario->delete();
+        }catch(\Exception $error){
+            $data = [
+                'message' => 'Error al eliminar el usuario: ' . $error->getMessage(),
+                'status' => 500
+            ];
+
+            return response()->json($data, 500);
+        }
+        $data = [
+            'message' => "Usuario de nombre $id eliminado",
+            'status' => 200
+        ];
+        return response()->json($data, 200);
+    }
 }

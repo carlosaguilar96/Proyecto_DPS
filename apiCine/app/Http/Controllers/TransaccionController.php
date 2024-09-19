@@ -48,4 +48,30 @@ class TransaccionController extends Controller
 
         return response()->json($data, 201);
     }
+
+    public function index(){
+        $transacciones = Transaccion::all();
+        $data = [
+            'funciones' => $transacciones,
+            'status' => 200
+        ];
+        return response()->json($data, 200);
+    }
+
+    public function show($id){
+        $transaccion = Transaccion::find($id);
+        if(!$transaccion){
+            $data = [
+                'message' => 'Transacción no encontrada',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        }
+        $data = [
+            'transaccion' => $transaccion,
+            'status' => 200
+        ];
+        return response()->json($data, 200);
+    }
+
 }

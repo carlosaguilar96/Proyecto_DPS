@@ -57,4 +57,13 @@ class CineController extends Controller
 
         return response()->json($data, 201);
     }
+
+    public function index(){
+        $cines =Cine::all();
+        $data = [
+            'cines' => $cines,
+            'status' => 200
+        ];
+        return response()->json($data, 200);
+    }
 }

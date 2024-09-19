@@ -48,4 +48,55 @@ class ProductoController extends Controller
 
         return response()->json($data, 201);
     }
+
+    public function index(){
+        $productos = Producto::all();
+        $data = [
+            'productos' => $productos,
+            'status' => 200
+        ];
+        return response()->json($data, 200);
+    }
+
+    public function show($id){
+        $producto = Producto::find($id);
+        if(!$producto){
+            $data = [
+                'message' => 'Producto no encontrado',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        }
+        $data = [
+            'producto' => $producto,
+            'status' => 200
+        ];
+        return response()->json($data, 200);
+    }
+
+    public function destroy($id){
+        $producto = Producto::find($id);
+        if(!$producto){
+            $data = [
+                'message' => 'Producto no encontrado',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        }
+        try{
+            $producto->delete();
+        }catch(\Exception $error){
+            $data = [
+                'message' => 'Error al eliminar el producto: ' . $error->getMessage(),
+                'status' => 500
+            ];
+
+            return response()->json($data, 500);
+        }
+        $data = [
+            'message' => "Producto de código $id eliminado",
+            'status' => 200
+        ];
+        return response()->json($data, 200);
+    }
 }

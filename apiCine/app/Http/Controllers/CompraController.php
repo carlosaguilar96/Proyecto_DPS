@@ -62,4 +62,29 @@ class CompraController extends Controller
 
         return response()->json($data, 201);
     }
+
+    public function index(){
+        $compras = Compra::all();
+        $data = [
+            'compras' => $compras,
+            'status' => 200
+        ];
+        return response()->json($data, 200);
+    }
+
+    public function show($id){
+        $compra= Compra::find($id);
+        if(!$compra){
+            $data = [
+                'message' => 'Compra no encontrada',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        }
+        $data = [
+            'compra' => $compra,
+            'status' => 200
+        ];
+        return response()->json($data, 200);
+    }
 }
