@@ -16,7 +16,7 @@ CREATE TABLE cines(
     codCine int PRIMARY KEY AUTO_INCREMENT,
     nombreCine varchar(20) NOT NULL,
     logo_path varchar(100) NOT NULL,
-    ubicacion varchar(150) NOT NULL,
+    ubicacion JSON NOT NULL,
     mision text NOT NULL, 
     vision text NOT NULL,
     telefono varchar(10) NOT NULL,
