@@ -9,7 +9,8 @@ CREATE TABLE usuarios(
     nombres varchar(20) NOT NULL,
     apellidos varchar(20) NOT NULL,
     nivelAcceso varchar(10) NOT NULL,
-    correoE varchar(20) NOT NULL    
+    correoE varchar(20) NOT NULL,
+    estadoEliminacion int DEFAULT "1" NOT NULL
 )
 
 CREATE TABLE cines(
@@ -32,7 +33,8 @@ CREATE TABLE cines(
     codProducto int PRIMARY KEY AUTO_INCREMENT,
     nombre varchar(20) NOT NULL,
     precioRegular decimal(10,2) NOT NULL,
-    miniatura varchar(100) NOT NULL
+    miniatura varchar(100) NOT NULL,
+    estadoEliminacion int DEFAULT "1" NOT NULL
  )
 
  CREATE TABLE peliculas(
@@ -42,14 +44,17 @@ CREATE TABLE cines(
     clasificacion varchar(15) NOT NULL,
     director varchar(30) NOT NULL,
     genero varchar(15) NOT NULL,
-    sinopsis text 
+    sinopsis text,
+    enCartelera int DEFAULT "1" NOT NULL,
+    estadoEliminacion int DEFAULT "1" NOT NULL
  )
 
 CREATE TABLE salas(
     codSala int PRIMARY KEY AUTO_INCREMENT,
     capacidad int NOT NULL,
     sucursal varchar(15) NOT NULL,
-    tipo varchar(10) NOT NULL
+    tipo varchar(10) NOT NULL,
+    estadoEliminacion int DEFAULT "1" NOT NULL
 )
 
 CREATE TABLE funciones(
@@ -64,6 +69,8 @@ CREATE TABLE funciones(
     precioAdultoVIP decimal(10,2) NOT NULL,
     precioNinoVIP decimal(10,2) NOT NULL,
     precioTEVIP decimal(10,2) NOT NULL,
+    estadoEliminacion int DEFAULT "1" NOT NULL,
+    
 
     FOREIGN KEY(codPelicula) REFERENCES peliculas(codPelicula),
     FOREIGN KEY(codSala) REFERENCES salas(codSala)
