@@ -5,19 +5,20 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Usuario;
 use Illuminate\Support\Facades\Validator;
+use Exception;
 
 class UsuarioController extends Controller
 {
-    public function store(Request $request){
+    //Función para almacenar administrador
+    public function storeAdmin(Request $request){
 
         $validator = Validator::make($request->all() , [
-            'nombreUsuario' => 'required',
-            'contrasena'  => 'required',
-            'DUI'  => 'required',
+            'nombreUsuario' => ['required', 'unique:usuarios'],
+            'contrasena'  => ['required', 'min:8'],
+            'DUI'  => ['required', 'unique:usuarios'],
             'nombres'  => 'required',
             'apellidos'  => 'required',
-            'nivelAcceso'  => 'required',
-            'correoE'  => 'required'
+            'correoE'  => ['required', 'email', 'unique:usuarios'],
         ]);
 
         if($validator->fails()){
@@ -33,11 +34,11 @@ class UsuarioController extends Controller
         try{
             $usuario = Usuario::create([
                 'nombreUsuario' => $request->nombreUsuario,
-                'contrasena'  => $request->contrasena,
+                'contrasena'  => Hash('SHA256', $request->contrasena),
                 'DUI'  => $request->DUI,
                 'nombres'  => $request->nombres,
                 'apellidos'  => $request->apellidos,
-                'nivelAcceso'  => $request->nivelAcceso,
+                'nivelAcceso'  => 1,
                 'correoE'  => $request->correoE
             ]);
         } catch(\Exception $error){
@@ -57,8 +58,58 @@ class UsuarioController extends Controller
         return response()->json($data, 201);
     }
 
-    public function index(){
-        $usuarios = Usuario::all();
+    //Función para almacenar cliente
+    public function storeCliente(Request $request){
+
+        $validator = Validator::make($request->all() , [
+            'nombreUsuario' => ['required', 'unique:usuarios'],
+            'contrasena'  => ['required', 'min:8'],
+            'DUI'  => ['required', 'unique:usuarios'],
+            'nombres'  => 'required',
+            'apellidos'  => 'required',
+            'correoE'  => ['required', 'email', 'unique:usuarios'],
+        ]);
+
+        if($validator->fails()){
+            $data = [
+                'message' => 'Error en la validación',
+                'errors' => $validator->errors(),
+                'status' => 400
+            ];
+
+            return response()->json($data, 400);
+        }
+
+        try{
+            $usuario = Usuario::create([
+                'nombreUsuario' => $request->nombreUsuario,
+                'contrasena'  => Hash('SHA256', $request->contrasena),
+                'DUI'  => $request->DUI,
+                'nombres'  => $request->nombres,
+                'apellidos'  => $request->apellidos,
+                'nivelAcceso'  => 2,
+                'correoE'  => $request->correoE
+            ]);
+        } catch(\Exception $error){
+            $data = [
+                'message' => 'Error al crear el usuario: ' . $error->getMessage(),
+                'status' => 500
+            ];
+
+            return response()->json($data, 500);
+        }
+
+        $data = [
+            'usuario' => $usuario,
+            'status' => 201
+        ];
+
+        return response()->json($data, 201);
+    }
+
+    //Función para mostrar index de administradores
+    public function indexAdmins(){
+        $usuarios = Usuario::where('nivelAcceso', 1)->get();
         $data = [
             'usuarios' => $usuarios,
             'status' => 200
@@ -66,7 +117,17 @@ class UsuarioController extends Controller
         return response()->json($data, 200);
     }
 
+    //Función para mostrar index de clientes
+    public function indexClientes(){
+        $usuarios = Usuario::where('nivelAcceso', 2)->get();
+        $data = [
+            'usuarios' => $usuarios,
+            'status' => 200
+        ];
+        return response()->json($data, 200);
+    }
 
+    //Función para mostrar usuario específico
     public function show($id){
         $usuario = Usuario::find($id);
         if(!$usuario){
@@ -83,6 +144,7 @@ class UsuarioController extends Controller
         return response()->json($data, 200);
     }
 
+    //Función para eliminar un usuario
     public function destroy($id){
         $usuario = Usuario::find($id);
         if(!$usuario){
@@ -93,8 +155,9 @@ class UsuarioController extends Controller
             return response()->json($data, 404);
         }
         try{
-            $usuario->delete();
-        }catch(\Exception $error){
+            $usuario->estadoEliminacion = 0;
+            $usuario->save();
+        }catch(Exception $error){
             $data = [
                 'message' => 'Error al eliminar el usuario: ' . $error->getMessage(),
                 'status' => 500
@@ -109,6 +172,35 @@ class UsuarioController extends Controller
         return response()->json($data, 200);
     }
 
+    //Función para reactivar usuario eliminado
+    public function reactivate($id){
+        $usuario = Usuario::find($id);
+        if(!$usuario){
+            $data = [
+                'message' => 'Usuario no encontrado',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        }
+        try{
+            $usuario->estadoEliminacion = 1;
+            $usuario->save();
+        }catch(Exception $error){
+            $data = [
+                'message' => 'Error al reactivar el usuario: ' . $error->getMessage(),
+                'status' => 500
+            ];
+
+            return response()->json($data, 500);
+        }
+        $data = [
+            'message' => "Usuario de nombre $id reactivado",
+            'status' => 200
+        ];
+        return response()->json($data, 200);
+    }
+
+    //Función para actualizar datos de usuario
     public function update(Request $request, $id){
         $usuario = Usuario::find($id);
         if(!$usuario){
@@ -119,12 +211,11 @@ class UsuarioController extends Controller
             return response()->json($data, 404);
         }
         $validator = Validator::make($request->all() , [
-            'contrasena'  => 'required',
-            'DUI'  => 'required',
+            'nombreUsuario' => ['required','unique:usuarios,nombreUsuario,'.$id.',nombreUsuario'],
+            'DUI'  => ['required', 'unique:usuarios,DUI,'.$id. ',nombreUsuario'],
             'nombres'  => 'required',
             'apellidos'  => 'required',
-            'nivelAcceso'  => 'required',
-            'correoE'  => 'required'
+            'correoE'  => ['required', 'email', 'unique:usuarios,correoE,'.$id. ',nombreUsuario']
         ]);
 
         if($validator->fails()){
@@ -138,16 +229,14 @@ class UsuarioController extends Controller
         }
 
         $usuario->nombreUsuario = $request->nombreUsuario;
-        $usuario->contrasena  = $request->contrasena;
         $usuario->DUI  = $request->DUI;
         $usuario->nombres  = $request->nombres;
         $usuario->apellidos  = $request->apellidos;
-        $usuario->nivelAcceso = $request->nivelAcceso;
         $usuario->correoE = $request->correoE;
 
         try{
             $usuario->save();
-        }catch(\Exception $error){
+        }catch(Exception $error){
             $data = [
                 'message' => 'Error al actualizar el usuario: ' . $error->getMessage(),
                 'status' => 500
@@ -158,6 +247,62 @@ class UsuarioController extends Controller
 
         $data = [
             'message' => 'Usuario actualizado',
+            'usuario' => $usuario,
+            'status' => 200
+        ];
+        return response()->json($data, 200);
+    }
+
+    //Función para cambiar contraseña de usuario
+    public function changePass(Request $request, $id){
+        $usuario = Usuario::find($id);
+        if(!$usuario){
+            $data = [
+                'message' => 'Usuario no encontrado',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        }
+
+        $validator = Validator::make($request->all() , [
+            'pwActual' => 'required',
+            'pwNueva'  => ['required', 'min:8'],
+            'pwConfirmar'  => 'required'
+        ]);
+
+        $validator->after(function($validator) use($request, $usuario){
+            if($usuario->contrasena != Hash('SHA256', $request->pwActual)){
+                $validator->errors()->add('pwActual','La contraseña actual es incorrecta');
+            }
+            if($request->pwNueva != $request->pwConfirmar){
+                $validator->errors()->add('pwConfirmar','La contraseña nueva no ha sido confirmada');
+            }
+        });
+
+        if($validator->fails()){
+            $data = [
+                'message' => 'Error en la validación',
+                'errors' => $validator->errors(),
+                'status' => 400
+            ];
+
+            return response()->json($data, 400);
+        }
+
+        try{
+            $usuario->contrasena = Hash('SHA256', $request->pwNueva);
+            $usuario->save();
+        }catch(Exception $error){
+            $data = [
+                'message' => 'Error al actualizar contraseña: ' . $error->getMessage(),
+                'status' => 500
+            ];
+
+            return response()->json($data, 500);
+        }
+
+        $data = [
+            'message' => 'Contraseña actualizada',
             'usuario' => $usuario,
             'status' => 200
         ];

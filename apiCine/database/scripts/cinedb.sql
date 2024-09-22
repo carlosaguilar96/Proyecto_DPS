@@ -8,7 +8,7 @@ CREATE TABLE usuarios(
     DUI varchar(10) NOT NULL,
     nombres varchar(20) NOT NULL,
     apellidos varchar(20) NOT NULL,
-    nivelAcceso varchar(10) NOT NULL,
+    nivelAcceso int NOT NULL,
     correoE varchar(20) NOT NULL,
     estadoEliminacion int DEFAULT "1" NOT NULL
 )

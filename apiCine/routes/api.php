@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CineController;
 use App\Http\Controllers\CompraController;
@@ -11,12 +10,24 @@ use App\Http\Controllers\SalaController;
 use App\Http\Controllers\TransaccionController;
 use App\Http\Controllers\UsuarioController;
 
+//RUTAS PARA USUARIOS
+//Rutas para crear usuarios de tipo Administrador o Cliente
+Route::post('/usuarios/crearAdministrador', [UsuarioController::class, 'storeAdmin']);
+Route::post('/usuarios/crearCliente', [UsuarioController::class, 'storeCliente']);
+//Rutas para mostrar todos los usuarios de tipo administrador
+Route::get('/usuarios/indexAdmins', [UsuarioController::class, 'indexAdmins']);
+//Rutas para mostrar todos los usuarios de tipo cliente
+Route::get('/usuarios/indexClientes', [UsuarioController::class, 'indexClientes']);
+//Ruta para mostrar un usuario específico
+Route::get('/usuarios/show/{id}', [UsuarioController::class, 'show']);
+//Rutas para eliminar y reactivar usuario
+Route::put('/usuarios/eliminarUsuario/{id}', [UsuarioController::class, 'destroy']);
+Route::put('/usuarios/reactivarUsuario/{id}', [UsuarioController::class, 'reactivate']);
+//Ruta para modificar usuario
+Route::put('/usuarios/modificarUsuario/{id}', [UsuarioController::class, 'update']);
+//Ruta para cambiar contraseña
+Route::put('/usuarios/cambiarPassword/{id}', [UsuarioController::class, 'changePass']);
 
-Route::post('/usuarios', [UsuarioController::class, 'store']);
-Route::get('/usuarios', [UsuarioController::class, 'index']);
-Route::get( '/usuarios/{id}', [UsuarioController::class, 'show']);
-Route::delete( '/usuarios/{id}', [UsuarioController::class, 'destroy']);
-Route::put( '/usuarios/{id}', [UsuarioController::class, 'update']);
 
 Route::post('/cines', [CineController::class, 'store']);
 Route::get('/cines', [CineController::class, 'index']);
