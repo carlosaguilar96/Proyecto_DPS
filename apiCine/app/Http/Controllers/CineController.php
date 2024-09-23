@@ -15,7 +15,6 @@ class CineController extends Controller
         $validator = Validator::make($request->all(), [
             'nombreCine' => 'required',
             'logo'  => ['required', 'image'],
-            'ubicacion'  => 'required',
             'mision'  => 'required',
             'vision'  => 'required',
             'telefono'  => 'required',
@@ -38,9 +37,6 @@ class CineController extends Controller
             $cine = Cine::create([
                 'nombreCine' => $request->nombreCine,
                 'logo_path'  => $fileName,
-                'ubicacion'  => $request->ubicacion,
-                //POR SI SE HACE DESDE UN JSON
-                //'ubicacion'  => json_encode($request->ubicacion),
                 'mision'  => $request->mision,
                 'vision'  => $request->vision,
                 'telefono'  => $request->telefono,
@@ -95,7 +91,6 @@ class CineController extends Controller
 
         $validator = Validator::make($request->all(), [
             'nombreCine' => 'required',
-            'ubicacion'  => 'required',
             'mision'  => 'required',
             'vision'  => 'required',
             'telefono'  => 'required'
@@ -115,9 +110,6 @@ class CineController extends Controller
         $cine->mision = $request->mision;
         $cine->vision = $request->vision;
         $cine->telefono = $request->telefono;
-        //$cine->ubicacion = $request->ubicacion;
-        //POR SI SE HACE DESDE UN JSON
-        $cine->ubicacion  = json_encode($request->ubicacion);
 
         try {
             $cine->save();

@@ -8,6 +8,7 @@ use App\Http\Controllers\FuncionController;
 use App\Http\Controllers\PeliculaController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\SalaController;
+use App\Http\Controllers\SucursalController;
 use App\Http\Controllers\TransaccionController;
 use App\Http\Controllers\UsuarioController;
 
@@ -38,6 +39,20 @@ Route::get('/cines/show/{id}', [CineController::class, 'show']);
 Route::put('/cines/update/{id}', [CineController::class, 'update']);
 // Solo hay un cine por base de datos
 // El cine nunca se borrará
+
+
+// RUTAS PARA SUCURSALES
+// Ruta para crear la sucursal
+Route::post('/sucursales/crearSucursal', [SucursalController::class, 'store']);
+// Ruta para mostrar todas las sucursales
+Route::get('/sucursales/index', [SucursalController::class, 'index']);
+// Ruta para mostrar una sucursal
+Route::get('/sucursales/index/{id}', [SucursalController::class, 'show']);
+// Ruta para modificar una sucursal
+Route::put('/sucursales/update/{id}', [SucursalController::class, 'update']);
+// Ruta para eliminar una sucursal
+Route::delete('/sucursales/eliminar/{id}', [SucursalController::class, 'destroy']);
+
 
 Route::post('/productos', [ProductoController::class, 'store']);
 Route::get('/productos', [ProductoController::class, 'index']);

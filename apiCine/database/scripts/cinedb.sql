@@ -17,13 +17,21 @@ CREATE TABLE cines(
     codCine int PRIMARY KEY AUTO_INCREMENT,
     nombreCine varchar(20) NOT NULL,
     logo_path varchar(100) NOT NULL,
-    ubicacion JSON NOT NULL,
     mision text NOT NULL, 
     vision text NOT NULL,
-    telefono varchar(10) NOT NULL,
     firstAdmin varchar(20) NOT NULL,
 
     FOREIGN KEY (firstAdmin) REFERENCES usuarios(nombreUsuario)
+)
+
+CREATE TABLE sucursales(
+    codSucursal int PRIMARY KEY AUTO_INCREMENT,
+    codCine int NOT NULL,
+    sucursal varchar(20) NOT NULL, -- Soyapango
+    ubicacion varchar(200) NOT NULL, -- Calle X Av X frente a ....
+    telefono varchar(12) NOT NULL,
+
+    FOREIGN KEY (codCine) REFERENCES cines(codCine)
 )
 
 -- Cliente
