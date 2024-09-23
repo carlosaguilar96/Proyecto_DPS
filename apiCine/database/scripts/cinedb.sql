@@ -97,10 +97,17 @@ CREATE TABLE compras(
     cantidadAdultosVIP int NOT NULL,
     cantidadNinosVIP int NOT NULL,
     cantidadTEVIP int NOT NULL,
-    asientos JSON,
 
     FOREIGN KEY(nombreUsuario) REFERENCES usuarios(nombreUsuario),
     FOREIGN KEY(codFuncion) REFERENCES funciones(codFuncion),
     FOREIGN KEY(codTransaccion) REFERENCES transacciones(codTransaccion)
 
+)
+
+CREATE TABLE asientos(
+    codRelacion int PRIMARY KEY AUTO_INCREMENT,
+    numButaca varchar(5) NOT NULL,
+    codCompra int NOT NULL,
+
+    FOREIGN KEY (codCompra) REFERENCES compras(codCompra)
 )

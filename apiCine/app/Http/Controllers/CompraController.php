@@ -19,8 +19,7 @@ class CompraController extends Controller
             "cantidadTE" => 'required',
             "cantidadAdultosVIP" => 'required',
             "cantidadNinosVIP" => 'required',
-            "cantidadTEVIP" => 'required',
-            "asientos" => 'required'
+            "cantidadTEVIP" => 'required'
         ]);
 
         if($validator->fails()){
@@ -43,8 +42,7 @@ class CompraController extends Controller
                 "cantidadTE" => $request->cantidadTE,
                 "cantidadAdultosVIP" => $request->cantidadAdultosVIP,
                 "cantidadNinosVIP" => $request->cantidadNinosVIP,
-                "cantidadTEVIP" => $request->cantidadTEVIP,
-                "asientos" => $request->asientos
+                "cantidadTEVIP" => $request->cantidadTEVIP
             ]);
         } catch(\Exception $error){
             $data = [
