@@ -5,16 +5,16 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Cine;
 use Illuminate\Support\Facades\Validator;
+use Exception;
 
 class CineController extends Controller
 {
-
-    public function store(Request $request)
-    {
+    //Función para almacenar cine
+    public function store(Request $request){
 
         $validator = Validator::make($request->all(), [
             'nombreCine' => 'required',
-            'logo_path'  => 'required',
+            'logo'  => ['required', 'image'],
             'ubicacion'  => 'required',
             'mision'  => 'required',
             'vision'  => 'required',
@@ -33,16 +33,20 @@ class CineController extends Controller
         }
 
         try {
+            $fileName = time() . "." . $request->file('logo')->extension();
+            $request->file('logo')->move(public_path("img"), $fileName);
             $cine = Cine::create([
                 'nombreCine' => $request->nombreCine,
-                'logo_path'  => $request->logo_path,
+                'logo_path'  => $fileName,
                 'ubicacion'  => $request->ubicacion,
+                //POR SI SE HACE DESDE UN JSON
+                //'ubicacion'  => json_encode($request->ubicacion),
                 'mision'  => $request->mision,
                 'vision'  => $request->vision,
                 'telefono'  => $request->telefono,
                 'firstAdmin'  => $request->firstAdmin
             ]);
-        } catch (\Exception $error) {
+        } catch (Exception $error) {
             $data = [
                 'message' => 'Error al crear el cine: ' . $error->getMessage(),
                 'status' => 500
@@ -59,28 +63,42 @@ class CineController extends Controller
         return response()->json($data, 201);
     }
 
-    public function index()
+    //Función para mostrar cine específico
+    public function show($id)
     {
-        $cines = Cine::all();
+        $cine = Cine::find($id);
+        if(!$cine){
+            $data = [
+                'message' => 'Cine no encontrado',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        }
         $data = [
-            'cines' => $cines,
+            'cine' => $cine,
             'status' => 200
         ];
         return response()->json($data, 200);
     }
 
-    public function update(Request $request)
+    //función para modificar cine
+    public function update(Request $request, $id)
     {
-        $cine = Cine::find(1); // Solo hay un cine
+        $cine = Cine::find($id);
+        if(!$cine){
+            $data = [
+                'message' => 'Cine no encontrado',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        }
 
         $validator = Validator::make($request->all(), [
             'nombreCine' => 'required',
-            'logo_path'  => 'required',
             'ubicacion'  => 'required',
             'mision'  => 'required',
             'vision'  => 'required',
-            'telefono'  => 'required',
-            'firstAdmin'  => 'required'
+            'telefono'  => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -94,16 +112,16 @@ class CineController extends Controller
         }
 
         $cine->nombreCine = $request->nombreCine;
-        $cine->logo_path  = $request->logo_path;
-        $cine->ubicacion = $request->ubicacion;
         $cine->mision = $request->mision;
         $cine->vision = $request->vision;
         $cine->telefono = $request->telefono;
-        $cine->firstAdmin = $request->firstAdmin;
+        //$cine->ubicacion = $request->ubicacion;
+        //POR SI SE HACE DESDE UN JSON
+        $cine->ubicacion  = json_encode($request->ubicacion);
 
         try {
             $cine->save();
-        } catch (\Exception $error) {
+        } catch (Exception $error) {
             $data = [
                 'message' => 'Error al actualizar el cine: ' . $error->getMessage(),
                 'status' => 500

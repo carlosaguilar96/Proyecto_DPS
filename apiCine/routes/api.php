@@ -28,12 +28,15 @@ Route::put('/usuarios/modificarUsuario/{id}', [UsuarioController::class, 'update
 //Ruta para cambiar contraseña
 Route::put('/usuarios/cambiarPassword/{id}', [UsuarioController::class, 'changePass']);
 
-
-Route::post('/cines', [CineController::class, 'store']);
-Route::get('/cines', [CineController::class, 'index']);
+//RUTAS PARA CINES
+//Ruta para crear cine
+Route::post('/cines/crearCine', [CineController::class, 'store']);
+//Ruta para mostrar cine
+Route::get('/cines/show/{id}', [CineController::class, 'show']);
+//Ruta para modificar cine
+Route::put('/cines/update/{id}', [CineController::class, 'update']);
 // Solo hay un cine por base de datos
 // El cine nunca se borrará
-Route::put('/cines', [CineController::class, 'update']);
 
 Route::post('/productos', [ProductoController::class, 'store']);
 Route::get('/productos', [ProductoController::class, 'index']);
