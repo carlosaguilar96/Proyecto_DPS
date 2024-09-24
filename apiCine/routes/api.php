@@ -93,3 +93,5 @@ Route::get('/compras/{id}', [CompraController::class, 'show']);
 Route::post('/asientos', [AsientoController::class, 'store']);
 Route::get('/asientos', [AsientoController::class, 'index']);
 Route::get('/asientos/{id}', [AsientoController::class, 'show']);
+// Los asientos no se pueden eliminar
+// Los asientos no se pueden modificar

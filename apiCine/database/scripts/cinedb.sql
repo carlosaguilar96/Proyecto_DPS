@@ -60,9 +60,11 @@ CREATE TABLE sucursales(
 CREATE TABLE salas(
     codSala int PRIMARY KEY AUTO_INCREMENT,
     capacidad int NOT NULL,
-    sucursal varchar(15) NOT NULL,
+    codSucursal int NOT NULL,
     tipo varchar(10) NOT NULL,
-    estadoEliminacion int DEFAULT "1" NOT NULL
+    estadoEliminacion int DEFAULT "1" NOT NULL,
+
+    FOREIGN KEY (codSucursal) REFERENCES sucursales(codSucursal)
 )
 
 CREATE TABLE funciones(
