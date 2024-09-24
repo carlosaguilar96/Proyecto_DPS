@@ -17,10 +17,8 @@ class Cine extends Model
     protected $fillable = [
         'nombreCine',
         'logo_path',
-        'ubicacion',
         'mision',
         'vision',
-        'telefono',
         'firstAdmin'
     ];
 

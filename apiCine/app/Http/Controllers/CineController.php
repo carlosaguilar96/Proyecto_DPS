@@ -17,7 +17,6 @@ class CineController extends Controller
             'logo'  => ['required', 'image'],
             'mision'  => 'required',
             'vision'  => 'required',
-            'telefono'  => 'required',
             'firstAdmin'  => 'required'
         ]);
 
@@ -39,7 +38,6 @@ class CineController extends Controller
                 'logo_path'  => $fileName,
                 'mision'  => $request->mision,
                 'vision'  => $request->vision,
-                'telefono'  => $request->telefono,
                 'firstAdmin'  => $request->firstAdmin
             ]);
         } catch (Exception $error) {
@@ -92,8 +90,7 @@ class CineController extends Controller
         $validator = Validator::make($request->all(), [
             'nombreCine' => 'required',
             'mision'  => 'required',
-            'vision'  => 'required',
-            'telefono'  => 'required'
+            'vision'  => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -109,7 +106,6 @@ class CineController extends Controller
         $cine->nombreCine = $request->nombreCine;
         $cine->mision = $request->mision;
         $cine->vision = $request->vision;
-        $cine->telefono = $request->telefono;
 
         try {
             $cine->save();
