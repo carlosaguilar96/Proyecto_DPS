@@ -40,18 +40,16 @@ Route::put('/cines/update/{id}', [CineController::class, 'update']);
 // Solo hay un cine por base de datos
 // El cine nunca se borrará
 
-
 // RUTAS PARA SUCURSALES
 // Ruta para crear la sucursal
 Route::post('/sucursales/crearSucursal', [SucursalController::class, 'store']);
-// Ruta para mostrar todas las sucursales
-Route::get('/sucursales/index', [SucursalController::class, 'index']);
+// Ruta para mostrar todas las sucursales por cine
+Route::get('/sucursales/index/{id}', [SucursalController::class, 'index']);
 // Ruta para mostrar una sucursal
-Route::get('/sucursales/index/{id}', [SucursalController::class, 'show']);
+Route::get('/sucursales/show/{id}', [SucursalController::class, 'show']);
 // Ruta para modificar una sucursal
 Route::put('/sucursales/update/{id}', [SucursalController::class, 'update']);
-// Ruta para eliminar una sucursal
-Route::delete('/sucursales/eliminar/{id}', [SucursalController::class, 'destroy']);
+// No se podrán eliminar sucursales
 
 
 Route::post('/productos', [ProductoController::class, 'store']);
