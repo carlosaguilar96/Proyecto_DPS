@@ -51,12 +51,18 @@ Route::get('/sucursales/show/{id}', [SucursalController::class, 'show']);
 Route::put('/sucursales/update/{id}', [SucursalController::class, 'update']);
 // No se podrán eliminar sucursales
 
-
-Route::post('/productos', [ProductoController::class, 'store']);
-Route::get('/productos', [ProductoController::class, 'index']);
-Route::get('/productos/{id}', [ProductoController::class, 'show']);
-Route::delete('/productos/{id}', [ProductoController::class, 'destroy']);
-Route::put('/productos/{id}', [ProductoController::class, 'update']);
+//RUTAS PARA PRODUCTOS
+//Ruta para crear producto
+Route::post('/productos/crearProducto', [ProductoController::class, 'store']);
+//Ruta para mostrar todos los productos
+Route::get('/productos/index', [ProductoController::class, 'index']);
+//Ruta para mostrar un producto
+Route::get('/productos/show/{id}', [ProductoController::class, 'show']);
+//Rutas para reactivar y eliminar productos
+Route::put('/productos/eliminarProducto/{id}', [ProductoController::class, 'destroy']);
+Route::put('/productos/reactivarProducto/{id}', [ProductoController::class, 'reactivate']);
+//Ruta para modificar producto
+Route::put('/productos/update/{id}', [ProductoController::class, 'update']);
 
 Route::post('/peliculas', [PeliculaController::class, 'store']);
 Route::get('/peliculas', [PeliculaController::class, 'index']);
