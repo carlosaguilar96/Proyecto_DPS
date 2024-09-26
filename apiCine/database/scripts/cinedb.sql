@@ -55,7 +55,8 @@ CREATE TABLE sucursales(
     genero varchar(15) NOT NULL,
     sinopsis text,
     enCartelera int DEFAULT "1" NOT NULL,
-    estadoEliminacion int DEFAULT "1" NOT NULL
+    estadoEliminacion int DEFAULT "1" NOT NULL,
+    imagen varchar(100) NOT NULL
  )
 
 CREATE TABLE salas(

@@ -64,11 +64,21 @@ Route::put('/productos/reactivarProducto/{id}', [ProductoController::class, 'rea
 //Ruta para modificar producto
 Route::put('/productos/update/{id}', [ProductoController::class, 'update']);
 
-Route::post('/peliculas', [PeliculaController::class, 'store']);
-Route::get('/peliculas', [PeliculaController::class, 'index']);
-Route::get('/peliculas/{id}', [PeliculaController::class, 'show']);
-Route::delete('/peliculas/{id}', [PeliculaController::class, 'destroy']);
-Route::put('/peliculas/{id}', [PeliculaController::class, 'update']);
+//RUTAS PARA PELÍCULAS
+//Ruta para crear película
+Route::post('/peliculas/crearPelicula', [PeliculaController::class, 'store']);
+//Ruta para mostrar todas las películas
+Route::get('/peliculas/index', [PeliculaController::class, 'index']);
+//Ruta para mostar una película
+Route::get('/peliculas/show/{id}', [PeliculaController::class, 'show']);
+//Rutas para reactivar y eliminar peliculas
+Route::put('/peliculas/eliminarPelicula/{id}', [PeliculaController::class, 'destroy']);
+Route::put('/peliculas/reactivarPelicula/{id}', [PeliculaController::class, 'reactivate']);
+//Rutas para quitar y poner película en cartelera
+Route::put('/peliculas/ponerCartelera/{id}', [PeliculaController::class, 'ponerC']);
+Route::put('/peliculas/quitarCartelera/{id}', [PeliculaController::class, 'quitarC']);
+//Ruta para modificar película
+Route::put('/peliculas/update/{id}', [PeliculaController::class, 'update']);
 
 Route::post('/salas', [SalaController::class, 'store']);
 Route::get('/salas', [SalaController::class, 'index']);
