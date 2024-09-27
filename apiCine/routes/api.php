@@ -80,11 +80,18 @@ Route::put('/peliculas/quitarCartelera/{id}', [PeliculaController::class, 'quita
 //Ruta para modificar película
 Route::put('/peliculas/update/{id}', [PeliculaController::class, 'update']);
 
-Route::post('/salas', [SalaController::class, 'store']);
-Route::get('/salas', [SalaController::class, 'index']);
-Route::get('/salas/{id}', [SalaController::class, 'show']);
-Route::delete('/salas/{id}', [SalaController::class, 'destroy']);
-Route::put('/salas/{id}', [SalaController::class, 'update']);
+//RUTAS PARA SALAS
+//Ruta para crear salas
+Route::post('/salas/crearSala', [SalaController::class, 'store']);
+//Ruta para mostrar todas las salas
+Route::get('/salas/index', [SalaController::class, 'index']);
+//Ruta para mostrar una sala
+Route::get('/salas/show/{id}', [SalaController::class, 'show']);
+//Rutas para reactivar y eliminar salas
+Route::put('/salas/eliminarSala/{id}', [SalaController::class, 'destroy']);
+Route::put('/salas/reactivarSala/{id}', [SalaController::class, 'reactivate']);
+//Ruta para modificar sala
+Route::put('/salas/update/{id}', [SalaController::class, 'update']);
 
 Route::post('/funciones', [FuncionController::class, 'store']);
 Route::get('/funciones', [FuncionController::class, 'index']);

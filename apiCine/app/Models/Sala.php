@@ -15,7 +15,7 @@ class sala extends Model
 
     protected $fillable = [
         "capacidad",
-        "sucursal",
+        "codSucursal",
         "tipo",
     ];
 }
