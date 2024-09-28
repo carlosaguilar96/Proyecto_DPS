@@ -63,7 +63,6 @@ CREATE TABLE salas(
     codSala int PRIMARY KEY AUTO_INCREMENT,
     capacidad int NOT NULL,
     codSucursal int NOT NULL,
-    tipo varchar(10) NOT NULL,
     estadoEliminacion int DEFAULT "1" NOT NULL,
 
     FOREIGN KEY (codSucursal) REFERENCES sucursales(codSucursal)

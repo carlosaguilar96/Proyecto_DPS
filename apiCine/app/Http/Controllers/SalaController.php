@@ -15,8 +15,7 @@ class SalaController extends Controller
 
         $validator = Validator::make($request->all(), [
             "capacidad" => ['required','numeric', 'min:0'],
-            "sucursal" => 'required',
-            "tipo" => 'required',
+            "sucursal" => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -32,8 +31,7 @@ class SalaController extends Controller
         try {
             $sala = Sala::create([
                 "capacidad" => $request->capacidad,
-                "codSucursal" => $request->sucursal,
-                "tipo" => $request->tipo,
+                "codSucursal" => $request->sucursal
             ]);
         } catch (Exception $error) {
             $data = [
@@ -152,8 +150,7 @@ class SalaController extends Controller
         }
         $validator = Validator::make($request->all(), [
             "capacidad" => ['required','numeric', 'min:0'],
-            "sucursal" => 'required',
-            "tipo" => 'required',
+            "sucursal" => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -168,7 +165,6 @@ class SalaController extends Controller
 
         $sala->capacidad = $request->capacidad;
         $sala->codSucursal = $request->sucursal;
-        $sala->tipo = $request->tipo;
 
         try{
             $sala->save();
