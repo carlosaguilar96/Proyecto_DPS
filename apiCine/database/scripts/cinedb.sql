@@ -74,13 +74,11 @@ CREATE TABLE funciones(
     codPelicula int NOT NULL,
     codSala int NOT NULL,
     idioma varchar(10) NOT NULL,
-    fechaHora datetime NOT NULL,
+    fecha date NOT NULL,
+    hora time NOT NULL,
     precioAdulto decimal(10,2) NOT NULL,
     precioNino decimal(10,2) NOT NULL,
     precioTE decimal(10,2) NOT NULL,
-    precioAdultoVIP decimal(10,2) NOT NULL,
-    precioNinoVIP decimal(10,2) NOT NULL,
-    precioTEVIP decimal(10,2) NOT NULL,
     estadoEliminacion int DEFAULT "1" NOT NULL,
     
 

@@ -93,11 +93,18 @@ Route::put('/salas/reactivarSala/{id}', [SalaController::class, 'reactivate']);
 //Ruta para modificar sala
 Route::put('/salas/update/{id}', [SalaController::class, 'update']);
 
-Route::post('/funciones', [FuncionController::class, 'store']);
-Route::get('/funciones', [FuncionController::class, 'index']);
-Route::get('/funciones/{id}', [FuncionController::class, 'show']);
-Route::delete('/funciones/{id}', [FuncionController::class, 'destroy']);
-Route::put('/funciones/{id}', [FuncionController::class, 'update']);
+//RUTAS PARA FUNCIONES
+//Ruta para crear función
+Route::post('/funciones/crearFuncion', [FuncionController::class, 'store']);
+//Ruta para mostrar todas las funciones
+Route::get('/funciones/index', [FuncionController::class, 'index']);
+//Ruta para mostrar una función
+Route::get('/funciones/show/{id}', [FuncionController::class, 'show']);
+//Rutas para reactivar y eliminar funciones
+Route::put('/funciones/eliminarFuncion/{id}', [FuncionController::class, 'destroy']);
+Route::put('/funciones/reactivarFuncion/{id}', [FuncionController::class, 'reactivate']);
+//Ruta para modificar función
+Route::put('/funciones/update/{id}', [FuncionController::class, 'update']);
 
 Route::post('/transacciones', [TransaccionController::class, 'store']);
 Route::get('/transacciones', [TransaccionController::class, 'index']);
