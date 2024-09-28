@@ -106,9 +106,13 @@ Route::put('/funciones/reactivarFuncion/{id}', [FuncionController::class, 'react
 //Ruta para modificar función
 Route::put('/funciones/update/{id}', [FuncionController::class, 'update']);
 
-Route::post('/transacciones', [TransaccionController::class, 'store']);
-Route::get('/transacciones', [TransaccionController::class, 'index']);
-Route::get('/transacciones/{id}', [TransaccionController::class, 'show']);
+//RUTAS PARA TRANSACCIONES
+//Ruta para crear transacción
+Route::post('/transacciones/crearTransaccion', [TransaccionController::class, 'store']);
+//Ruta para ver transacciones
+Route::get('/transacciones/index', [TransaccionController::class, 'index']);
+//Ruta para ver una transacción
+Route::get('/transacciones/show/{id}', [TransaccionController::class, 'show']);
 // Las transacciones ya no se pueden regresar
 // No se pueden modificar
 

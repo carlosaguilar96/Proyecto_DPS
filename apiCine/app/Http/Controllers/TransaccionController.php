@@ -5,15 +5,17 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Transaccion;
+use Exception;
+use Carbon\Carbon;
 
 class TransaccionController extends Controller
 {
+    //Función para almacenar transacción
     public function store(Request $request){
 
         $validator = Validator::make($request->all() , [
-            "precioTotal" => "required",
-            "fecha" => "required",
-            "cardID" => "required",
+            "precioTotal" => ["required",'numeric', 'min:0'],
+            "cardID" => ['required','digits:16']
         ]);
 
         if($validator->fails()){
@@ -27,12 +29,13 @@ class TransaccionController extends Controller
         }
 
         try{
+            $lastDigits = substr($request->cardID, -6);
             $transaccion = Transaccion::create([
                 "precioTotal" => $request->precioTotal,
-                "fecha" => $request->fecha,
-                "cardID" => $request->cardID
+                "fecha" => Carbon::now('America/El_Salvador'),
+                "cardID" => $lastDigits
             ]);
-        } catch(\Exception $error){
+        } catch(Exception $error){
             $data = [
                 'message' => 'Error al crear la transacción: ' . $error->getMessage(),
                 'status' => 500
