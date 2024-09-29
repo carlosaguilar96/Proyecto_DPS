@@ -15,18 +15,29 @@ const agruparTitle = (data) => {
       acc[item.title] = { ...item, horarios: [] }; 
     }
 
-    // Comprobar si ya existe un horario para el idioma actual
-    const existingIdioma = acc[item.title].horarios.find(h => h.idioma === item.idioma);
+    // Comprobar si ya existe un horario para la sucursal actual
+    const existingSucursal = acc[item.title].horarios.find(h => h.sucursal === item.sucursal);
 
-    if (!existingIdioma) {
-      // Añadir un nuevo objeto para el idioma si no existe
+    if (!existingSucursal) {
+      // Añadir un nuevo objeto para la sucursal si no existe
       acc[item.title].horarios.push({
-        idioma: item.idioma,
-        detalles: [{ fecha: item.fecha, hora: item.hora }], // Almacena los detalles en un array
+        sucursal: item.sucursal,
+        idiomas: [{ idioma: item.idioma, detalles: [{ fecha: item.fecha, hora: item.hora }] }],
       });
     } else {
-      // Si el idioma ya existe, agregar el horario a los detalles
-      existingIdioma.detalles.push({ fecha: item.fecha, hora: item.hora });
+      // Comprobar si el idioma ya existe para la sucursal
+      const existingIdioma = existingSucursal.idiomas.find(i => i.idioma === item.idioma);
+
+      if (!existingIdioma) {
+        // Añadir un nuevo idioma si no existe
+        existingSucursal.idiomas.push({
+          idioma: item.idioma,
+          detalles: [{ fecha: item.fecha, hora: item.hora }],
+        });
+      } else {
+        // Si el idioma ya existe, agregar el horario a los detalles
+        existingIdioma.detalles.push({ fecha: item.fecha, hora: item.hora });
+      }
     }
 
     return acc;
@@ -40,17 +51,25 @@ const renderItem = ({ item }) => (
   <View style={styles.card}>
     <Image source={item.image} style={styles.image} />
     <View style={styles.infoContainer}>
-      <Text style={styles.sucursalTitle}>Sucursal {item.sucursal} </Text>
+
       <Text style={styles.title}>{item.title}</Text>
       <View style={styles.horariosContainer}>
         {item.horarios && item.horarios.length > 0 ? (
           item.horarios.map((horario, index) => (
             <View key={index} style={styles.horarioRow}>
-              <Text style={styles.horarioTitle}>{horario.idioma}</Text>
-              {horario.detalles.map((detalle, indexDetalle) => (
-                <TouchableOpacity key={indexDetalle} style={styles.horarioButton}>
-                  <Text style={styles.horarioText}>{detalle.hora} </Text>
-                </TouchableOpacity>
+              {/* Mostrar sucursal */}
+              <Text style={styles.sucursalTitle}>Sucursal {horario.sucursal}</Text>
+
+              {/* Renderizar los detalles de horarios, agrupados por idioma en la misma línea */}
+              {horario.idiomas.map((idioma, indexIdioma) => (
+                <View key={indexIdioma} style={styles.idiomaContainer}>
+                  <Text style={styles.horarioTitle}>{`${idioma.idioma} `}</Text>
+                  {idioma.detalles.map((detalle, indexDetalle) => (
+                    <TouchableOpacity key={indexDetalle} style={styles.horarioButton}>
+                      <Text style={styles.horarioText}>{`${detalle.hora} `}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
               ))}
             </View>
           ))
@@ -62,6 +81,7 @@ const renderItem = ({ item }) => (
   </View>
 );
 
+
 // Función para agrupar las películas por título e idioma y combinar los horarios
 const agruparPeliculas = (peliculas) => {
   const groupedData = peliculas.reduce((acc, item) => {
@@ -70,18 +90,29 @@ const agruparPeliculas = (peliculas) => {
       acc[item.title] = { ...item, horarios: [] };
     }
 
-    // Buscar si ya existe un horario para el idioma actual
-    const existingIdioma = acc[item.title].horarios.find(h => h.idioma === item.idioma);
+    // Buscar si ya existe un horario para la sucursal actual
+    const existingSucursal = acc[item.title].horarios.find(h => h.sucursal === item.sucursal);
 
-    if (!existingIdioma) {
-      // Añadir un nuevo objeto para el idioma si no existe
+    if (!existingSucursal) {
+      // Añadir un nuevo objeto para la sucursal si no existe
       acc[item.title].horarios.push({
-        idioma: item.idioma,
-        detalles: [{ fecha: item.fecha, hora: item.hora, sucursal: item.sucursal }], // Incluye la sucursal aquí
+        sucursal: item.sucursal,
+        idiomas: [{ idioma: item.idioma, detalles: [{ fecha: item.fecha, hora: item.hora }] }],
       });
     } else {
-      // Si el idioma ya existe, agregar el horario a los detalles
-      existingIdioma.detalles.push({ fecha: item.fecha, hora: item.hora, sucursal: item.sucursal }); // Incluye la sucursal aquí
+      // Comprobar si el idioma ya existe para la sucursal
+      const existingIdioma = existingSucursal.idiomas.find(i => i.idioma === item.idioma);
+
+      if (!existingIdioma) {
+        // Añadir un nuevo idioma si no existe
+        existingSucursal.idiomas.push({
+          idioma: item.idioma,
+          detalles: [{ fecha: item.fecha, hora: item.hora }],
+        });
+      } else {
+        // Si el idioma ya existe, agregar el horario a los detalles
+        existingIdioma.detalles.push({ fecha: item.fecha, hora: item.hora });
+      }
     }
 
     return acc;
@@ -91,38 +122,30 @@ const agruparPeliculas = (peliculas) => {
   return Object.values(groupedData);
 };
 
+
 // Componente para renderizar cada película
 const renderItemInicio = ({ item }) => (
   <View style={styles.container}>
     <View style={styles.rowContainer}>
       <View style={styles.card}>
         <Image source={item.image} style={styles.image} />
-
-        {/* Título de la película */}
         <Text style={styles.title}>{item.title}</Text>
 
         <View style={styles.horariosContainer}>
           {item.horarios && item.horarios.length > 0 ? (
             item.horarios.map((horario, index) => (
               <View key={index} style={styles.horarioRow}>
-                {/* Mostrar el idioma */}
-                <Text style={styles.horarioTitle}>Idioma: {horario.idioma}</Text>
-                
-                {horario.detalles.map((detalle, indexDetalle) => (
-                  <TouchableOpacity key={indexDetalle} style={styles.horarioButton}>
-                    {/* Mostrar el horario y la sucursal */}
-                    <Text style={styles.horarioText}>Hora: {detalle.hora} </Text>
-                
-                  
-                  </TouchableOpacity>
-                ))}
-                 {horario.detalles.map((detalle, indexD) => (
-                  <View key={indexD}>
-                    {/* Mostrar el horario y la sucursal */}
-                    
-                    <Text>Fecha: {detalle.fecha}</Text>
-                    <Text>Sucursal: {detalle.sucursal}</Text>
-                  
+                <Text style={styles.sucursalTitle}>{`Sucursal ${horario.sucursal}`}</Text>
+
+                {/* Renderizar los idiomas y horarios en la misma línea */}
+                {horario.idiomas.map((idioma, indexIdioma) => (
+                  <View key={indexIdioma} style={styles.idiomaContainer}>
+                    <Text style={styles.horarioTitle}>{`${idioma.idioma}: `}</Text>
+                    {idioma.detalles.map((detalle, indexDetalle) => (
+                      <TouchableOpacity key={indexDetalle} style={styles.horarioButton}>
+                        <Text style={styles.horarioText}>{`${detalle.hora} `}</Text>
+                      </TouchableOpacity>
+                    ))}
                   </View>
                 ))}
               </View>
@@ -136,19 +159,16 @@ const renderItemInicio = ({ item }) => (
   </View>
 );
 
+
 // Renderizar la lista de películas agrupadas
 const renderFlatListInicio = (peliculasAgrupadas) => (
   <FlatList
-    data={peliculasAgrupadas} // Utiliza los datos agrupados
+    data={peliculasAgrupadas} 
     renderItem={renderItemInicio}
-    keyExtractor={(item) => item.title} // Clave única, se puede ajustar
+    keyExtractor={(item) => item.title} 
   />
 );
 
-
-
-
-// Utiliza la función para agrupar tus datos
 
 export default function Cartelera() {
   const route = useRoute();
@@ -276,7 +296,8 @@ const styles = StyleSheet.create({
   },
   infoContainer: {
     flex: 1,
-    padding: 10,
+    padding: 15,
+    marginRight: 20,
   },
   title: {
     fontSize: 16,
@@ -286,7 +307,7 @@ const styles = StyleSheet.create({
   horariosContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    marginTop: 10,
+    marginRight:50,
   },
   horarioTitle: {
     fontSize: 14,
@@ -302,7 +323,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   horarioText: {
-    fontSize: 12,
+    fontSize: 14,
     color: '#333',
   },
   

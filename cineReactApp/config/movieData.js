@@ -77,7 +77,7 @@ export const EstrenosData = [
       image: require('../assets/img/02.jpg'), 
       sucursal: 'Y',
       idioma: 'Sub Español',
-      fecha: '2024-09-30',
+      fecha: '2024-09-29',
       hora: '2:00 pm',
     },
     {
@@ -94,7 +94,7 @@ export const EstrenosData = [
       title: 'Película 1',
       image: require('../assets/img/02.jpg'),
       fecha: '2024-09-29',
-      idioma: 'dub',
+      idioma: 'Dub',
       hora: '5:00 pm',
       sucursal: 'X',
     },
@@ -142,6 +142,15 @@ export const EstrenosData = [
       idioma: 'Sub Español',
       fecha: '2024-09-30',
       hora: '2:00 pm',
+    },
+    {
+      id: '3',
+      title: 'Película 2',
+      image: require('../assets/img/cupon1.jpg'),
+      fecha: '2024-09-29',
+      idioma: 'Dub',
+      hora: '4:00 pm',
+      sucursal: 'X',
     },
 
   ];
