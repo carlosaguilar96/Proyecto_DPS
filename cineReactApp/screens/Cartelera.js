@@ -127,54 +127,47 @@ const agruparPeliculas = (peliculas) => {
 const renderItemInicio = ({ item }) => (
   <View style={styles.container}>
     <View style={styles.rowContainer}>
-      <View style={styles.card}>
-        <Image source={item.image} style={styles.image} />
-        <Text style={styles.title}>{item.title}</Text>
+    <View style={styles.card}>
+    <Image source={item.image} style={styles.image} />
+    <View style={styles.infoContainer}>
 
-        <View style={styles.horariosContainer}>
-          {item.horarios && item.horarios.length > 0 ? (
-            item.horarios.map((horario, index) => (
-              <View key={index} style={styles.horarioRow}>
-                <Text style={styles.sucursalTitle}>{`Sucursal ${horario.sucursal}`}</Text>
+      <Text style={styles.title}>{item.title}</Text>
+      <View style={styles.horariosContainer}>
+        {item.horarios && item.horarios.length > 0 ? (
+          item.horarios.map((horario, index) => (
+            <View key={index} style={styles.horarioRow}>
+              {/* Mostrar sucursal */}
+              <Text style={styles.sucursalTitle}>Sucursal {horario.sucursal}</Text>
 
-                {/* Renderizar los idiomas y horarios en la misma línea */}
-                {horario.idiomas.map((idioma, indexIdioma) => (
-                  <View key={indexIdioma} style={styles.idiomaContainer}>
-                    <Text style={styles.horarioTitle}>{`${idioma.idioma}: `}</Text>
-                    {idioma.detalles.map((detalle, indexDetalle) => (
-                      <TouchableOpacity key={indexDetalle} style={styles.horarioButton}>
-                        <Text style={styles.horarioText}>{`${detalle.hora} `}</Text>
-                      </TouchableOpacity>
-                    ))}
-                  </View>
-                ))}
-              </View>
-            ))
-          ) : (
-            <Text>No hay horarios disponibles para esta película.</Text>
-          )}
-        </View>
+              {/* Renderizar los detalles de horarios, agrupados por idioma en la misma línea */}
+              {horario.idiomas.map((idioma, indexIdioma) => (
+                <View key={indexIdioma} style={styles.idiomaContainer}>
+                  <Text style={styles.horarioTitle}>{`${idioma.idioma} `}</Text>
+                  {idioma.detalles.map((detalle, indexDetalle) => (
+                    <TouchableOpacity key={indexDetalle} style={styles.horarioButton}>
+                      <Text style={styles.horarioText}>{`${detalle.hora} `}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              ))}
+            </View>
+          ))
+        ) : (
+          <Text>No hay horarios disponibles.</Text>
+        )}
       </View>
+    </View>
+  </View>
     </View>
   </View>
 );
 
 
-// Renderizar la lista de películas agrupadas
-const renderFlatListInicio = (peliculasAgrupadas) => (
-  <FlatList
-    data={peliculasAgrupadas} 
-    renderItem={renderItemInicio}
-    keyExtractor={(item) => item.title} 
-  />
-);
-
 
 export default function Cartelera() {
   const route = useRoute();
   const { title } = route?.params || {};
-  const filteredData = agruparPeliculas(Funcion.filter(item => item.title === title)); 
-
+  
   
   const { miVariable, setMiVariable } = useContext(AppContext); // Obtén la variable del contexto
 
@@ -196,14 +189,16 @@ export default function Cartelera() {
   const localMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
   const [selectedData, setSelectedData] = useState([]); // Estado para la lista seleccionada
   const [selectedButton, setSelectedButton] = useState(null);
-  const [selectedMovie, setSelectedMovie] = useState([]);
+
   const selectedDate = format(localMidnight, 'yyyy-MM-dd');
   const tomorrow = addDays(new Date(), 1);
   const selectedT = format(tomorrow, 'yyyy-MM-dd');
   const tomorrowP = addDays(new Date(), 2);
   const selectedP = format(tomorrowP, 'yyyy-MM-dd');
   
-
+  const MovieToday = agruparPeliculas(Funcion.filter(item => item.title === title && format(parseISO(item.fecha), 'yyyy-MM-dd') === selectedDate));
+  const MovieTomorrow = agruparPeliculas(Funcion.filter(item => item.title === title && format(parseISO(item.fecha), 'yyyy-MM-dd') === selectedT)); 
+  const MovieTomorrowP = agruparPeliculas(Funcion.filter(item => item.title === title && format(parseISO(item.fecha), 'yyyy-MM-dd') === selectedP));   
   const DataToday = agruparTitle(Funcion.filter(item => format(parseISO(item.fecha), 'yyyy-MM-dd') === selectedDate));
   const DataTomorrow = agruparTitle(Funcion.filter(item => format(parseISO(item.fecha), 'yyyy-MM-dd') === selectedT));
   const DataTomorrowP = agruparTitle(Funcion.filter(item => format(parseISO(item.fecha), 'yyyy-MM-dd') === selectedP));
@@ -216,10 +211,6 @@ export default function Cartelera() {
   const handleButtonPress = (day, data) => {
     setSelectedButton(day); // Actualiza el botón seleccionado
     setSelectedData(data); // Actualiza los datos seleccionados
-  };
-
-  const handlemovie = (day, data) => {
-    setSelectedMovie(data); // Actualiza los datos seleccionados
   };
   
   return (
@@ -252,12 +243,45 @@ export default function Cartelera() {
             </View>
             ) : 
             ( 
-              
-            renderFlatListInicio(filteredData)
-            
+              <View>
+              <Text style={styles.sucursalTitle}>Hoy</Text>
+              <View style={styles.cardMovie}>
+              {(
+            <FlatList
+              data={MovieToday}
+              renderItem={renderItemInicio}
+              keyExtractor={(item) => item.title}
+              ListEmptyComponent={<Text style={styles.titleError}>No hay horarios disponibles</Text>} 
+            />
+              )}
+              </View>
+              <Text style={styles.sucursalTitle}>Mañana</Text>
+              <View style={styles.cardMovie}>
+              {(
+                
+            <FlatList
+              data={MovieTomorrow}
+              renderItem={renderItemInicio}
+              keyExtractor={(item) => item.title}
+              ListEmptyComponent={<Text style={styles.titleError}>No hay horarios disponibles</Text>} 
+            />
+              )}
+              </View>
+              <Text style={styles.daytitle}>Pasado</Text>
+              {(
+                
+                <FlatList
+                  data={MovieTomorrowP}
+                  renderItem={renderItemInicio}
+                  keyExtractor={(item) => item.title}
+                  ListEmptyComponent={<Text style={styles.titleError}>No hay horarios disponibles</Text>} 
+                />
+                  )}
+            </View>
+           
             )}
-    </View>
-                );
+          </View>
+);
 }
 
 const styles = StyleSheet.create({
@@ -268,17 +292,39 @@ const styles = StyleSheet.create({
     marginVertical: 10, // Esp
   },
 
+  titleError:{
+    margin:10,
+    fontSize: 20,
+  },
+
   sucursalTitle: {
     fontSize: 20,
     fontWeight: 'bold',
     color: '#b00',
     marginVertical: 10,
+    
+  },
+  daytitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#b00',
+    marginVertical: 10,
+    paddingTop:20,
   },
   card: {
     flexDirection: 'row',
     backgroundColor: '#fff',
     borderRadius: 8,
     marginBottom: 20,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+  },
+  cardMovie: {
+    flexDirection: 'row',
+    marginBottom: 10,
     elevation: 3,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -319,7 +365,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#e0e0e0',
     padding: 10,
     borderRadius: 5,
-    marginRight: 30,
+    marginRight: 20,
     marginBottom: 5,
   },
   horarioText: {

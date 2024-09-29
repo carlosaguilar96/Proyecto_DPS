@@ -121,9 +121,9 @@ const Inicio = () => {
           style={styles.picker}
           onValueChange={(itemValue) => setSelectedCinema(itemValue)}
         >
-          <Picker.Item label="Cine 1" value="cine1" />
-          <Picker.Item label="Cine 2" value="cine2" />
-          <Picker.Item label="Cine 3" value="cine3" />
+          <Picker.Item label="Sucursal X" value="cine1" />
+          <Picker.Item label="Sucursal Y" value="cine2" />
+
         </Picker>
         <TouchableOpacity style={styles.button}>
           <Text style={styles.buttonText}>Ver disponibilidad</Text>
