@@ -19,6 +19,7 @@ class Pelicula extends Model
         "clasificacion",
         "director",
         "genero",
-        "sinopsis"
+        "sinopsis",
+        "imagen"
     ];
 }

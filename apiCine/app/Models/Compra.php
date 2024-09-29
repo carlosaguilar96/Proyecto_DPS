@@ -16,13 +16,8 @@ class Compra extends Model
     protected $fillable = [
         "nombreUsuario",
         "codFuncion",
-        "codTransaccion",
         "cantidadAdultos",
         "cantidadNinos",
-        "cantidadTE",
-        "cantidadAdultosVIP",
-        "cantidadNinosVIP",
-        "cantidadTEVIP",
-        "asientos"
+        "cantidadTE"
     ];
 }

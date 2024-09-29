@@ -17,13 +17,11 @@ class Funcion extends Model
         'codPelicula',
         'codSala',
         'idioma',
-        'fechaHora',
+        'fecha',
+        'hora',
         'precioAdulto',
         'precioNino',
-        'precioTE',
-        'precioAdultoVIP',
-        'precioNinoVIP',
-        'precioTEVIP'
+        'precioTE'
     ];
 
 }

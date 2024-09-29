@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Funcion;
+use Exception;
 
 class FuncionController extends Controller
 {
+    //Función para almacenar función
     public function store(Request $request)
     {
 
@@ -15,13 +17,11 @@ class FuncionController extends Controller
             "codPelicula" => "required",
             "codSala" => "required",
             "idioma" => "required",
-            "fechaHora" => "required",
-            "precioAdulto" => "required",
-            "precioNino" => "required",
-            "precioTE" => "required",
-            "precioAdultoVIP" => "required",
-            "precioNinoVIP" => "required",
-            "precioTEVIP" => "required"
+            "fecha" => "required",
+            "hora" => "required",
+            "precioAdulto" => ["required",'numeric', 'min:0'],
+            "precioNino" => ["required",'numeric', 'min:0'],
+            "precioTE" => ["required",'numeric', 'min:0']
         ]);
 
         if ($validator->fails()) {
@@ -39,15 +39,13 @@ class FuncionController extends Controller
                 "codPelicula" => $request->codPelicula,
                 "codSala" => $request->codSala,
                 "idioma" => $request->idioma,
-                "fechaHora" => $request->fechaHora,
+                "fecha" => $request->fecha,
+                "hora" => $request->hora,
                 "precioAdulto" => $request->precioAdulto,
                 "precioNino" => $request->precioNino,
-                "precioTE" => $request->precioTE,
-                "precioAdultoVIP" => $request->precioAdultoVIP,
-                "precioNinoVIP" => $request->precioNinoVIP,
-                "precioTEVIP" => $request->precioTEVIP
+                "precioTE" => $request->precioTE
             ]);
-        } catch (\Exception $error) {
+        } catch (Exception $error) {
             $data = [
                 'message' => 'Error al crear la función: ' . $error->getMessage(),
                 'status' => 500
@@ -64,6 +62,7 @@ class FuncionController extends Controller
         return response()->json($data, 201);
     }
 
+    //Función para mostrar todas las funciones
     public function index()
     {
         $funciones = Funcion::all();
@@ -74,6 +73,7 @@ class FuncionController extends Controller
         return response()->json($data, 200);
     }
 
+    //Función para mostrar una función específica
     public function show($id)
     {
         $funcion = Funcion::find($id);
@@ -91,6 +91,7 @@ class FuncionController extends Controller
         return response()->json($data, 200);
     }
 
+    //Función para eliminar una función
     public function destroy($id)
     {
         $funcion = Funcion::find($id);
@@ -102,8 +103,9 @@ class FuncionController extends Controller
             return response()->json($data, 404);
         }
         try {
-            $funcion->delete();
-        } catch (\Exception $error) {
+            $funcion->estadoEliminacion = 0;
+            $funcion->save();
+        } catch (Exception $error) {
             $data = [
                 'message' => 'Error al eliminar la función: ' . $error->getMessage(),
                 'status' => 500
@@ -118,6 +120,36 @@ class FuncionController extends Controller
         return response()->json($data, 200);
     }
 
+    //Función para reactivar una función
+    public function reactivate($id)
+    {
+        $funcion = Funcion::find($id);
+        if (!$funcion) {
+            $data = [
+                'message' => 'Función no encontrada',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        }
+        try {
+            $funcion->estadoEliminacion = 1;
+            $funcion->save();
+        } catch (Exception $error) {
+            $data = [
+                'message' => 'Error al reactivar la función: ' . $error->getMessage(),
+                'status' => 500
+            ];
+
+            return response()->json($data, 500);
+        }
+        $data = [
+            'message' => "Función de código $id reactivada",
+            'status' => 200
+        ];
+        return response()->json($data, 200);
+    }
+
+    //Función para actualizar función
     public function update(Request $request, $id)
     {
         $funcion = Funcion::find($id);
@@ -132,13 +164,11 @@ class FuncionController extends Controller
             "codPelicula" => "required",
             "codSala" => "required",
             "idioma" => "required",
-            "fechaHora" => "required",
-            "precioAdulto" => "required",
-            "precioNino" => "required",
-            "precioTE" => "required",
-            "precioAdultoVIP" => "required",
-            "precioNinoVIP" => "required",
-            "precioTEVIP" => "required"
+            "fecha" => "required",
+            "hora" => "required",
+            "precioAdulto" => ["required",'numeric', 'min:0'],
+            "precioNino" => ["required",'numeric', 'min:0'],
+            "precioTE" => ["required",'numeric', 'min:0']
         ]);
 
         if ($validator->fails()) {
@@ -153,17 +183,15 @@ class FuncionController extends Controller
         $funcion->codPelicula = $request->codPelicula;
         $funcion->codSala = $request->codSala;
         $funcion->idioma = $request->idioma;
-        $funcion->fechaHora = $request->fechaHora;
+        $funcion->fecha = $request->fecha;
+        $funcion->hora = $request->hora;
         $funcion->precioAdulto = $request->precioAdulto;
         $funcion->precioNino = $request->precioNino;
         $funcion->precioTE = $request->precioTE;
-        $funcion->precioAdultoVIP = $request->precioAdultoVIP;
-        $funcion->precioNinoVIP = $request->precioNinoVIP;
-        $funcion->precioTEVIP = $request->precioTEVIP;
 
         try{
             $funcion->save();
-        }catch(\Exception $error){
+        }catch(Exception $error){
             $data = [
                 'message' => 'Error al actualizar la función: ' . $error->getMessage(),
                 'status' => 500

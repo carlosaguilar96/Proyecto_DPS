@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Sucursal;
+use Exception;
 
 class SucursalController extends Controller
 {
+    //Función para almacenar sucursal
     public function store(Request $request)
     {
 
@@ -35,7 +37,7 @@ class SucursalController extends Controller
                 "ubicacion" => $request->ubicacion,
                 "telefono" => $request->telefono
             ]);
-        } catch (\Exception $error) {
+        } catch (Exception $error) {
             $data = [
                 'message' => 'Error al crear la sucursal: ' . $error->getMessage(),
                 'status' => 500
@@ -52,9 +54,10 @@ class SucursalController extends Controller
         return response()->json($data, 201);
     }
 
-    public function index()
+    //Función para mostar sucursales por cine
+    public function index($id)
     {
-        $sucursales = Sucursal::all();
+        $sucursales = Sucursal::where('codCine', $id)->get();;
         $data = [
             'sucursales' => $sucursales,
             'status' => 200
@@ -62,6 +65,7 @@ class SucursalController extends Controller
         return response()->json($data, 200);
     }
 
+    //Función para mostrar sucursal específica
     public function show($id)
     {
         $sucursal = Sucursal::find($id);
@@ -79,33 +83,7 @@ class SucursalController extends Controller
         return response()->json($data, 200);
     }
 
-    public function destroy($id)
-    {
-        $sucursal = Sucursal::find($id);
-        if (!$sucursal) {
-            $data = [
-                'message' => 'Sucursal no encontrada',
-                'status' => 404
-            ];
-            return response()->json($data, 404);
-        }
-        try {
-            $sucursal->delete();
-        } catch (\Exception $error) {
-            $data = [
-                'message' => 'Error al eliminar la sucursal: ' . $error->getMessage(),
-                'status' => 500
-            ];
-
-            return response()->json($data, 500);
-        }
-        $data = [
-            'message' => "Sucursal de código $id eliminada",
-            'status' => 200
-        ];
-        return response()->json($data, 200);
-    }
-
+    //Función para actualizar sucursal
     public function update(Request $request, $id)
     {
         $sucursal = Sucursal::find($id);
@@ -139,7 +117,7 @@ class SucursalController extends Controller
 
         try {
             $sucursal->save();
-        } catch (\Exception $error) {
+        } catch (Exception $error) {
             $data = [
                 'message' => 'Error al actualizar la sucursal: ' . $error->getMessage(),
                 'status' => 500

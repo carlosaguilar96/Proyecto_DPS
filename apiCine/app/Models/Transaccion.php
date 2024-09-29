@@ -16,6 +16,7 @@ class Transaccion extends Model
     protected $fillable = [
         "precioTotal",
         "fecha",
-        "cardID"
+        "cardID",
+        "codCompra"
     ];
 }
