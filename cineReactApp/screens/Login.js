@@ -184,8 +184,8 @@ export default function Login() {
            
            <TextInput
              placeholder="Apellido"
-             value={apellido} // Asegúrate de que 'correo' esté definido en tu estado
-             onChangeText={setApellido} // Función para actualizar el estado del correo
+             value={apellido} 
+             onChangeText={setApellido} 
              style={styles.input}
            />
 
@@ -251,8 +251,9 @@ export default function Login() {
       </View>
       {/* Footer en la parte inferior */}
       <View style={styles.footerContainer}>
+      <TouchableOpacity  onPress={()=>EntrarInvitado()}><Text style={styles.invitado}>Entrar como invitado</Text></TouchableOpacity>
       <View style={styles.textContainer}>
-        <TouchableOpacity onPress={()=>EntrarInvitado()}><Text>Entrar como invitado</Text></TouchableOpacity>
+        
         <Text style={styles.footerText}>© 2024 FilmApp - Todos los derechos reservados</Text>
         
       </View>
@@ -269,10 +270,11 @@ const styles = StyleSheet.create({
   
   },
   footerContainer: {
-    backgroundColor: '#E0E0E0', // Color de fondo similar al de tu ejemplo
+    backgroundColor: '#E0E0E0', 
     padding: 20,
     borderTopWidth: 1,
     borderTopColor: '#ccc',
+    alignItems:'center',
   },
   textContainer: {
     flexDirection: 'row',
@@ -347,6 +349,15 @@ const styles = StyleSheet.create({
   textcaja:{
     fontSize: 22,
     fontWeight: 'bold',
+  },
+  invitado:{
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#8B0000'
+  },
+  footerText:{
+    fontSize: 17,
+    padding: 5,
   },
 });
 
