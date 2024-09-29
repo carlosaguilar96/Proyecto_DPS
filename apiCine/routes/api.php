@@ -106,24 +106,12 @@ Route::put('/funciones/reactivarFuncion/{id}', [FuncionController::class, 'react
 //Ruta para modificar función
 Route::put('/funciones/update/{id}', [FuncionController::class, 'update']);
 
-//RUTAS PARA TRANSACCIONES
-//Ruta para crear transacción
-Route::post('/transacciones/crearTransaccion', [TransaccionController::class, 'store']);
-//Ruta para ver transacciones
-Route::get('/transacciones/index', [TransaccionController::class, 'index']);
-//Ruta para ver una transacción
-Route::get('/transacciones/show/{id}', [TransaccionController::class, 'show']);
-// Las transacciones ya no se pueden regresar
-// No se pueden modificar
-
-Route::post('/compras', [CompraController::class, 'store']);
-Route::get('/compras', [CompraController::class, 'index']);
-Route::get('/compras/{id}', [CompraController::class, 'show']);
+//RUTAS PARA COMPRAS
+//Ruta para crear compra
+Route::post('/compras/crearCompra', [CompraController::class, 'store']);
+//Ruta para mostrar compras
+Route::get('/compras/index', [CompraController::class, 'index']);
+//Ruta para mostrar compra
+Route::get('/compras/show/{id}', [CompraController::class, 'show']);
 // No se ha planteado la devolución o la cancelación de la compra.
 // No se pueden modificar
-
-Route::post('/asientos', [AsientoController::class, 'store']);
-Route::get('/asientos', [AsientoController::class, 'index']);
-Route::get('/asientos/{id}', [AsientoController::class, 'show']);
-// Los asientos no se pueden eliminar
-// Los asientos no se pueden modificar
