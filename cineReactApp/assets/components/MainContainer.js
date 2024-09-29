@@ -6,8 +6,7 @@ import { StatusBar } from 'react-native';
 const MainContainer = ({children, style, ...props}) =>{
   return(
     <SafeAreaView style={styles.container}>
-        <ScrollView style={[style]
-        }
+        <ScrollView style={[style]}
         contentContainerStyle={styles.scrollViewContent}
         showsHorizontalScrollIndicator={true}
         {...props}

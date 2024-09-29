@@ -7,6 +7,12 @@ import { useRoute } from '@react-navigation/native';
 import { useFocusEffect } from '@react-navigation/native';
 import { format, addDays,parseISO } from 'date-fns'; 
 import { AppContext } from '../assets/components/Context';
+import { useNavigation } from '@react-navigation/native';
+
+
+const handleNavigation = (item) =>{
+  navigation.navigate('Boleto', { title: item.title, horario: item.horarios, fecha: item.fecha, idioma: item.idioma, id: item.id});
+}
 
 // Función para agrupar las películas por título e idioma y combinar los horarios
 const agruparTitle = (data) => {
@@ -65,7 +71,7 @@ const renderItem = ({ item }) => (
                 <View key={indexIdioma} style={styles.idiomaContainer}>
                   <Text style={styles.horarioTitle}>{`${idioma.idioma} `}</Text>
                   {idioma.detalles.map((detalle, indexDetalle) => (
-                    <TouchableOpacity key={indexDetalle} style={styles.horarioButton}>
+                    <TouchableOpacity key={indexDetalle} style={styles.horarioButton} onPress={() => handleNavigation(item)}>
                       <Text style={styles.horarioText}>{`${detalle.hora} `}</Text>
                     </TouchableOpacity>
                   ))}
@@ -167,7 +173,7 @@ const renderItemInicio = ({ item }) => (
 export default function Cartelera() {
   const route = useRoute();
   const { title } = route?.params || {};
-  
+  const navigation = useNavigation();
   
   const { miVariable, setMiVariable } = useContext(AppContext); // Obtén la variable del contexto
 
@@ -206,7 +212,7 @@ export default function Cartelera() {
   useEffect(() => {
     handleButtonPress('Hoy', DataToday);
      // Llama a la función por defecto
-
+    
   }, []);
   const handleButtonPress = (day, data) => {
     setSelectedButton(day); // Actualiza el botón seleccionado

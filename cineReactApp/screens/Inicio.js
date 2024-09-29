@@ -4,7 +4,6 @@ import { useNavigation } from '@react-navigation/native';
 import { movieData, EstrenosData } from '../config/movieData'; // Importa los datos locales
 import MainContainer from '../assets/components/MainContainer';
 import Cartelera from './Cartelera';
-
 import { Picker } from '@react-native-picker/picker';
 import Carousel from 'react-native-reanimated-carousel';
 import Icon from 'react-native-vector-icons/FontAwesome';
