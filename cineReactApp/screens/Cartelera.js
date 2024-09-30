@@ -103,14 +103,13 @@ export default function Cartelera() {
         
           return () => {
               setMiVariable(1);
-              console.log('miVariable', miVariable);
               
           };
       }, [])
   );
 
-  const handleNavigation = (title, hora, idioma,sucursal,fecha, image) =>{
-    navigation.navigate('Boletos', {title, hora, idioma,sucursal,fecha,image});
+  const handleNavigation = (title, hora, idioma,sucursal,fecha, image,item) =>{
+    navigation.navigate('Boletos', {title, hora, idioma,sucursal,fecha,image,item});
   }
 
 
@@ -161,7 +160,7 @@ export default function Cartelera() {
                   <View key={indexIdioma} style={styles.idiomaContainer}>
                     <Text style={styles.horarioTitle}>{`${idioma.idioma} `}</Text>
                     {idioma.detalles.map((detalle, indexDetalle) => (
-                      <TouchableOpacity key={indexDetalle} style={styles.horarioButton} onPress={() => handleNavigation(item.title,detalle.hora, idioma.idioma, horario.sucursal, detalle.fecha, item.image)}>
+                      <TouchableOpacity key={indexDetalle} style={styles.horarioButton} onPress={() => handleNavigation(item.title,detalle.hora, idioma.idioma, horario.sucursal, detalle.fecha, item.image, item)}>
                         <Text style={styles.horarioText}>{`${detalle.hora} `}</Text>
                       </TouchableOpacity>
                     ))}
@@ -198,7 +197,7 @@ export default function Cartelera() {
                   <View key={indexIdioma} style={styles.idiomaContainer}>
                     <Text style={styles.horarioTitle}>{`${idioma.idioma} `}</Text>
                     {idioma.detalles.map((detalle, indexDetalle) => (
-                      <TouchableOpacity key={indexDetalle} style={styles.horarioButton} onPress={() => handleNavigation(item.title,detalle.hora, idioma.idioma, horario.sucursal, detalle.fecha, item.image)}>
+                      <TouchableOpacity key={indexDetalle} style={styles.horarioButton} onPress={() => handleNavigation(item.title,detalle.hora, idioma.idioma, horario.sucursal, detalle.fecha, item.image,item)}>
                         <Text style={styles.horarioText}>{`${detalle.hora} `}</Text>
                       </TouchableOpacity>
                     ))}

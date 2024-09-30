@@ -234,7 +234,7 @@ export default function Login() {
               initialRouteName="Inicio"
               screenOptions={{
                 headerStyle: {
-                  backgroundColor: '#8B0000', 
+                  backgroundColor: '#b30000', 
                 },
                 headerTintColor: '#fff',
               }}
@@ -264,7 +264,7 @@ export default function Login() {
               initialRouteName="Inicio"
               screenOptions={{
                 headerStyle: {
-                  backgroundColor: '#8B0000', 
+                  backgroundColor: '#b30000', 
                 },
                 headerTintColor: '#fff',
               }}
