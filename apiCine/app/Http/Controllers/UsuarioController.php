@@ -41,7 +41,7 @@ class UsuarioController extends Controller
                 'nivelAcceso'  => 1,
                 'correoE'  => $request->correoE
             ]);
-        } catch(\Exception $error){
+        } catch(Exception $error){
             $data = [
                 'message' => 'Error al crear el usuario: ' . $error->getMessage(),
                 'status' => 500
