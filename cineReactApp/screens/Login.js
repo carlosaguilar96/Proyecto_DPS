@@ -78,10 +78,10 @@ export default function Login() {
     if (usuario) {
 
       if (usuario.rol === "admin") {
-      setMiVariable2(2);    
+      setMiVariable2(3);    
     }
     else{
-      setMiVariable2(3);    
+      setMiVariable2(2);    
     }
 
       setIngreso(true);
