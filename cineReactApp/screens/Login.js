@@ -5,12 +5,14 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import Inicio from './Inicio';
 import { TextInputMask } from 'react-native-masked-text';
 import Cartelera from './Cartelera';
-
 import { AppContext } from '../assets/components/Context';
 import { AppProvider } from '../assets/components/Context';
 import { Usuarios } from '../config/movieData';
 
+import Boletos from './Boletos';
+
 const Drawer = createDrawerNavigator();
+
 
 export default function Login() {
   const [contra, setContra] = useState('');
@@ -64,6 +66,8 @@ export default function Login() {
     setIngreso(true);
     setMssgError('');
   }
+
+ 
 
   const validarIngreso = async () => {
     const usuario = Usuarios.find(usuario => usuario.email === email && usuario.contra === contra);
@@ -120,6 +124,14 @@ export default function Login() {
             >
               <Drawer.Screen name="Inicio" component={Inicio} />
               <Drawer.Screen name="Cartelera" component={Cartelera} />
+              <Drawer.Screen
+          name="Boletos"
+          component={Boletos}
+          options={{
+            drawerItemStyle: { display: 'none' }, // Oculta la opción de Boletos en el drawer
+            headerShown: false,
+          }}
+        />
               <Drawer.Screen name="Cerrar Sesión">
                 {() => (
                   <TouchableOpacity>
@@ -151,6 +163,7 @@ export default function Login() {
               </Drawer.Screen>
             </Drawer.Navigator>
           )}
+        
         </NavigationContainer>
       </AppProvider>
     );

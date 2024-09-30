@@ -1,5 +1,3 @@
-//NO TOQUEN ESTO, NO ESTA TERMINADO :)
-
 import React, { useState, useContext, useEffect} from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, FlatList, ScrollView } from 'react-native';
 import { Funcion } from '../config/movieData';
@@ -9,10 +7,6 @@ import { format, addDays,parseISO } from 'date-fns';
 import { AppContext } from '../assets/components/Context';
 import { useNavigation } from '@react-navigation/native';
 
-
-const handleNavigation = (item) =>{
-  navigation.navigate('Boleto', { title: item.title, horario: item.horarios, fecha: item.fecha, idioma: item.idioma, id: item.id});
-}
 
 // Función para agrupar las películas por título e idioma y combinar los horarios
 const agruparTitle = (data) => {
@@ -51,41 +45,6 @@ const agruparTitle = (data) => {
 
   return Object.values(groupedData);
 };
-
-
-const renderItem = ({ item }) => (
-  <View style={styles.card}>
-    <Image source={item.image} style={styles.image} />
-    <View style={styles.infoContainer}>
-
-      <Text style={styles.title}>{item.title}</Text>
-      <View style={styles.horariosContainer}>
-        {item.horarios && item.horarios.length > 0 ? (
-          item.horarios.map((horario, index) => (
-            <View key={index} style={styles.horarioRow}>
-              {/* Mostrar sucursal */}
-              <Text style={styles.sucursalTitle}>Sucursal {horario.sucursal}</Text>
-
-              {/* Renderizar los detalles de horarios, agrupados por idioma en la misma línea */}
-              {horario.idiomas.map((idioma, indexIdioma) => (
-                <View key={indexIdioma} style={styles.idiomaContainer}>
-                  <Text style={styles.horarioTitle}>{`${idioma.idioma} `}</Text>
-                  {idioma.detalles.map((detalle, indexDetalle) => (
-                    <TouchableOpacity key={indexDetalle} style={styles.horarioButton} onPress={() => handleNavigation(item)}>
-                      <Text style={styles.horarioText}>{`${detalle.hora} `}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              ))}
-            </View>
-          ))
-        ) : (
-          <Text>No hay horarios disponibles.</Text>
-        )}
-      </View>
-    </View>
-  </View>
-);
 
 
 // Función para agrupar las películas por título e idioma y combinar los horarios
@@ -171,9 +130,10 @@ const renderItemInicio = ({ item }) => (
 
 
 export default function Cartelera() {
+  const navigation = useNavigation();
   const route = useRoute();
   const { title } = route?.params || {};
-  const navigation = useNavigation();
+  
   
   const { miVariable, setMiVariable } = useContext(AppContext); // Obtén la variable del contexto
 
@@ -188,7 +148,9 @@ export default function Cartelera() {
       }, [])
   );
 
-
+  const handleNavigation = (title, hora, idioma,sucursal,fecha, image) =>{
+    navigation.navigate('Boletos', {title, hora, idioma,sucursal,fecha,image});
+  }
 
 
   const today = new Date();
@@ -219,6 +181,42 @@ export default function Cartelera() {
     setSelectedData(data); // Actualiza los datos seleccionados
   };
   
+
+  const renderItem = ({ item }) => (
+    <View style={styles.card}>
+      <Image source={item.image} style={styles.image} />
+      <View style={styles.infoContainer}>
+  
+        <Text style={styles.title}>{item.title}</Text>
+        <View style={styles.horariosContainer}>
+          {item.horarios && item.horarios.length > 0 ? (
+            item.horarios.map((horario, index) => (
+              <View key={index} style={styles.horarioRow}>
+                {/* Mostrar sucursal */}
+                <Text style={styles.sucursalTitle}>Sucursal {horario.sucursal}</Text>
+  
+                {/* Renderizar los detalles de horarios, agrupados por idioma en la misma línea */}
+                {horario.idiomas.map((idioma, indexIdioma) => (
+                  <View key={indexIdioma} style={styles.idiomaContainer}>
+                    <Text style={styles.horarioTitle}>{`${idioma.idioma} `}</Text>
+                    {idioma.detalles.map((detalle, indexDetalle) => (
+                      <TouchableOpacity key={indexDetalle} style={styles.horarioButton} onPress={() => handleNavigation(item.title,detalle.hora, idioma.idioma, horario.sucursal, detalle.fecha, item.image)}>
+                        <Text style={styles.horarioText}>{`${detalle.hora} `}</Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                ))}
+              </View>
+            ))
+          ) : (
+            <Text>No hay horarios disponibles.</Text>
+          )}
+        </View>
+      </View>
+    </View>
+  );
+
+
   return (
 //si miVariable es diferente de 2, se ingresa a la vista desde el drawer, caso contrario se ha seleccionado una peli en especifico desde el inicio
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>

@@ -10,6 +10,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { useFocusEffect } from '@react-navigation/native';
 import { AppContext } from '../assets/components/Context';
 
+
 const { width } = Dimensions.get('window');
 const Inicio = () => {
   const navigation = useNavigation();
