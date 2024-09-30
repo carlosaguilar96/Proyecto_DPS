@@ -141,6 +141,17 @@ export default function Cartelera() {
     setSelectedData(data); // Actualiza los datos seleccionados
   };
   
+  const FlatListInicio = ({ Movie }) => {
+    return (
+      <FlatList
+        data={Movie}
+        renderItem={renderItemInicio}
+        keyExtractor={(item) => item.title}
+        ListEmptyComponent={<Text style={styles.titleError}>No hay horarios disponibles</Text>}
+        scrollEnabled={false}
+      />
+    );
+  };
 
   const renderItem = ({ item }) => (
     <View style={styles.card}>
@@ -246,41 +257,18 @@ export default function Cartelera() {
             </View>
             ) : 
             ( 
-              <View>
+              <ScrollView>
               <Text style={styles.sucursalTitle}>Hoy</Text>
               <View style={styles.cardMovie}>
-              {(
-            <FlatList
-              data={MovieToday}
-              renderItem={renderItemInicio}
-              keyExtractor={(item) => item.title}
-              ListEmptyComponent={<Text style={styles.titleError}>No hay horarios disponibles</Text>} 
-            />
-              )}
+             <FlatListInicio Movie={MovieToday}/>
               </View>
               <Text style={styles.sucursalTitle}>Mañana</Text>
               <View style={styles.cardMovie}>
-              {(
-                
-            <FlatList
-              data={MovieTomorrow}
-              renderItem={renderItemInicio}
-              keyExtractor={(item) => item.title}
-              ListEmptyComponent={<Text style={styles.titleError}>No hay horarios disponibles</Text>} 
-            />
-              )}
+              <FlatListInicio Movie={MovieTomorrow}/>
               </View>
               <Text style={styles.daytitle}>Pasado</Text>
-              {(
-                
-                <FlatList
-                  data={MovieTomorrowP}
-                  renderItem={renderItemInicio}
-                  keyExtractor={(item) => item.title}
-                  ListEmptyComponent={<Text style={styles.titleError}>No hay horarios disponibles</Text>} 
-                />
-                  )}
-            </View>
+              <FlatListInicio Movie={MovieTomorrowP}/>
+            </ScrollView>
            
             )}
           </View>
