@@ -8,7 +8,6 @@ import { AppContext } from '../assets/components/Context';
 import { useNavigation } from '@react-navigation/native';
 
 
-// Función para agrupar las películas por título e idioma y combinar los horarios
 const agruparTitle = (data) => {
   const groupedData = data.reduce((acc, item) => {
     if (!acc[item.title]) {
@@ -89,7 +88,43 @@ const agruparPeliculas = (peliculas) => {
 
 
 // Componente para renderizar cada película
+const renderItemInicio = ({ item }) => (
+  <View style={styles.container}>
+    <View style={styles.rowContainer}>
+    <View style={styles.card}>
+    <Image source={item.image} style={styles.image} />
+    <View style={styles.infoContainer}>
 
+      <Text style={styles.title}>{item.title}</Text>
+      <View style={styles.horariosContainer}>
+        {item.horarios && item.horarios.length > 0 ? (
+          item.horarios.map((horario, index) => (
+            <View key={index} style={styles.horarioRow}>
+              {/* Mostrar sucursal */}
+              <Text style={styles.sucursalTitle}>Sucursal {horario.sucursal}</Text>
+
+              {/* Renderizar los detalles de horarios, agrupados por idioma en la misma línea */}
+              {horario.idiomas.map((idioma, indexIdioma) => (
+                <View key={indexIdioma} style={styles.idiomaContainer}>
+                  <Text style={styles.horarioTitle}>{`${idioma.idioma} `}</Text>
+                  {idioma.detalles.map((detalle, indexDetalle) => (
+                    <TouchableOpacity key={indexDetalle} style={styles.horarioButton}>
+                      <Text style={styles.horarioText}>{`${detalle.hora} `}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              ))}
+            </View>
+          ))
+        ) : (
+          <Text>No hay horarios disponibles.</Text>
+        )}
+      </View>
+    </View>
+  </View>
+    </View>
+  </View>
+);
 
 
 
@@ -180,58 +215,6 @@ export default function Cartelera() {
     </View>
   );
 
-  const renderItemInicio = ({ item }) => (
-    <View style={styles.container}>
-      <View style={styles.rowContainer}>
-        <View style={styles.card}>
-          <Image source={item.image} style={styles.image} />
-          <View style={styles.infoContainer}>
-            <Text style={styles.title}>{item.title}</Text>
-  
-            {/* Renderizar los horarios directamente sin el ScrollView */}
-            {item.horarios && item.horarios.length > 0 ? (
-              item.horarios.map((horario, index) => (
-                <View key={index} style={styles.horarioRow}>
-                  {/* Mostrar sucursal */}
-                  <Text style={styles.sucursalTitle}>Sucursal {horario.sucursal}</Text>
-  
-                  {/* Renderizar los detalles de horarios, agrupados por idioma en la misma línea */}
-                  {horario.idiomas.map((idioma, indexIdioma) => (
-                    <View key={indexIdioma} style={styles.idiomaContainer}>
-                      <Text style={styles.horarioTitle}>{`${idioma.idioma} `}</Text>
-                      {idioma.detalles.map((detalle, indexDetalle) => (
-                        <TouchableOpacity 
-                          key={indexDetalle} 
-                          style={styles.horarioButtonMovie} 
-                          onPress={() => handleNavigation(item.title, detalle.hora, idioma.idioma, horario.sucursal, detalle.fecha, item.image)}
-                        >
-                          <Text style={styles.horarioText}>{`${detalle.hora} `}</Text>
-                        </TouchableOpacity>
-                      ))}
-                    </View>
-                  ))}
-                </View>
-              ))
-            ) : (
-              <Text>No hay horarios disponibles.</Text>
-            )}
-          </View>
-        </View>
-      </View>
-    </View>
-  );
-  
-
-  const FlatListInicio = ({Movie}) => {
-    return(<FlatList
-      data={Movie}
-      renderItem={renderItemInicio}
-      keyExtractor={(item) => item.title}
-      ListEmptyComponent={<Text style={styles.titleError}>No hay horarios disponibles</Text>}
-      scrollEnabled={false}
-    />);
-  }
-  
 
   return (
 //si miVariable es diferente de 2, se ingresa a la vista desde el drawer, caso contrario se ha seleccionado una peli en especifico desde el inicio
@@ -263,21 +246,44 @@ export default function Cartelera() {
             </View>
             ) : 
             ( 
-             
-              <ScrollView>
-              <View style={styles.container}>
-                <Text style={styles.sucursalTitle}>Hoy</Text>
-                <FlatListInicio Movie={MovieToday} />
-                
-                <Text style={styles.sucursalTitle}>Mañana</Text>
-                <FlatListInicio Movie={MovieTomorrow} />
-                
-                <Text style={styles.daytitle}>Pasado</Text>
-                <FlatListInicio Movie={MovieTomorrowP} />
+              <View>
+              <Text style={styles.sucursalTitle}>Hoy</Text>
+              <View style={styles.cardMovie}>
+              {(
+            <FlatList
+              data={MovieToday}
+              renderItem={renderItemInicio}
+              keyExtractor={(item) => item.title}
+              ListEmptyComponent={<Text style={styles.titleError}>No hay horarios disponibles</Text>} 
+            />
+              )}
               </View>
-            </ScrollView>
-           )}
+              <Text style={styles.sucursalTitle}>Mañana</Text>
+              <View style={styles.cardMovie}>
+              {(
+                
+            <FlatList
+              data={MovieTomorrow}
+              renderItem={renderItemInicio}
+              keyExtractor={(item) => item.title}
+              ListEmptyComponent={<Text style={styles.titleError}>No hay horarios disponibles</Text>} 
+            />
+              )}
+              </View>
+              <Text style={styles.daytitle}>Pasado</Text>
+              {(
+                
+                <FlatList
+                  data={MovieTomorrowP}
+                  renderItem={renderItemInicio}
+                  keyExtractor={(item) => item.title}
+                  ListEmptyComponent={<Text style={styles.titleError}>No hay horarios disponibles</Text>} 
+                />
+                  )}
             </View>
+           
+            )}
+          </View>
 );
 }
 
@@ -313,11 +319,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 8,
     marginBottom: 20,
-    elevation: 3,
+   
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.8,
     shadowRadius: 2,
+    elevation:10,
   },
   cardMovie: {
     flexDirection: 'row',
@@ -365,26 +372,22 @@ const styles = StyleSheet.create({
     marginRight: 20,
     marginBottom: 5,
   },
-  horarioButtonMovie: {
-    backgroundColor: '#e0e0e0',
-    padding: 10,
-    borderRadius: 5,
-    marginRight: 20,
-    marginBottom: 5,
-    paddingRight:0,
-    width: '40%',
-  },
   horarioText: {
     fontSize: 14,
     color: '#333',
   },
   
   button: {
-    backgroundColor: '#c55c5c', // Color rojo claro similar para los botones
-    paddingHorizontal: 45,
+    backgroundColor: '#b30000', // Color rojo claro similar para los botones
+    paddingHorizontal: 40,
     paddingVertical: 25,
     marginHorizontal: 5,
     alignItems: 'center',
+    shadowColor: 'rgba(0, 0, 0, 0.5)', // Color de sombra más oscuro
+    shadowRadius: 50, // Radio más pequeño para una sombra más definida
+    shadowOffset: { width: 0, height: 50 }, // Offset vertical para más profundidad
+    shadowOpacity: 0.8, // Sombra más opaca
+    elevation: 10, 
   },
   dayText: {
     color: '#fff',
@@ -398,6 +401,5 @@ const styles = StyleSheet.create({
     flexDirection: 'row', // Alinea el texto en fila
     justifyContent: 'space-around', // Espaciado entre los botones
     alignItems: 'center', // Centra verticalmente
-    marginVertical: 10, // Espaciado vertical (opcional)
   },
 });

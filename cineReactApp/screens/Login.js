@@ -7,7 +7,6 @@ import { TextInputMask } from 'react-native-masked-text';
 import Cartelera from './Cartelera';
 import { AppContext } from '../assets/components/Context';
 import { AppProvider } from '../assets/components/Context';
-import { Usuarios } from '../config/movieData';
 
 import Boletos from './Boletos';
 import axios from 'axios';
@@ -329,7 +328,7 @@ export default function Login() {
             value={dui}
             onChangeText={text => setDui(text)}
             style={styles.input}
-             placeholder="DUI" // Placeholder que indica el formato
+            placeholder="DUI" // Placeholder que indica el formato
             keyboardType="numeric"
             />
           </View>
