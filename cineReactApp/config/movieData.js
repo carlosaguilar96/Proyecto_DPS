@@ -143,6 +143,33 @@ export const Funcion = [
     fecha: '2024-09-30',
     hora: '2:00 pm',
   },
+  {
+    id: '8',
+    title: 'Película 1',
+    image: require('../assets/img/02.jpg'), 
+    sucursal: 'Y',
+    idioma: 'Sub Español',
+    fecha: '2024-10-02',
+    hora: '6:00 pm',
+  },
+  {
+    id: '9',
+    title: 'Película 1',
+    image: require('../assets/img/02.jpg'), 
+    sucursal: 'Y',
+    idioma: 'Dub',
+    fecha: '2024-09-30',
+    hora: '8:00 pm',
+  },
+  {
+    id: '10',
+    title: 'Película 1',
+    image: require('../assets/img/02.jpg'), 
+    sucursal: 'Y',
+    idioma: 'Dub',
+    fecha: '2024-10-01',
+    hora: '8:00 pm',
+  },
 
 ];
 
