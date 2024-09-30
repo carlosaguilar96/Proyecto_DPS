@@ -9,7 +9,6 @@ class Pelicula extends Model
 {
     use HasFactory;
     protected $table = 'peliculas';
-    public $timestamps = false;
 
     protected $primaryKey = 'codPelicula';
 

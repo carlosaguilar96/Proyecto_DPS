@@ -1,74 +1,21 @@
-export const movieData = [
+export const Cupones = [
   {
     id: '1',
-    title: 'Película 1',
-    image: require('../assets/img/02.jpg'), 
-    
-  },
-  {
-    id: '2',
-    title: 'Película 2',
     image: require('../assets/img/cupon1.jpg'),
-   
-  },
-  {
-    id: '3',
-    title: 'Película 3',
-    image: require('../assets/img/film.png'),
-    
-  },
-  {
-      id: '4',
-      title: 'Película 4',
-      image: require('../assets/img/film.png'),
-      
-  },
-  {
-      id: '5',
-      title: 'Película 5',
-      image: require('../assets/img/film.png'),
-      
-  },
-  {
-      id: '6',
-      title: 'Película 5',
-      image: require('../assets/img/film.png'),
-      
-  },
-];
-
-export const EstrenosData = [
-  {
-    id: '1',
-    title: 'Película 1',
-    image: require('../assets/img/02.jpg'), 
   },
   {
     id: '2',
-    title: 'Película 2',
-    image: require('../assets/img/film.png'),
+    image: require('../assets/img/cupon2.jpg'),
   },
   {
     id: '3',
-    title: 'Película 3',
-    image: require('../assets/img/film.png'),
+    image: require('../assets/img/cupon3.jpg'),
   },
   {
-      id: '4',
-      title: 'Película 4',
-      image: require('../assets/img/film.png'),
-  },
-  {
-      id: '5',
-      title: 'Película 5',
-      image: require('../assets/img/film.png'),
-  },
-  {
-      id: '6',
-      title: 'Película 5',
-      image: require('../assets/img/film.png'),
-  },
-];
+    id: '4',
+    image: require('../assets/img/cupon4.jpg'),
+  }
+]
 
 export const Funcion = [
   {
@@ -181,26 +128,3 @@ export const Funcion = [
   },
 
 ];
-
-export const Usuarios = [
-  {
-    "nombreUsuario":"usu1",
-    "nombre": "Usuario1",
-    "apellido": "Apellido1",
-    "dui": "12345678-9",
-    "email": "usuario1@example.com",
-    "contra": "contrasena1",
-    "rol":"user",
-  },
-  {
-    "nombreUsuario":"usu2",
-    "nombre": "Usuario2",
-    "apellido": "Apellido2",
-    "dui": "87654321-0",
-    "email": "usuario2@example.com",
-    "contra": "contrasena2",
-    "rol":"admin",
-  }
-]
-
-
