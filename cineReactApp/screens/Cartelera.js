@@ -89,43 +89,7 @@ const agruparPeliculas = (peliculas) => {
 
 
 // Componente para renderizar cada película
-const renderItemInicio = ({ item }) => (
-  <View style={styles.container}>
-    <View style={styles.rowContainer}>
-    <View style={styles.card}>
-    <Image source={item.image} style={styles.image} />
-    <View style={styles.infoContainer}>
 
-      <Text style={styles.title}>{item.title}</Text>
-      <View style={styles.horariosContainer}>
-        {item.horarios && item.horarios.length > 0 ? (
-          item.horarios.map((horario, index) => (
-            <View key={index} style={styles.horarioRow}>
-              {/* Mostrar sucursal */}
-              <Text style={styles.sucursalTitle}>Sucursal {horario.sucursal}</Text>
-
-              {/* Renderizar los detalles de horarios, agrupados por idioma en la misma línea */}
-              {horario.idiomas.map((idioma, indexIdioma) => (
-                <View key={indexIdioma} style={styles.idiomaContainer}>
-                  <Text style={styles.horarioTitle}>{`${idioma.idioma} `}</Text>
-                  {idioma.detalles.map((detalle, indexDetalle) => (
-                    <TouchableOpacity key={indexDetalle} style={styles.horarioButton}>
-                      <Text style={styles.horarioText}>{`${detalle.hora} `}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              ))}
-            </View>
-          ))
-        ) : (
-          <Text>No hay horarios disponibles.</Text>
-        )}
-      </View>
-    </View>
-  </View>
-    </View>
-  </View>
-);
 
 
 
@@ -216,6 +180,58 @@ export default function Cartelera() {
     </View>
   );
 
+  const renderItemInicio = ({ item }) => (
+    <View style={styles.container}>
+      <View style={styles.rowContainer}>
+        <View style={styles.card}>
+          <Image source={item.image} style={styles.image} />
+          <View style={styles.infoContainer}>
+            <Text style={styles.title}>{item.title}</Text>
+  
+            {/* Renderizar los horarios directamente sin el ScrollView */}
+            {item.horarios && item.horarios.length > 0 ? (
+              item.horarios.map((horario, index) => (
+                <View key={index} style={styles.horarioRow}>
+                  {/* Mostrar sucursal */}
+                  <Text style={styles.sucursalTitle}>Sucursal {horario.sucursal}</Text>
+  
+                  {/* Renderizar los detalles de horarios, agrupados por idioma en la misma línea */}
+                  {horario.idiomas.map((idioma, indexIdioma) => (
+                    <View key={indexIdioma} style={styles.idiomaContainer}>
+                      <Text style={styles.horarioTitle}>{`${idioma.idioma} `}</Text>
+                      {idioma.detalles.map((detalle, indexDetalle) => (
+                        <TouchableOpacity 
+                          key={indexDetalle} 
+                          style={styles.horarioButtonMovie} 
+                          onPress={() => handleNavigation(item.title, detalle.hora, idioma.idioma, horario.sucursal, detalle.fecha, item.image)}
+                        >
+                          <Text style={styles.horarioText}>{`${detalle.hora} `}</Text>
+                        </TouchableOpacity>
+                      ))}
+                    </View>
+                  ))}
+                </View>
+              ))
+            ) : (
+              <Text>No hay horarios disponibles.</Text>
+            )}
+          </View>
+        </View>
+      </View>
+    </View>
+  );
+  
+
+  const FlatListInicio = ({Movie}) => {
+    return(<FlatList
+      data={Movie}
+      renderItem={renderItemInicio}
+      keyExtractor={(item) => item.title}
+      ListEmptyComponent={<Text style={styles.titleError}>No hay horarios disponibles</Text>}
+      scrollEnabled={false}
+    />);
+  }
+  
 
   return (
 //si miVariable es diferente de 2, se ingresa a la vista desde el drawer, caso contrario se ha seleccionado una peli en especifico desde el inicio
@@ -247,44 +263,21 @@ export default function Cartelera() {
             </View>
             ) : 
             ( 
-              <View>
-              <Text style={styles.sucursalTitle}>Hoy</Text>
-              <View style={styles.cardMovie}>
-              {(
-            <FlatList
-              data={MovieToday}
-              renderItem={renderItemInicio}
-              keyExtractor={(item) => item.title}
-              ListEmptyComponent={<Text style={styles.titleError}>No hay horarios disponibles</Text>} 
-            />
-              )}
-              </View>
-              <Text style={styles.sucursalTitle}>Mañana</Text>
-              <View style={styles.cardMovie}>
-              {(
+             
+              <ScrollView>
+              <View style={styles.container}>
+                <Text style={styles.sucursalTitle}>Hoy</Text>
+                <FlatListInicio Movie={MovieToday} />
                 
-            <FlatList
-              data={MovieTomorrow}
-              renderItem={renderItemInicio}
-              keyExtractor={(item) => item.title}
-              ListEmptyComponent={<Text style={styles.titleError}>No hay horarios disponibles</Text>} 
-            />
-              )}
-              </View>
-              <Text style={styles.daytitle}>Pasado</Text>
-              {(
+                <Text style={styles.sucursalTitle}>Mañana</Text>
+                <FlatListInicio Movie={MovieTomorrow} />
                 
-                <FlatList
-                  data={MovieTomorrowP}
-                  renderItem={renderItemInicio}
-                  keyExtractor={(item) => item.title}
-                  ListEmptyComponent={<Text style={styles.titleError}>No hay horarios disponibles</Text>} 
-                />
-                  )}
+                <Text style={styles.daytitle}>Pasado</Text>
+                <FlatListInicio Movie={MovieTomorrowP} />
+              </View>
+            </ScrollView>
+           )}
             </View>
-           
-            )}
-          </View>
 );
 }
 
@@ -371,6 +364,15 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginRight: 20,
     marginBottom: 5,
+  },
+  horarioButtonMovie: {
+    backgroundColor: '#e0e0e0',
+    padding: 10,
+    borderRadius: 5,
+    marginRight: 20,
+    marginBottom: 5,
+    paddingRight:0,
+    width: '40%',
   },
   horarioText: {
     fontSize: 14,
