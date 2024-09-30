@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Usuario;
 use Illuminate\Support\Facades\Validator;
 use Exception;
+use Illuminate\Support\Facades\DB;
 
 class UsuarioController extends Controller
 {
@@ -41,7 +42,7 @@ class UsuarioController extends Controller
                 'nivelAcceso'  => 1,
                 'correoE'  => $request->correoE
             ]);
-        } catch(\Exception $error){
+        } catch(Exception $error){
             $data = [
                 'message' => 'Error al crear el usuario: ' . $error->getMessage(),
                 'status' => 500
@@ -307,5 +308,58 @@ class UsuarioController extends Controller
             'status' => 200
         ];
         return response()->json($data, 200);
+    }
+
+    //Función para iniciar sesión
+    public function login(Request $request){
+        $validator = Validator::make($request->all() , [
+            'user'  => 'required',
+            'password'  => 'required'
+        ]);
+
+        if($validator->fails()){
+            $data = [
+                'message' => 'Error en la validación',
+                'errors' => $validator->errors(),
+                'status' => 400
+            ];
+
+            return response()->json($data, 400);
+        }
+
+        try{
+            $userName = $request->input("user");
+            $pass = $request->input("password");
+
+            $usuario = Usuario::find($userName);
+            if(!$usuario){
+                $data = [
+                    'message' => 'Usuario no encontrado',
+                    'status' => 404
+                ];
+                return response()->json($data, 404);
+            }
+            if($usuario->contrasena == Hash('SHA256',$pass)){
+                $data = [
+                    'message' => 'Ingreso autorizado',
+                    'usuario' => $usuario,
+                    'status' => 200
+                ];
+                return response()->json($data, 200);
+            } else{
+                $data = [
+                    'message' => 'Ingreso no autorizado',
+                    'status' => 401
+                ];
+                return response()->json($data, 200);
+            }
+        } catch (Exception $error){
+            $data = [
+                'message' => 'Error al iniciar sesión: ' . $error->getMessage(),
+                'status' => 500
+            ];
+
+            return response()->json($data, 500);
+        }
     }
 }
