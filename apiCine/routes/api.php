@@ -29,6 +29,8 @@ Route::put('/usuarios/reactivarUsuario/{id}', [UsuarioController::class, 'reacti
 Route::put('/usuarios/modificarUsuario/{id}', [UsuarioController::class, 'update']);
 //Ruta para cambiar contraseña
 Route::put('/usuarios/cambiarPassword/{id}', [UsuarioController::class, 'changePass']);
+//Ruta para iniciar sesión
+Route::post('/iniciarSesion', [UsuarioController::class, 'login']);
 
 //RUTAS PARA CINES
 //Ruta para crear cine

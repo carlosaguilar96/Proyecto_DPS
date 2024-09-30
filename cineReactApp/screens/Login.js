@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Image, TouchableOpacity, Alert } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import Inicio from './Inicio';
@@ -10,6 +10,7 @@ import { AppProvider } from '../assets/components/Context';
 import { Usuarios } from '../config/movieData';
 
 import Boletos from './Boletos';
+import axios from 'axios';
 
 const Drawer = createDrawerNavigator();
 
@@ -33,14 +34,46 @@ export default function Login() {
     return emailRegex.test(email);
   };
 
-  const validarRegistro = async () => {
+  const registrarCliente = async () => {
+    //Todas estas validaciones son en el lado del cliente
+    if(username == ""){
+      setMssgError("Ingresar un nombre de usuario.");
+      return;
+    }
+    if(nombre == ""){
+      setMssgError("Ingresar un nombre.");
+      return;
+    }
+    if(apellido == ""){
+      setMssgError("Ingresar un apellido.");
+      return;
+    }
+    if(dui == ""){
+      setMssgError("Ingresar DUI.");
+      return;
+    }
+    if (dui.length != 10) {
+      setMssgError('Ingresar DUI válido.');
+      return;
+    }
+    if(email == ""){
+      setMssgError("Ingresar correo electrónico.");
+      return;
+    }
     if (!validarEmail(email)) {
       setMssgError('El correo electrónico ingresado no es válido.');
       return;
     }
-
-    if (contra.length < 6) {
-      setMssgError('La contraseña debe tener al menos 6 caracteres.');
+    if(contra == ""){
+      setMssgError("Ingresar contraseña.");
+      return;
+    }
+    if (contra.length < 8) {
+      setMssgError('La contraseña debe tener al menos 8 caracteres.');
+      return;
+    }
+    if(confirmContra == ""){
+      setMssgError("Ingresar confirmación de contraseña.");
       return;
     }
     if (contra !== confirmContra) {
@@ -48,17 +81,47 @@ export default function Login() {
       return;
     }
 
-    const usuarioExistente = Usuarios.find(usuario => usuario.email === email);
+    //Esta validación ya no se hace en el cliente, la hace el servidor
+    /*const usuarioExistente = Usuarios.find(usuario => usuario.email === email);
     if (usuarioExistente) {
       setMssgError('El correo electrónico ya está registrado.');
       return;
-    }
+    }*/
 
-    // Aqui tendriamooos que ingresar los datos a la base, pero como aun no hay, doy el ingreso de una vez 
-    setMiVariable2(2);
-    //El MiVariable es una variable de Context que al cambiar se mantiene como tal independientemente de lo que haga  o a que ruta vaya en la app
-    setIngreso(true);
-    setMssgError('');
+    //Ingreso del cliente a la BD
+    try { 
+      //si quieren probar cambiar la ip de su computadora donde está el docker y que su dispositivo esté en esa misma red
+      //NO CAMBIAR PUERTO
+      const response = await axios.post('http://localhost:8000/api/usuarios/crearCliente', {
+        nombreUsuario: username,
+        contrasena: contra,
+        DUI: dui,
+        nombres: nombre,
+        apellidos: apellido,
+        correoE: email,
+      });
+      Alert.alert('Registro exitoso', 'Usuario creado correctamente');
+      setMiVariable2(2);
+      //El MiVariable es una variable de Context que al cambiar se mantiene como tal independientemente de lo que haga  o a que ruta vaya en la app
+      setIngreso(true);
+      setMssgError('');
+    } catch (error) {
+      if (error.response) {
+        const errores = error.response.data.errors;
+        let mensaje ="";
+        for (const campo in errores) {
+          mensaje += `Error en ${campo}: ${errores[campo].join(', ')}`;
+        }
+        setMssgError(mensaje);
+        return;
+      } else if (error.request) {
+        Alert.alert('Error', 'No hubo respuesta del servidor');
+        return;
+      } else {
+        Alert.alert('Error', 'Error al hacer la solicitud');
+        return;
+      }
+    }
   };
 
   const EntrarInvitado = () =>{
@@ -69,8 +132,53 @@ export default function Login() {
 
  
 
-  const validarIngreso = async () => {
-    const usuario = Usuarios.find(usuario => usuario.email === email && usuario.contra === contra);
+  const iniciarSesion = async () => {
+    if(username == ""){
+      setMssgError("Ingresar un nombre de usuario.");
+      return;
+    }
+    if(contra == ""){
+      setMssgError("Ingresar contraseña.");
+      return;
+    }
+
+    try {
+      //si quieren probar cambiar la ip de su computadora donde está el docker y que su dispositivo esté en esa misma red
+      //NO CAMBIAR PUERTO
+      const response = await axios.post('http://localhost:8000/api/iniciarSesion', {
+        user: username,
+        password: contra,
+      });
+      if(response.data.usuario){
+        if(response.data.usuario.nivelAcceso == 1){
+          setMiVariable2(3);
+        } else{
+          setMiVariable2(2);
+        }
+        setIngreso(true);
+        setMssgError('');
+      } else{
+        setMssgError('Credenciales incorrectas.');
+        return;
+      }
+    } catch (error) {
+      if (error.response) {
+        const errores = error.response.data.errors;
+        let mensaje ="";
+        for (const campo in errores) {
+          mensaje += `Error en ${campo}: ${errores[campo].join(', ')}`;
+        }
+        setMssgError(mensaje);
+        return;
+      } else if (error.request) {
+        Alert.alert('Error', 'No hubo respuesta del servidor');
+        return;
+      } else {
+        Alert.alert('Error', 'Error al hacer la solicitud');
+        return;
+      }
+    }
+    /*const usuario = Usuarios.find(usuario => usuario.email === email && usuario.contra === contra);
     if (!validarEmail(email)) {
       setMssgError('El correo electrónico ingresado no es válido.');
       return;
@@ -88,10 +196,20 @@ export default function Login() {
       setMssgError(''); 
     } else {
       setMssgError('Credenciales incorrectas.');
-    }
+    }*/
   };
+
   const validarCierre = () => {
     setIngreso(false);
+    setLogin(true);
+    setUsername('');
+    setNombre('');
+    setApellido('');
+    setDui('');
+    setEmail('');
+    setContra('');
+    setConfirmContra('');
+    setMssgError('');
   };
 
 
@@ -182,11 +300,11 @@ export default function Login() {
 
            <View>
             <TextInput
-             placeholder="Username"
-             value={username}
-             onChangeText={setUsername}
-             style={styles.input}
-           />
+              placeholder="Correo electrónico"
+              value={email}
+              onChangeText={setEmail}
+              style={styles.input}
+            />
 
            <TextInput
              placeholder="Nombre"
@@ -218,9 +336,9 @@ export default function Login() {
             
           )}
           <TextInput
-            placeholder="Correo electrónico"
-            value={email}
-            onChangeText={setEmail}
+            placeholder="Usuario"
+            value={username}
+            onChangeText={setUsername}
             style={styles.input}
             autoCapitalize="none"
           />
@@ -243,16 +361,17 @@ export default function Login() {
           )}
           {login ? (
             <>
-              <TouchableOpacity style={styles.button} onPress={validarIngreso}>
+              <TouchableOpacity style={styles.button} onPress={iniciarSesion}>
                 <Text style={styles.buttonText}>Iniciar Sesión</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.button} onPress={cambioPantalla}>
                 <Text style={styles.buttonText}>Registrate</Text>
               </TouchableOpacity>
+              <TouchableOpacity style={styles.button} onPress={()=>EntrarInvitado()}><Text style={styles.buttonText}>Entrar como invitado</Text></TouchableOpacity>
             </>
           ) : (
             <>
-              <TouchableOpacity style={styles.button} onPress={validarRegistro}>
+              <TouchableOpacity style={styles.button} onPress={registrarCliente}>
                 <Text style={styles.buttonText}>Registrate</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.button} onPress={cambioPantalla}>
@@ -264,7 +383,7 @@ export default function Login() {
       </View>
       {/* Footer en la parte inferior */}
       <View style={styles.footerContainer}>
-      <TouchableOpacity  onPress={()=>EntrarInvitado()}><Text style={styles.invitado}>Entrar como invitado</Text></TouchableOpacity>
+      
       <View style={styles.textContainer}>
         
         <Text style={styles.footerText}>© 2024 FilmApp - Todos los derechos reservados</Text>
