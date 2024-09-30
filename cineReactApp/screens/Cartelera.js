@@ -87,44 +87,6 @@ const agruparPeliculas = (peliculas) => {
 };
 
 
-// Componente para renderizar cada película
-const renderItemInicio = ({ item }) => (
-  <View style={styles.container}>
-    <View style={styles.rowContainer}>
-    <View style={styles.card}>
-    <Image source={item.image} style={styles.image} />
-    <View style={styles.infoContainer}>
-
-      <Text style={styles.title}>{item.title}</Text>
-      <View style={styles.horariosContainer}>
-        {item.horarios && item.horarios.length > 0 ? (
-          item.horarios.map((horario, index) => (
-            <View key={index} style={styles.horarioRow}>
-              {/* Mostrar sucursal */}
-              <Text style={styles.sucursalTitle}>Sucursal {horario.sucursal}</Text>
-
-              {/* Renderizar los detalles de horarios, agrupados por idioma en la misma línea */}
-              {horario.idiomas.map((idioma, indexIdioma) => (
-                <View key={indexIdioma} style={styles.idiomaContainer}>
-                  <Text style={styles.horarioTitle}>{`${idioma.idioma} `}</Text>
-                  {idioma.detalles.map((detalle, indexDetalle) => (
-                    <TouchableOpacity key={indexDetalle} style={styles.horarioButton}>
-                      <Text style={styles.horarioText}>{`${detalle.hora} `}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              ))}
-            </View>
-          ))
-        ) : (
-          <Text>No hay horarios disponibles.</Text>
-        )}
-      </View>
-    </View>
-  </View>
-    </View>
-  </View>
-);
 
 
 
@@ -211,6 +173,45 @@ export default function Cartelera() {
             <Text>No hay horarios disponibles.</Text>
           )}
         </View>
+      </View>
+    </View>
+  );
+
+  //render de cada pelicula
+  const renderItemInicio = ({ item }) => (
+    <View style={styles.container}>
+      <View style={styles.rowContainer}>
+      <View style={styles.card}>
+      <Image source={item.image} style={styles.image} />
+      <View style={styles.infoContainer}>
+  
+        <Text style={styles.title}>{item.title}</Text>
+        <View style={styles.horariosContainer}>
+          {item.horarios && item.horarios.length > 0 ? (
+            item.horarios.map((horario, index) => (
+              <View key={index} style={styles.horarioRow}>
+                {/* Mostrar sucursal */}
+                <Text style={styles.sucursalTitle}>Sucursal {horario.sucursal}</Text>
+  
+                {/* Renderizar los detalles de horarios, agrupados por idioma en la misma línea */}
+                {horario.idiomas.map((idioma, indexIdioma) => (
+                  <View key={indexIdioma} style={styles.idiomaContainer}>
+                    <Text style={styles.horarioTitle}>{`${idioma.idioma} `}</Text>
+                    {idioma.detalles.map((detalle, indexDetalle) => (
+                      <TouchableOpacity key={indexDetalle} style={styles.horarioButton} onPress={() => handleNavigation(item.title,detalle.hora, idioma.idioma, horario.sucursal, detalle.fecha, item.image)}>
+                        <Text style={styles.horarioText}>{`${detalle.hora} `}</Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                ))}
+              </View>
+            ))
+          ) : (
+            <Text>No hay horarios disponibles.</Text>
+          )}
+        </View>
+      </View>
+    </View>
       </View>
     </View>
   );
