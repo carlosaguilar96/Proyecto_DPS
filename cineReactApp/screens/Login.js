@@ -10,6 +10,7 @@ import { AppProvider } from '../assets/components/Context';
 
 import Boletos from './Boletos';
 import axios from 'axios';
+import { API_URL } from '@env';
 
 const Drawer = createDrawerNavigator();
 
@@ -89,9 +90,7 @@ export default function Login() {
 
     //Ingreso del cliente a la BD
     try { 
-      //si quieren probar cambiar la ip de su computadora donde está el docker y que su dispositivo esté en esa misma red
-      //NO CAMBIAR PUERTO
-      const response = await axios.post('http://localhost:8000/api/usuarios/crearCliente', {
+      const response = await axios.post(`${API_URL}/api/usuarios/crearCliente`, {
         nombreUsuario: username,
         contrasena: contra,
         DUI: dui,
@@ -140,11 +139,8 @@ export default function Login() {
       setMssgError("Ingresar contraseña.");
       return;
     }
-
     try {
-      //si quieren probar cambiar la ip de su computadora donde está el docker y que su dispositivo esté en esa misma red
-      //NO CAMBIAR PUERTO
-      const response = await axios.post('http://localhost:8000/api/iniciarSesion', {
+      const response = await axios.post(`${API_URL}/api/iniciarSesion`, {
         user: username,
         password: contra,
       });
