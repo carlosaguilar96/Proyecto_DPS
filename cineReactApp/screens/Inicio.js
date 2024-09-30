@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useState, useContext} from 'react';
-import { ScrollView ,View, Text, Image,Dimensions, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
+import React, { useEffect, useRef, useState, useContext } from 'react';
+import { ScrollView, View, Text, Image, Dimensions, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { movieData, EstrenosData } from '../config/movieData'; // Importa los datos locales
+import { EstrenosData } from '../config/movieData'; // Importa los datos locales
 import MainContainer from '../assets/components/MainContainer';
 import Cartelera from './Cartelera';
 import { Picker } from '@react-native-picker/picker';
@@ -9,7 +9,7 @@ import Carousel from 'react-native-reanimated-carousel';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useFocusEffect } from '@react-navigation/native';
 import { AppContext } from '../assets/components/Context';
-
+import axios from 'axios';
 
 const { width } = Dimensions.get('window');
 const Inicio = () => {
@@ -24,11 +24,30 @@ const Inicio = () => {
 
   const { miVariable, setMiVariable } = useContext(AppContext); // Obtén la variable del contexto
 
- const HandleEffect = (item) =>{
-        setMiVariable(2); // Cambia el valor de miVariable al hacer clic en la card
-        navigation.navigate('Cartelera', { title: item.title});
- }
+  const [movieData, setMovieData] = useState([]);
 
+  const HandleEffect = (item) => {
+    setMiVariable(2); // Cambia el valor de miVariable al hacer clic en la card
+    navigation.navigate('Cartelera', { title: item.title });
+  }
+
+  const obtenerCartelera = async () => {
+    try {
+      const response = await axios.get('http:localhost:8000/api/peliculas/cartelera');
+      setMovieData(response.data.peliculas);
+
+    } catch (error) {
+      if (error.request) {
+        Alert.alert('Error', 'No hubo respuesta del servidor');
+        return;
+      } else {
+        Alert.alert('Error', 'Error al hacer la solicitud');
+        return;
+      }
+    }
+  }
+
+  obtenerCartelera();
 
   // Función para hacer scroll automático en la primera lista
   const scrollToNextCard1 = () => {
@@ -36,9 +55,9 @@ const Inicio = () => {
     setCurrentIndex1(nextIndex); // Actualizar el índice actual
 
     if (flatListRef1.current) {
-      flatListRef1.current.scrollToIndex({ 
-        animated: true, 
-        index: nextIndex 
+      flatListRef1.current.scrollToIndex({
+        animated: true,
+        index: nextIndex
       });
     }
   };
@@ -49,18 +68,19 @@ const Inicio = () => {
     setCurrentIndex2(nextIndex); // Actualizar el índice actual
 
     if (flatListRef2.current) {
-      flatListRef2.current.scrollToIndex({ 
-        animated: true, 
-        index: nextIndex 
+      flatListRef2.current.scrollToIndex({
+        animated: true,
+        index: nextIndex
       });
     }
   };
 
+  /*
   // Efectos para iniciar el scroll automático
   useEffect(() => {
     const interval1 = setInterval(scrollToNextCard1, 3000); // Cambia 3000 por el intervalo deseado
     return () => clearInterval(interval1);
-  }, [currentIndex1]);
+  }, [currentIndex1]); */
 
   useEffect(() => {
     const interval2 = setInterval(scrollToNextCard2, 3000); // Cambia 3000 por el intervalo deseado
@@ -68,39 +88,41 @@ const Inicio = () => {
   }, [currentIndex2]);
 
   // Renderiza cada item en la lista
-  const renderItem = ({ item, isEstreno }) => 
-    (
-    <MainContainer>
-      <TouchableOpacity style={styles.cards} onPress={() => HandleEffect(item)}> 
-        <View style={styles.Lista}>
-          {/* Mostrar la franja "Estreno" solo si isEstreno es true */}
-          {isEstreno ? (
-            <>
-              <View style={styles.estrenoBanner}>
-                <Text style={styles.estrenoText}>Estreno</Text>
-              </View>
-              <Image source={item.image} style={styles.imagenE} />
-              <Text style={styles.cardsE}>Ver horarios</Text>
-            </>
-          ) : (
-            <>
-              <Image source={item.image} style={styles.imagen} />
-              <Text style={styles.cardstext}>Ver horarios</Text>
-            </>
-          )}
-        </View>
-      </TouchableOpacity>
-    </MainContainer>
-  );
-  
+  const renderItem = ({ item, isEstreno }) => {
+
+    return (
+      <MainContainer>
+        <TouchableOpacity style={styles.cards} onPress={() => HandleEffect(item)}>
+          <View style={styles.Lista}>
+            {/* Mostrar la franja "Estreno" solo si isEstreno es true */}
+            {isEstreno ? (
+              <>
+                <View style={styles.estrenoBanner}>
+                  <Text style={styles.estrenoText}>Estreno</Text>
+                </View>
+                <Image source={item.image} style={styles.imagenE} />
+                <Text style={styles.cardsE}>Ver horarios</Text>
+              </>
+            ) : (
+              <>
+                <Image source={{uri: `http://localhost/img/peliculas/${item.imagen}`}} style={styles.imagen} />
+                <Text style={styles.cardstext}>Ver horarios</Text>
+              </>
+            )}
+          </View>
+        </TouchableOpacity>
+      </MainContainer>
+    )
+  };
+
 
   // Función para renderizar cada FlatList
   const renderFlatList = (data, flatListRef, isEstreno = false) => (
     <FlatList
       ref={flatListRef}
       data={data}
-      renderItem={(item) => renderItem({ ...item, isEstreno })} 
-      keyExtractor={(item) => item.id}
+      renderItem={(item) => renderItem({ ...item, isEstreno })}
+      keyExtractor={(item) => item.codPelicula}
       horizontal={true}
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={styles.flatListContainer}
@@ -112,91 +134,91 @@ const Inicio = () => {
 
   return (
     <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
-    <View style={styles.container}>
-      {/* Sección de Selección de Cine */}
-      <View style={styles.cinemaSelectionContainer}>
-        <Text style={styles.cinemaSelectionText}>Selecciona tu sucursal</Text>
-        <Picker
-          selectedValue={selectedCinema}
-          style={styles.picker}
-          onValueChange={(itemValue) => setSelectedCinema(itemValue)}
-        >
-          <Picker.Item label="Sucursal X" value="cine1" />
-          <Picker.Item label="Sucursal Y" value="cine2" />
+      <View style={styles.container}>
+        {/* Sección de Selección de Cine */}
+        <View style={styles.cinemaSelectionContainer}>
+          <Text style={styles.cinemaSelectionText}>Selecciona tu sucursal</Text>
+          <Picker
+            selectedValue={selectedCinema}
+            style={styles.picker}
+            onValueChange={(itemValue) => setSelectedCinema(itemValue)}
+          >
+            <Picker.Item label="Sucursal X" value="cine1" />
+            <Picker.Item label="Sucursal Y" value="cine2" />
 
-        </Picker>
-        <TouchableOpacity style={styles.button}>
-          <Text style={styles.buttonText}>Ver disponibilidad</Text>
-        </TouchableOpacity>
-      </View>
-      <Text style={styles.encabezados}>CARTELERA</Text>
-      <View style={styles.separator} />
-      {/* Usar la referencia y estado para el primer FlatList */}
-      <View style={styles.flatListWrapper}>
-        {renderFlatList(movieData, flatListRef1,)}
-      </View>
-      {/* Estrenos */}
-      <Text style={styles.encabezados}>LO MÁS RECIENTE</Text>
-      <View style={styles.separator} />
-      {/* Usar la referencia y estado para el segundo FlatList */}
-      <View style={styles.flatListWrapper}>
-        {renderFlatList(EstrenosData, flatListRef2,true) }
-      </View>
+          </Picker>
+          <TouchableOpacity style={styles.button}>
+            <Text style={styles.buttonText}>Ver disponibilidad</Text>
+          </TouchableOpacity>
+        </View>
+        <Text style={styles.encabezados}>CARTELERA</Text>
+        <View style={styles.separator} />
+        {/* Usar la referencia y estado para el primer FlatList */}
+        <View style={styles.flatListWrapper}>
+          {renderFlatList(movieData, flatListRef1,)}
+        </View>
+        {/* Estrenos */}
+        <Text style={styles.encabezados}>LO MÁS RECIENTE</Text>
+        <View style={styles.separator} />
+        {/* Usar la referencia y estado para el segundo FlatList */}
+        <View style={styles.flatListWrapper}>
+          {renderFlatList(EstrenosData, flatListRef2, true)}
+        </View>
         {/* Carrusel automático con 3 imágenes visibles */}
         <Text style={styles.encabezados}>CUPONES</Text>
-      <View style={styles.separator} />
-      <View style={styles.containerCarousel}>
-      
-     <Carousel
-        loop
-        width={width}
-        height={250}  // Ajustamos el alto
-        autoPlay={true}
-        autoPlayInterval={1000}  // Cambiar cada 3 segundos
-        data={movieData}
-        scrollAnimationDuration={1000}  // Duración de la animación de desplazamiento
-        mode="horizontal-stack"  // Modo de carrusel en pila horizontal
-        modeConfig={{
-          snapDirection: 'left',  // Desplazamiento hacia la izquierda
-          stackInterval: 150,  // Intervalo entre imágenes en el stack
-        }}
-        panGestureHandlerProps={{
-          activeOffsetX: [-10, 10],  // Sensibilidad de desplazamiento
-        }}
-        customConfig={{
-          type: 'slider',  // Tipo de carrusel
-        }}
-        renderItem={({ item }) => (
-          <View style={styles.cuponCard}>
-            <Image source={item.image} style={styles.cuponImage} resizeMode="cover" />
-            
+        <View style={styles.separator} />
+        <View style={styles.containerCarousel}>
+
+          <Carousel
+            loop
+            width={width}
+            height={250}  // Ajustamos el alto
+            autoPlay={true}
+            autoPlayInterval={1000}  // Cambiar cada 3 segundos
+            data={movieData}
+            scrollAnimationDuration={1000}  // Duración de la animación de desplazamiento
+            mode="horizontal-stack"  // Modo de carrusel en pila horizontal
+            modeConfig={{
+              snapDirection: 'left',  // Desplazamiento hacia la izquierda
+              stackInterval: 150,  // Intervalo entre imágenes en el stack
+            }}
+            panGestureHandlerProps={{
+              activeOffsetX: [-10, 10],  // Sensibilidad de desplazamiento
+            }}
+            customConfig={{
+              type: 'slider',  // Tipo de carrusel
+            }}
+            renderItem={({ item }) => (
+              <View style={styles.cuponCard}>
+                <Image source={item.image} style={styles.cuponImage} resizeMode="cover" />
+
+              </View>
+            )}
+
+          />
+        </View>
+        <View style={styles.footerContainer}>
+          <View style={styles.textContainer}>
+            <View style={styles.column}>
+              <Text style={styles.header}>Quienes Somos</Text>
+              <Text style={styles.text}>Misión</Text>
+              <Text style={styles.text}>Visión</Text>
+              <Text style={styles.text}>Políticas y Condiciones</Text>
+            </View>
+            <View style={styles.column}>
+              <Text style={styles.header}>Contáctanos</Text>
+              <Text style={styles.text}>Escríbenos</Text>
+              <Text style={styles.text}>Trabaja con nosotros</Text>
+            </View>
           </View>
-        )}
-        
-      />
-     </View>
-     <View style={styles.footerContainer}>
-      <View style={styles.textContainer}>
-        <View style={styles.column}>
-          <Text style={styles.header}>Quienes Somos</Text>
-          <Text style={styles.text}>Misión</Text>
-          <Text style={styles.text}>Visión</Text>
-          <Text style={styles.text}>Políticas y Condiciones</Text>
-        </View>
-        <View style={styles.column}>
-          <Text style={styles.header}>Contáctanos</Text>
-          <Text style={styles.text}>Escríbenos</Text>
-          <Text style={styles.text}>Trabaja con nosotros</Text>
+          <View style={styles.iconsContainer}>
+            <Icon name="facebook" size={30} color="#000" style={styles.icon} />
+            <Icon name="instagram" size={30} color="#000" style={styles.icon} />
+            <Icon name="twitter" size={30} color="#000" style={styles.icon} />
+            <Icon name="linkedin" size={30} color="#000" style={styles.icon} />
+          </View>
         </View>
       </View>
-      <View style={styles.iconsContainer}>
-        <Icon name="facebook" size={30} color="#000" style={styles.icon} />
-        <Icon name="instagram" size={30} color="#000" style={styles.icon} />
-        <Icon name="twitter" size={30} color="#000" style={styles.icon} />
-        <Icon name="linkedin" size={30} color="#000" style={styles.icon} />
-      </View>
-    </View>
-    </View>
     </ScrollView>
   );
 };
@@ -246,7 +268,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-   
+
   },
   cinemaSelectionContainer: {
     backgroundColor: '#383232',
@@ -324,7 +346,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden', // Evita el desbordamiento
     marginVertical: 10, // Espaciado vertical adicional
   },
-  estrenoText:{
+  estrenoText: {
     color: '#fff',
     fontSize: 16,
     marginBottom: 8,
@@ -341,7 +363,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
   },
-  containerCarousel:{
+  containerCarousel: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
@@ -357,7 +379,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 30,
   },
-   cuponImage: {
+  cuponImage: {
     width: '100%',
     height: 200,
     borderRadius: 0,
@@ -401,8 +423,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  
-  
+
+
 });
 
 export default Inicio;
