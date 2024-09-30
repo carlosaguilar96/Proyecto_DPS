@@ -73,6 +73,26 @@ class PeliculaController extends Controller
         return response()->json($data, 200);
     }
 
+    // Función para mostrar películas en cartelera
+    public function mostrarCartelera()
+    {
+        $peliculas = Pelicula::all()->where('enCartelera', 1);
+        if(!$peliculas){
+            $data = [
+                'message' => 'No hay películas en cartelera',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        }
+
+        $data = [
+            'peliculas' => $peliculas,
+            'status' => 200
+        ];
+
+        return response()->json($data, 200);
+    }
+
     //Función para mostrar película específica
     public function show($id)
     {
