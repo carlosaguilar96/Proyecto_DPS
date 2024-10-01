@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Pelicula;
+use App\Models\Sucursal;
+use App\Models\Sala;
+use App\Models\Funcion;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 use Exception;
@@ -84,6 +87,21 @@ class PeliculaController extends Controller
             $peliculas = Pelicula::all()->where('enCartelera', 1);
         } else{
 
+            $salas = Sala::all()->where('codSucursal', $id);
+
+            foreach($salas as $sala){
+                $codigosSala[] = $sala->codSala;
+            }
+            
+            $funciones = Funcion::all()->whereIn('codSala',$codigosSala);
+            
+            foreach($funciones as $funcion){
+                $codigosPeliculas[] = $funcion->codPelicula;
+            }
+            $codigosPeliculas = array_unique($codigosPeliculas); // Se filtran los repetidos
+
+            $peliculas = Pelicula::all()->where('enCartelera', 1)->whereIn('codPelicula',$codigosPeliculas);
+            
         }
 
         if (!$peliculas) {
@@ -111,7 +129,20 @@ class PeliculaController extends Controller
         if($id == -1){
             $peliculasBase = Pelicula::all();
         } else{
+            $salas = Sala::all()->where('codSucursal', $id);
+
+            foreach($salas as $sala){
+                $codigosSala[] = $sala->codSala;
+            }
             
+            $funciones = Funcion::all()->whereIn('codSala',$codigosSala);
+            
+            foreach($funciones as $funcion){
+                $codigosPeliculas[] = $funcion->codPelicula;
+            }
+            $codigosPeliculas = array_unique($codigosPeliculas); // Se filtran los repetidos
+
+            $peliculasBase = Pelicula::all()->where('enCartelera', 1)->whereIn('codPelicula',$codigosPeliculas);
         }
 
         foreach ($peliculasBase as $pelicula) {
