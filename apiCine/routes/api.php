@@ -72,9 +72,9 @@ Route::post('/peliculas/crearPelicula', [PeliculaController::class, 'store']);
 //Ruta para mostrar todas las películas
 Route::get('/peliculas/index', [PeliculaController::class, 'index']);
 // Ruta para mostrar las películas en cartelera
-Route::get('/peliculas/cartelera', [PeliculaController::class, 'mostrarCartelera']);
+Route::get('/peliculas/cartelera/{id}', [PeliculaController::class, 'mostrarCartelera']);
 // Ruta para mostrar los estrenos
-Route::get('/peliculas/estrenos', [PeliculaController::class, 'mostrarEstrenos']);
+Route::get('/peliculas/estrenos/{id}', [PeliculaController::class, 'mostrarEstrenos']);
 //Ruta para mostar una película
 Route::get('/peliculas/show/{id}', [PeliculaController::class, 'show']);
 //Rutas para reactivar y eliminar peliculas

@@ -16,12 +16,11 @@ const { width } = Dimensions.get('window');
 const Inicio = () => {
   const navigation = useNavigation();
   const [selectedCinema, setSelectedCinema] = useState('');
+  const [sucursales, setSucursales] = useState([]);
 
   // Referencias y estados para cada FlatList
   const flatListRef1 = useRef(null);
   const flatListRef2 = useRef(null);
-  const [currentIndex1, setCurrentIndex1] = useState(0);
-  const [currentIndex2, setCurrentIndex2] = useState(0);
 
   const { miVariable, setMiVariable } = useContext(AppContext); // Obtén la variable del contexto
 
@@ -39,7 +38,7 @@ const Inicio = () => {
 
   const obtenerCartelera = async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/peliculas/cartelera`);
+      const response = await axios.get(`${API_URL}/api/peliculas/cartelera/-1`);
 
       if (response.data.peliculas.length != 0)
         setMovieData(response.data.peliculas);
@@ -57,11 +56,9 @@ const Inicio = () => {
     }
   }
 
-  obtenerCartelera();
-
   const obtenerEstrenos = async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/peliculas/estrenos`);
+      const response = await axios.get(`${API_URL}/api/peliculas/estrenos/-1`);
 
       if (response.data.peliculas.length != 0)
         setEstrenosData(response.data.peliculas);
@@ -79,47 +76,6 @@ const Inicio = () => {
     }
   }
 
-  obtenerEstrenos();
-
-  // Función para hacer scroll automático en la primera lista
-  const scrollToNextCard1 = () => {
-    const nextIndex = (currentIndex1 + 1) % movieData.length; // Ciclar al siguiente índice
-    setCurrentIndex1(nextIndex); // Actualizar el índice actual
-
-    if (flatListRef1.current) {
-      flatListRef1.current.scrollToIndex({
-        animated: true,
-        index: nextIndex
-      });
-    }
-  };
-
-  // Función para hacer scroll automático en la segunda lista
-  const scrollToNextCard2 = () => {
-    const nextIndex = (currentIndex2 + 1) % EstrenosData.length; // Ciclar al siguiente índice
-    setCurrentIndex2(nextIndex); // Actualizar el índice actual
-
-    if (flatListRef2.current) {
-      flatListRef2.current.scrollToIndex({
-        animated: true,
-        index: nextIndex
-      });
-    }
-  };
-
-  /*
-  // Efectos para iniciar el scroll automático
-  useEffect(() => {
-    const interval1 = setInterval(scrollToNextCard1, 3000); // Cambia 3000 por el intervalo deseado
-    return () => clearInterval(interval1);
-  }, [currentIndex1]); */
-
-  /*
-  useEffect(() => {
-    const interval2 = setInterval(scrollToNextCard2, 3000); // Cambia 3000 por el intervalo deseado
-    return () => clearInterval(interval2);
-  }, [currentIndex2]); */
-
   // Renderiza cada item en la lista
   const renderItem = ({ item, isEstreno }) => {
 
@@ -133,7 +89,7 @@ const Inicio = () => {
                 <View style={styles.estrenoBanner}>
                   <Text style={styles.estrenoText}>Estreno</Text>
                 </View>
-                <Image source={{uri: `${API_URL}/img/peliculas/${item.imagen}`}} style={styles.imagenE} />
+                <Image source={{ uri: `${API_URL}/img/peliculas/${item.imagen}` }} style={styles.imagenE} />
                 <Text style={styles.cardsE}>Ver horarios</Text>
               </>
             ) : (
@@ -166,6 +122,35 @@ const Inicio = () => {
     />
   );
 
+  const obtenerSucursales = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/api/sucursales/index/1`);
+
+      if (response.data.sucursales.length != 0)
+        setSucursales(response.data.sucursales);
+
+    } catch (error) {
+      if (error.request) {
+        Alert.alert('Error', 'No hubo respuesta del servidor');
+        return;
+      } else {
+        Alert.alert('Error', 'Error al hacer la solicitud');
+        return;
+      }
+    }
+  }
+
+
+  const filtarPeliculas = () =>{
+
+  }
+
+  useEffect(() => {
+    obtenerCartelera();
+    obtenerSucursales();
+    obtenerEstrenos();
+  }, []);
+
   return (
     <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
       <View style={styles.container}>
@@ -177,11 +162,13 @@ const Inicio = () => {
             style={styles.picker}
             onValueChange={(itemValue) => setSelectedCinema(itemValue)}
           >
-            <Picker.Item label="Sucursal X" value="cine1" />
-            <Picker.Item label="Sucursal Y" value="cine2" />
+            <Picker.Item label="Todas las sucursales" value={-1} />
+            {sucursales.map((itemS) => (
+              <Picker.Item label={itemS.sucursal} value={itemS.codSucursal} key={() => itemS.codSucursal} />
+            ))}
 
           </Picker>
-          <TouchableOpacity style={styles.button}>
+          <TouchableOpacity style={styles.button} onPress={filtarPeliculas}>
             <Text style={styles.buttonText}>Ver disponibilidad</Text>
           </TouchableOpacity>
         </View>

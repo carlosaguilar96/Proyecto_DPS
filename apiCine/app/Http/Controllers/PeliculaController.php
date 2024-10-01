@@ -75,9 +75,17 @@ class PeliculaController extends Controller
     }
 
     // Función para mostrar películas en cartelera
-    public function mostrarCartelera()
+    public function mostrarCartelera($id)
     {
-        $peliculas = Pelicula::all()->where('enCartelera', 1);
+
+        $peliculas = [];
+
+        if($id == -1){
+            $peliculas = Pelicula::all()->where('enCartelera', 1);
+        } else{
+
+        }
+
         if (!$peliculas) {
             $data = [
                 'message' => 'No hay películas en cartelera',
@@ -94,12 +102,19 @@ class PeliculaController extends Controller
         return response()->json($data, 200);
     }
 
-    public function mostrarEstrenos()
+    public function mostrarEstrenos($id)
     {
         $peliculas = [];
         $fechaHoy = Carbon::now();
+        $peliculasBase = [];
 
-        foreach (Pelicula::all() as $pelicula) {
+        if($id == -1){
+            $peliculasBase = Pelicula::all();
+        } else{
+            
+        }
+
+        foreach ($peliculasBase as $pelicula) {
             $fechaPelicula = Carbon::parse($pelicula->created_at);
             $resta = $fechaPelicula->diffInDays($fechaHoy);
 
