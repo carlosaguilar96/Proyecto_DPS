@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Image, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Image, TouchableOpacity, Alert, ScrollView,Platform ,KeyboardAvoidingView  } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import Inicio from './Inicio';
@@ -7,10 +7,18 @@ import { TextInputMask } from 'react-native-masked-text';
 import Cartelera from './Cartelera';
 import { AppContext } from '../assets/components/Context';
 import { AppProvider } from '../assets/components/Context';
-
 import Boletos from './Boletos';
 import axios from 'axios';
 import { API_URL } from '@env';
+import { LogBox } from 'react-native';
+import MenuAdmin from './MenuAdmin';
+import ModificarPelicula from './EditPelicula';
+import AñadirPelicula from './AddPelicula';
+
+
+LogBox.ignoreLogs([
+  'Found screens with the same name nested inside one another',
+]);
 
 const Drawer = createDrawerNavigator();
 
@@ -123,7 +131,7 @@ export default function Login() {
   };
 
   const EntrarInvitado = () =>{
-    setMiVariable2(2);
+    setMiVariable2(1);
     setIngreso(true);
     setMssgError('');
   }
@@ -224,166 +232,192 @@ export default function Login() {
   if (ingreso) {
     return (
       <AppProvider>
-        <NavigationContainer>
-          {miVariable2 === 2 ? (
-            <Drawer.Navigator
-              initialRouteName="Inicio"
-              screenOptions={{
-                headerStyle: {
-                  backgroundColor: '#b30000', 
-                },
-                headerTintColor: '#fff',
+        {/* Si miVariable2 === 1 Invitado, evalúa miVariable2 Usuario y si no es admin */}
+        {miVariable2 === 1 ? (
+          <Drawer.Navigator
+            initialRouteName="Inicio"
+            screenOptions={{
+              headerStyle: {
+                backgroundColor: '#b30000',
+              },
+              headerTintColor: '#fff',
+            }}
+          >
+            <Drawer.Screen name="Inicio" component={Inicio} />
+            <Drawer.Screen name="Cartelera" component={Cartelera} />
+            <Drawer.Screen
+              name="Inicio sesion"
+              component={Login}
+              options={{
+                headerShown: false,
+                drawerLockMode: 'locked-closed', // Bloquea el drawer en la pantalla de Login
               }}
-            >
-              <Drawer.Screen name="Inicio" component={Inicio} />
-              <Drawer.Screen name="Cartelera" component={Cartelera} />
-              <Drawer.Screen
-          name="Boletos"
-          component={Boletos}
-          options={{
-            drawerItemStyle: { display: 'none' }, // Oculta la opción de Boletos en el drawer
-            headerShown: false,
-          }}
-        />
-              <Drawer.Screen name="Cerrar Sesión">
-                {() => (
-                  <TouchableOpacity>
-                    <Text>¿Seguro que deseas cerrar sesión?</Text>
-                    <Button title="Cerrar Sesión" onPress={validarCierre} />
-                  </TouchableOpacity>
-                )}
-              </Drawer.Screen>
-            </Drawer.Navigator>
-          ) : (
-            
-            <Drawer.Navigator
-              initialRouteName="Inicio"
-              screenOptions={{
-                headerStyle: {
-                  backgroundColor: '#b30000', 
-                },
-                headerTintColor: '#fff',
+            />
+          </Drawer.Navigator>
+        ) : miVariable2 === 2 ? (
+          <Drawer.Navigator
+            initialRouteName="Inicio"
+            screenOptions={{
+              headerStyle: {
+                backgroundColor: '#b30000',
+              },
+              headerTintColor: '#fff',
+            }}
+          >
+            <Drawer.Screen name="Inicio" component={Inicio} />
+            <Drawer.Screen name="Cartelera" component={Cartelera} />
+            <Drawer.Screen
+              name="Boletos"
+              component={Boletos}
+              options={{
+                drawerItemStyle: { display: 'none' }, // Oculta la opción de Boletos en el drawer
+                headerShown: false,
               }}
-            >
-              <Drawer.Screen name="Inicio" component={Inicio} />
-              <Drawer.Screen name="Cerrar Sesión">
-                {() => (
-                  <TouchableOpacity>
-                    <Text>¿Seguro que deseas cerrar sesión?</Text>
-                    <Button title="Cerrar Sesión" onPress={validarCierre} />
-                  </TouchableOpacity>
-                )}
-              </Drawer.Screen>
-            </Drawer.Navigator>
-          )}
-        
-        </NavigationContainer>
+            />
+            <Drawer.Screen name="Cerrar Sesión">
+              {() => (
+                <TouchableOpacity>
+                  <Text>¿Seguro que deseas cerrar sesión?</Text>
+                  <Button title="Cerrar Sesión" onPress={validarCierre} />
+                </TouchableOpacity>
+              )}
+            </Drawer.Screen>
+          </Drawer.Navigator>
+        ) : (//DRAWER ADMIN
+          <Drawer.Navigator
+            initialRouteName="MenuAdmin"
+          >
+            <Drawer.Screen name="MenuAdmin" component={MenuAdmin} 
+            options={{
+              headerShown: false,
+              drawerLockMode: 'locked-closed',
+            }}
+            />
+            <Drawer.Screen name="AddPelicula" component={AñadirPelicula} />
+            <Drawer.Screen name="EditPelicula" component={ModificarPelicula}/>
+            <Drawer.Screen name="Cerrar Sesión">     
+              {() => (
+                <TouchableOpacity>
+                  <Text>¿Seguro que deseas cerrar sesión?</Text>
+                  <Button title="Cerrar Sesión" onPress={validarCierre} />
+                </TouchableOpacity>
+              )}
+            </Drawer.Screen>
+          </Drawer.Navigator>
+        )}
       </AppProvider>
     );
   }
   
 
   return (
-    <View style={styles.container}>
-      {/* Contenedor para el contenido principal */}
-      <View style={styles.mainContent}>
-        <Image source={require('../assets/img/FilmLogo.png')} style={styles.img} />
-        <View style={styles.caja}>
-          <Text style={styles.textcaja}>{mssgError ? mssgError : login ? 'LOG IN' : 'Registrarse'}</Text>
-          <View style={styles.separator} />
-          {!login && (
-
-           <View>
-            <TextInput
-              placeholder="Correo electrónico"
-              value={email}
-              onChangeText={setEmail}
-              style={styles.input}
-            />
-
-           <TextInput
-             placeholder="Nombre"
-             value={nombre}
-             onChangeText={setNombre}
-             style={styles.input}
-           />
-           
-           <TextInput
-             placeholder="Apellido"
-             value={apellido} 
-             onChangeText={setApellido} 
-             style={styles.input}
-           />
-
-            
-           <TextInputMask
-            type={'custom'}
-            options={{
-            mask: '99999999-9', // Define la máscara
-            }}
-            value={dui}
-            onChangeText={text => setDui(text)}
-            style={styles.input}
-            placeholder="DUI" // Placeholder que indica el formato
-            keyboardType="numeric"
-            />
+    <View style={{ flex: 1, backgroundColor: '#8B0000' }}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}
+        keyboardVerticalOffset={Platform.select({ ios: 0, android: 20 })}
+      >
+        <ScrollView  contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
+          {/* Contenedor para el contenido principal */}
+          <View style={styles.mainContent}>
+            <Image source={require('../assets/img/FilmLogo.png')} style={styles.img} />
+            <View style={styles.caja}>
+              <Text style={styles.textcaja}>{mssgError ? mssgError : login ? 'LOG IN' : 'Registrarse'}</Text>
+              <View style={styles.separator} />
+              {!login && (
+                <View>
+                  <TextInput
+                    placeholder="Correo electrónico"
+                    value={email}
+                    onChangeText={setEmail}
+                    style={styles.input}
+                  />
+                  <TextInput
+                    placeholder="Nombre"
+                    value={nombre}
+                    onChangeText={setNombre}
+                    style={styles.input}
+                  />
+                  <TextInput
+                    placeholder="Apellido"
+                    value={apellido}
+                    onChangeText={setApellido}
+                    style={styles.input}
+                  />
+                  <TextInputMask
+                    type={'custom'}
+                    options={{
+                      mask: '99999999-9',
+                    }}
+                    value={dui}
+                    onChangeText={text => setDui(text)}
+                    style={styles.input}
+                    placeholder="DUI"
+                    keyboardType="numeric"
+                  />
+                </View>
+              )}
+              <TextInput
+                placeholder="Usuario"
+                value={username}
+                onChangeText={setUsername}
+                style={styles.input}
+                autoCapitalize="none"
+              />
+              <TextInput
+                placeholder="Contraseña"
+                value={contra}
+                onChangeText={setContra}
+                style={styles.input}
+                secureTextEntry
+              />
+              {!login && (
+                <TextInput
+                  placeholder="Confirmar Contraseña"
+                  value={confirmContra}
+                  onChangeText={setConfirmContra}
+                  style={styles.input}
+                  secureTextEntry
+                />
+              )}
+              {login ? (
+                <>
+                  <TouchableOpacity style={styles.button} onPress={iniciarSesion}>
+                    <Text style={styles.buttonText}>Iniciar Sesión</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.button} onPress={cambioPantalla}>
+                    <Text style={styles.buttonText}>Registrate</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.button} onPress={() => EntrarInvitado()}>
+                    <Text style={styles.buttonText}>Entrar como invitado</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.button}>
+                    <Text style={styles.buttonText}>Acceder con Google</Text>
+                  </TouchableOpacity>
+                </>
+              ) : (
+                <>
+                  <TouchableOpacity style={styles.button} onPress={registrarCliente}>
+                    <Text style={styles.buttonText}>Registrate</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.button} onPress={cambioPantalla}>
+                    <Text style={styles.buttonText}>Volver al Inicio de Sesión</Text>
+                  </TouchableOpacity>
+                </>
+              )}
+            </View>
           </View>
-            
-          )}
-          <TextInput
-            placeholder="Usuario"
-            value={username}
-            onChangeText={setUsername}
-            style={styles.input}
-            autoCapitalize="none"
-          />
-          <TextInput
-            placeholder="Contraseña"
-            value={contra}
-            onChangeText={setContra}
-            style={styles.input}
-            secureTextEntry
-          />
-          {!login && (
-            <TextInput
-              placeholder="Confirmar Contraseña"
-              value={confirmContra}
-              onChangeText={setConfirmContra}
-              style={styles.input}
-              secureTextEntry
-            />
+        </ScrollView>
+      </KeyboardAvoidingView>
 
-          )}
-          {login ? (
-            <>
-              <TouchableOpacity style={styles.button} onPress={iniciarSesion}>
-                <Text style={styles.buttonText}>Iniciar Sesión</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.button} onPress={cambioPantalla}>
-                <Text style={styles.buttonText}>Registrate</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.button} onPress={()=>EntrarInvitado()}><Text style={styles.buttonText}>Entrar como invitado</Text></TouchableOpacity>
-            </>
-          ) : (
-            <>
-              <TouchableOpacity style={styles.button} onPress={registrarCliente}>
-                <Text style={styles.buttonText}>Registrate</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.button} onPress={cambioPantalla}>
-                <Text style={styles.buttonText}>Volver al Inicio de Sesión</Text>
-              </TouchableOpacity>
-            </>
-          )}
-        </View>
-      </View>
-      {/* Footer en la parte inferior */}
+      {/* Footer fijo en la parte inferior */}
       <View style={styles.footerContainer}>
-      
-      <View style={styles.textContainer}>
-        
-        <Text style={styles.footerText}>© 2024 FilmApp - Todos los derechos reservados</Text>
-        
-      </View>
+        <View style={styles.textContainer}>
+        <TouchableOpacity>
+        <Text style={styles.invitado}>    ¿Olvidaste tu Contraseña?</Text>
+        </TouchableOpacity> 
+          <Text style={styles.footerText}>© 2024 FilmApp - Todos los derechos reservados</Text>
+        </View>
       </View>
     </View>
   );
@@ -402,11 +436,10 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: '#ccc',
     alignItems:'center',
+    justifyContent: 'center',
   },
   textContainer: {
-    flexDirection: 'row',
     justifyContent: 'space-between',
-  
   },
   container: {
     flex: 1,
@@ -429,12 +462,12 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     alignItems: 'center',
     marginTop: 10,
-    width: 250,
+    width: 360,
     
   },
   buttonText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 12,
     fontWeight: 'bold',
   },
   buttonText: {
@@ -444,15 +477,15 @@ const styles = StyleSheet.create({
   },
   img:{
     width: 350,
-    height: 180,
+    height: 145,
     alignItems: 'center',
     justifyContent: 'center',
     marginLeft: 15,
-    marginTop:-100,
+    marginTop:-20,
   },
   caja: {
     backgroundColor: '#f6f6f6',
-    padding: 20,
+    padding: 10,
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
@@ -478,7 +511,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   invitado:{
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#8B0000'
   },

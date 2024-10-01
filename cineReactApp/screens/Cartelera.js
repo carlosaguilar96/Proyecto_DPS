@@ -1,9 +1,10 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, FlatList, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, FlatList, ScrollView,Modal, Button} from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import { useFocusEffect } from '@react-navigation/native';
 import { format, addDays, parseISO } from 'date-fns';
 import { AppContext } from '../assets/components/Context';
+import { AppProvider } from '../assets/components/Context';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import { API_URL } from '@env';
@@ -95,6 +96,7 @@ export default function Cartelera() {
   const { miVariable, setMiVariable } = useContext(AppContext); // Obtén la variable del contexto
   const [Funcion, setFunciones] = useState([]);
   const [mensajeDra, setMensajeDra] = useState("Cargando ...");
+  const [modalVisible, setModalVisible] = useState(false);
 
   const obtenerFunciones = async () => {
     try {
@@ -127,11 +129,19 @@ export default function Cartelera() {
     }, [])
   );
 
-  //navegacion a boletos
-  const handleNavigation = (title, hora, idioma, sucursal, fecha, image, item) => {
-    navigation.navigate('Boletos', { title, hora, idioma, sucursal, fecha, image, item });
+  const handleNavigation = (title, hora, idioma,sucursal,fecha, image,item) =>{
+    if(miVariable2 === 1){
+      setModalVisible(true);
+    }
+    else
+    navigation.navigate('Boletos', {title, hora, idioma,sucursal,fecha,image,item});
   }
 
+  const handleModalClose = () => {
+    // Cerrar el modal y redirigir a 'Inicio Sesion'
+    setModalVisible(false);
+    navigation.navigate('Inicio Sesion');
+  };
   //Esto toma la fecha del dia actual, el dia de mañana y pasado y lo pone en formato yyyy-MM-dd
   const today = new Date();
   const localMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
@@ -262,7 +272,7 @@ export default function Cartelera() {
   return (
     //si miVariable es diferente de 2, se ingresa a la vista desde el drawer, caso contrario se ha seleccionado una peli en especifico desde el inicio
 
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+    <View style={{ flex: 1}}>
       {miVariable !== 2 ? (
         <View style={styles.container}>
           {/*Vista desde DRAWER*/}
@@ -286,6 +296,7 @@ export default function Cartelera() {
               data={selectedData}
               renderItem={renderItem}
               keyExtractor={(item) => item.titulo}
+              ListEmptyComponent={<Text style={styles.titleError}>No hay horarios disponibles</Text>}
             />
           ) : (
             <Text style={styles.titleError}>{mensajeDra}</Text>
@@ -310,6 +321,21 @@ export default function Cartelera() {
           </ScrollView>
 
         )}
+ {/* Modal */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalText}>Debes iniciar sesión o registrarte para comprar boletos.</Text>
+            <Button title="Aceptar" onPress={handleModalClose} />
+          </View>
+        </View>
+      </Modal>
+
     </View>
   );
 }
@@ -428,5 +454,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row', // Alinea el texto en fila
     justifyContent: 'space-around', // Espaciado entre los botones
     alignItems: 'center', // Centra verticalmente
+  },modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Fondo semitransparente
   },
+  modalContent: {
+    width: 300,
+    padding: 20,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+
 });

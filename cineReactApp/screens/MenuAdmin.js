@@ -1,6 +1,6 @@
 import React from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import { NavigationContainer } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
@@ -44,6 +44,7 @@ function MainScreen() {
 function AddSalaScreen() {
   return (
     <View style={styles.screenContainer}>
+      
       <Text style={styles.text}>Añadir Sala</Text>
     </View>
   );
@@ -52,7 +53,9 @@ function AddSalaScreen() {
 function AddPeliculaScreen() {
   return (
     <View style={styles.screenContainer}>
+      <TouchableOpacity>
       <Text style={styles.text}>Añadir Película</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -60,7 +63,9 @@ function AddPeliculaScreen() {
 function AddFuncionScreen() {
   return (
     <View style={styles.screenContainer}>
+      <TouchableOpacity>
       <Text style={styles.text}>Añadir Función</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -83,9 +88,13 @@ function ModifySalaScreen() {
 }
 
 function ModifyPeliculaScreen() {
+  const navigation = useNavigation();
+
   return (
     <View style={styles.screenContainer}>
+      <TouchableOpacity onPress={()=>navigation.navigate('EditPelicula')}>
       <Text style={styles.text}>Modificar Película</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -108,9 +117,9 @@ function ModifyAdministradorScreen() {
 
 const Drawer = createDrawerNavigator();
 
-export default function App() {
+export default function MenuAdmin() {
+
   return (
-    <NavigationContainer>
       <Drawer.Navigator
         initialRouteName="Home"
         drawerContentOptions={{
@@ -189,7 +198,6 @@ export default function App() {
           }} 
         />
       </Drawer.Navigator>
-    </NavigationContainer>
   );
 }
 
