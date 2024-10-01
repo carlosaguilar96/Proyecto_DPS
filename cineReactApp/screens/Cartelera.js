@@ -7,7 +7,7 @@ import { format, addDays,parseISO } from 'date-fns';
 import { AppContext } from '../assets/components/Context';
 import { useNavigation } from '@react-navigation/native';
 
-
+//Esto agrupa las fuciones que vienen del DRAWER por sucursal,idioma y titulo, es para que no se renderizen varias cards con la misma peli
 const agruparTitle = (data) => {
   const groupedData = data.reduce((acc, item) => {
     if (!acc[item.title]) {
@@ -46,7 +46,7 @@ const agruparTitle = (data) => {
 };
 
 
-// Función para agrupar las películas por título e idioma y combinar los horarios
+//Esta agrupa las peliculas que viene desde INICIO por titulo
 const agruparPeliculas = (peliculas) => {
   const groupedData = peliculas.reduce((acc, item) => {
     // Si no existe una entrada con el título de la película, se crea una nueva
@@ -94,46 +94,49 @@ export default function Cartelera() {
   const navigation = useNavigation();
   const route = useRoute();
   const { title } = route?.params || {};
-  
-  
   const { miVariable, setMiVariable } = useContext(AppContext); // Obtén la variable del contexto
 
   useFocusEffect(
       React.useCallback(() => {
-        
           return () => {
-              setMiVariable(1);
-              
+              setMiVariable(1); 
           };
       }, [])
   );
 
+  //navegacion a boletos
   const handleNavigation = (title, hora, idioma,sucursal,fecha, image,item) =>{
     navigation.navigate('Boletos', {title, hora, idioma,sucursal,fecha,image,item});
   }
 
-
+//Esto toma la fecha del dia actual, el dia de mañana y pasado y lo pone en formato yyyy-MM-dd
   const today = new Date();
   const localMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-  const [selectedData, setSelectedData] = useState([]); // Estado para la lista seleccionada
-  const [selectedButton, setSelectedButton] = useState(null);
-
   const selectedDate = format(localMidnight, 'yyyy-MM-dd');
+  //se añade un dia
   const tomorrow = addDays(new Date(), 1);
   const selectedT = format(tomorrow, 'yyyy-MM-dd');
+  //se añaden dos dias
   const tomorrowP = addDays(new Date(), 2);
   const selectedP = format(tomorrowP, 'yyyy-MM-dd');
+
+
+  const [selectedData, setSelectedData] = useState([]); // Estado para la lista seleccionada
+  const [selectedButton, setSelectedButton] = useState(null);//cambia que dia esta seleccionado
+
   
+  //Todos estos son del INICIO
   const MovieToday = agruparPeliculas(Funcion.filter(item => item.title === title && format(parseISO(item.fecha), 'yyyy-MM-dd') === selectedDate));
   const MovieTomorrow = agruparPeliculas(Funcion.filter(item => item.title === title && format(parseISO(item.fecha), 'yyyy-MM-dd') === selectedT)); 
   const MovieTomorrowP = agruparPeliculas(Funcion.filter(item => item.title === title && format(parseISO(item.fecha), 'yyyy-MM-dd') === selectedP));   
+  
+  //Todos estos son del DRAWER
   const DataToday = agruparTitle(Funcion.filter(item => format(parseISO(item.fecha), 'yyyy-MM-dd') === selectedDate));
   const DataTomorrow = agruparTitle(Funcion.filter(item => format(parseISO(item.fecha), 'yyyy-MM-dd') === selectedT));
   const DataTomorrowP = agruparTitle(Funcion.filter(item => format(parseISO(item.fecha), 'yyyy-MM-dd') === selectedP));
   
   useEffect(() => {
-    handleButtonPress('Hoy', DataToday);
-     // Llama a la función por defecto
+    handleButtonPress('Hoy', DataToday);// Llama a la función por defecto
     
   }, []);
   const handleButtonPress = (day, data) => {
@@ -141,18 +144,7 @@ export default function Cartelera() {
     setSelectedData(data); // Actualiza los datos seleccionados
   };
   
-  const FlatListInicio = ({ Movie }) => {
-    return (
-      <FlatList
-        data={Movie}
-        renderItem={renderItemInicio}
-        keyExtractor={(item) => item.title}
-        ListEmptyComponent={<Text style={styles.titleError}>No hay horarios disponibles</Text>}
-        scrollEnabled={false}
-      />
-    );
-  };
-
+  //Render de peliculas desde el DRAWER
   const renderItem = ({ item }) => (
     <View style={styles.card}>
       <Image source={item.image} style={styles.image} />
@@ -187,7 +179,7 @@ export default function Cartelera() {
     </View>
   );
 
-  //render de cada pelicula
+  //render de cada pelicula desde INICIO
   const renderItemInicio = ({ item }) => (
     <View style={styles.container}>
       <View style={styles.rowContainer}>
@@ -226,11 +218,25 @@ export default function Cartelera() {
     </View>
   );
 
+//Flatlist peliculas desde INICIO
+  const FlatListInicio = ({ Movie }) => {
+    return (
+      <FlatList
+        data={Movie}
+        renderItem={renderItemInicio}
+        keyExtractor={(item) => item.title}
+        ListEmptyComponent={<Text style={styles.titleError}>No hay horarios disponibles</Text>}
+        scrollEnabled={false}
+      />
+    );
+  };
 
   return (
 //si miVariable es diferente de 2, se ingresa a la vista desde el drawer, caso contrario se ha seleccionado una peli en especifico desde el inicio
+    
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
             {miVariable !== 2 ? (<View style={styles.container}>
+              {/*Vista desde DRAWER*/}
               <View style={styles.rowContainer}>
               <TouchableOpacity onPress={() => handleButtonPress('Hoy', DataToday)} style={[styles.button, selectedButton === 'Hoy' && styles.selectedButton]}>
               <Text style={styles.dayText}>Hoy</Text>
@@ -245,7 +251,7 @@ export default function Cartelera() {
               </TouchableOpacity>
               </View>
 
-
+              {/*Flatlist desde DRAWER*/}
               {selectedData.length > 0 && (
                 <FlatList
                   data={selectedData}
@@ -257,6 +263,7 @@ export default function Cartelera() {
             </View>
             ) : 
             ( 
+              //vista principal desde el INICIO
               <ScrollView>
               <Text style={styles.sucursalTitle}>Hoy</Text>
               <View style={styles.cardMovie}>
