@@ -11,6 +11,9 @@ import Boletos from './Boletos';
 import axios from 'axios';
 import { API_URL } from '@env';
 import { LogBox } from 'react-native';
+import MenuAdmin from './MenuAdmin';
+import ModificarPelicula from './EditPelicula';
+import AñadirPelicula from './AddPelicula';
 
 
 LogBox.ignoreLogs([
@@ -128,7 +131,7 @@ export default function Login() {
   };
 
   const EntrarInvitado = () =>{
-    setMiVariable2(1);
+    setMiVariable2(3);
     setIngreso(true);
     setMssgError('');
   }
@@ -280,18 +283,19 @@ export default function Login() {
               )}
             </Drawer.Screen>
           </Drawer.Navigator>
-        ) : (
+        ) : (//DRAWER ADMIN
           <Drawer.Navigator
-            initialRouteName="Inicio"
-            screenOptions={{
-              headerStyle: {
-                backgroundColor: '#b30000',
-              },
-              headerTintColor: '#fff',
-            }}
+            initialRouteName="MenuAdmin"
           >
-            <Drawer.Screen name="Inicio" component={Inicio} />
-            <Drawer.Screen name="Cerrar Sesión">
+            <Drawer.Screen name="MenuAdmin" component={MenuAdmin} 
+            options={{
+              headerShown: false,
+              drawerLockMode: 'locked-closed',
+            }}
+            />
+            <Drawer.Screen name="AddPelicula" component={AñadirPelicula} />
+            <Drawer.Screen name="ModificarPelicula" component={ModificarPelicula}/>
+            <Drawer.Screen name="Cerrar Sesión">     
               {() => (
                 <TouchableOpacity>
                   <Text>¿Seguro que deseas cerrar sesión?</Text>
