@@ -294,7 +294,7 @@ export default function Login() {
             }}
             />
             <Drawer.Screen name="AddPelicula" component={AñadirPelicula} />
-            <Drawer.Screen name="ModificarPelicula" component={ModificarPelicula}/>
+            <Drawer.Screen name="EditPelicula" component={ModificarPelicula}/>
             <Drawer.Screen name="Cerrar Sesión">     
               {() => (
                 <TouchableOpacity>
