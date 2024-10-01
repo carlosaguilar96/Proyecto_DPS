@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, FlatList, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, FlatList, ScrollView,Modal, Button} from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import { useFocusEffect } from '@react-navigation/native';
 import { format, addDays, parseISO } from 'date-fns';
@@ -96,6 +96,7 @@ export default function Cartelera() {
   const { miVariable, setMiVariable } = useContext(AppContext); // Obtén la variable del contexto
   const [Funcion, setFunciones] = useState([]);
   const [mensajeDra, setMensajeDra] = useState("Cargando ...");
+  const [modalVisible, setModalVisible] = useState(false);
 
   const obtenerFunciones = async () =>{
     try {
@@ -126,11 +127,19 @@ export default function Cartelera() {
     }, [])
   );
 
-  //navegacion a boletos
-  const handleNavigation = (title, hora, idioma, sucursal, fecha, image, item) => {
-    navigation.navigate('Boletos', { title, hora, idioma, sucursal, fecha, image, item });
+  const handleNavigation = (title, hora, idioma,sucursal,fecha, image,item) =>{
+    if(miVariable2 === 1){
+      setModalVisible(true);
+    }
+    else
+    navigation.navigate('Boletos', {title, hora, idioma,sucursal,fecha,image,item});
   }
 
+  const handleModalClose = () => {
+    // Cerrar el modal y redirigir a 'Inicio Sesion'
+    setModalVisible(false);
+    navigation.navigate('Inicio Sesion');
+  };
   //Esto toma la fecha del dia actual, el dia de mañana y pasado y lo pone en formato yyyy-MM-dd
   const today = new Date();
   const localMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
@@ -310,6 +319,21 @@ export default function Cartelera() {
           </ScrollView>
 
         )}
+ {/* Modal */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalText}>Debes iniciar sesión o registrarte para comprar boletos.</Text>
+            <Button title="Aceptar" onPress={handleModalClose} />
+          </View>
+        </View>
+      </Modal>
+
     </View>
   );
 }
