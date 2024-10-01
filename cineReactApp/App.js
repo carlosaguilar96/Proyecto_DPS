@@ -11,7 +11,11 @@ const Drawer = createDrawerNavigator();
 
 export default function App() {
   return (
-   <AppProvider><Login/></AppProvider> 
+    <AppProvider>
+    <NavigationContainer>
+    <Login/> 
+    </NavigationContainer>
+    </AppProvider> 
     
   );
 }

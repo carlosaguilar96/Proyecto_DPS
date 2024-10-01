@@ -7,10 +7,15 @@ import { TextInputMask } from 'react-native-masked-text';
 import Cartelera from './Cartelera';
 import { AppContext } from '../assets/components/Context';
 import { AppProvider } from '../assets/components/Context';
-
 import Boletos from './Boletos';
 import axios from 'axios';
 import { API_URL } from '@env';
+import { LogBox } from 'react-native';
+
+
+LogBox.ignoreLogs([
+  'Found screens with the same name nested inside one another',
+]);
 
 const Drawer = createDrawerNavigator();
 
@@ -123,7 +128,7 @@ export default function Login() {
   };
 
   const EntrarInvitado = () =>{
-    setMiVariable2(2);
+    setMiVariable2(1);
     setIngreso(true);
     setMssgError('');
   }
@@ -224,60 +229,78 @@ export default function Login() {
   if (ingreso) {
     return (
       <AppProvider>
-        <NavigationContainer>
-          {miVariable2 === 2 ? (
-            <Drawer.Navigator
-              initialRouteName="Inicio"
-              screenOptions={{
-                headerStyle: {
-                  backgroundColor: '#b30000', 
-                },
-                headerTintColor: '#fff',
+        {/* Si miVariable2 === 1 Invitado, evalúa miVariable2 Usuario y si no es admin */}
+        {miVariable2 === 1 ? (
+          <Drawer.Navigator
+            initialRouteName="Inicio"
+            screenOptions={{
+              headerStyle: {
+                backgroundColor: '#b30000',
+              },
+              headerTintColor: '#fff',
+            }}
+          >
+            <Drawer.Screen name="Inicio" component={Inicio} />
+            <Drawer.Screen name="Cartelera" component={Cartelera} />
+            <Drawer.Screen
+              name="Inicio sesion"
+              component={Login}
+              options={{
+                headerShown: false,
+                drawerLockMode: 'locked-closed', // Bloquea el drawer en la pantalla de Login
               }}
-            >
-              <Drawer.Screen name="Inicio" component={Inicio} />
-              <Drawer.Screen name="Cartelera" component={Cartelera} />
-              <Drawer.Screen
-          name="Boletos"
-          component={Boletos}
-          options={{
-            drawerItemStyle: { display: 'none' }, // Oculta la opción de Boletos en el drawer
-            headerShown: false,
-          }}
-        />
-              <Drawer.Screen name="Cerrar Sesión">
-                {() => (
-                  <TouchableOpacity>
-                    <Text>¿Seguro que deseas cerrar sesión?</Text>
-                    <Button title="Cerrar Sesión" onPress={validarCierre} />
-                  </TouchableOpacity>
-                )}
-              </Drawer.Screen>
-            </Drawer.Navigator>
-          ) : (
-            
-            <Drawer.Navigator
-              initialRouteName="Inicio"
-              screenOptions={{
-                headerStyle: {
-                  backgroundColor: '#b30000', 
-                },
-                headerTintColor: '#fff',
+            />
+          </Drawer.Navigator>
+        ) : miVariable2 === 2 ? (
+          <Drawer.Navigator
+            initialRouteName="Inicio"
+            screenOptions={{
+              headerStyle: {
+                backgroundColor: '#b30000',
+              },
+              headerTintColor: '#fff',
+            }}
+          >
+            <Drawer.Screen name="Inicio" component={Inicio} />
+            <Drawer.Screen name="Cartelera" component={Cartelera} />
+            <Drawer.Screen
+              name="Boletos"
+              component={Boletos}
+              options={{
+                drawerItemStyle: { display: 'none' }, // Oculta la opción de Boletos en el drawer
+                headerShown: false,
               }}
-            >
-              <Drawer.Screen name="Inicio" component={Inicio} />
-              <Drawer.Screen name="Cerrar Sesión">
-                {() => (
-                  <TouchableOpacity>
-                    <Text>¿Seguro que deseas cerrar sesión?</Text>
-                    <Button title="Cerrar Sesión" onPress={validarCierre} />
-                  </TouchableOpacity>
-                )}
-              </Drawer.Screen>
-            </Drawer.Navigator>
-          )}
-        
-        </NavigationContainer>
+            />
+            <Drawer.Screen name="Cerrar Sesión">
+              {() => (
+                <TouchableOpacity>
+                  <Text>¿Seguro que deseas cerrar sesión?</Text>
+                  <Button title="Cerrar Sesión" onPress={validarCierre} />
+                </TouchableOpacity>
+              )}
+            </Drawer.Screen>
+          </Drawer.Navigator>
+        ) : (
+          <Drawer.Navigator
+            initialRouteName="Inicio"
+            screenOptions={{
+              headerStyle: {
+                backgroundColor: '#b30000',
+              },
+              headerTintColor: '#fff',
+            }}
+          >
+            <Drawer.Screen name="Inicio" component={Inicio} />
+            <Drawer.Screen name="Cerrar Sesión">
+              {() => (
+                <TouchableOpacity>
+                  <Text>¿Seguro que deseas cerrar sesión?</Text>
+                  <Button title="Cerrar Sesión" onPress={validarCierre} />
+                </TouchableOpacity>
+              )}
+            </Drawer.Screen>
+          </Drawer.Navigator>
+        )}
       </AppProvider>
     );
   }
@@ -386,6 +409,9 @@ export default function Login() {
       {/* Footer fijo en la parte inferior */}
       <View style={styles.footerContainer}>
         <View style={styles.textContainer}>
+        <TouchableOpacity>
+        <Text style={styles.invitado}>    ¿Olvidaste tu Contraseña?</Text>
+        </TouchableOpacity> 
           <Text style={styles.footerText}>© 2024 FilmApp - Todos los derechos reservados</Text>
         </View>
       </View>
@@ -406,11 +432,10 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: '#ccc',
     alignItems:'center',
+    justifyContent: 'center',
   },
   textContainer: {
-    flexDirection: 'row',
     justifyContent: 'space-between',
-  
   },
   container: {
     flex: 1,
@@ -433,7 +458,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     alignItems: 'center',
     marginTop: 10,
-    width: 350,
+    width: 360,
     
   },
   buttonText: {
@@ -448,11 +473,11 @@ const styles = StyleSheet.create({
   },
   img:{
     width: 350,
-    height: 180,
+    height: 145,
     alignItems: 'center',
     justifyContent: 'center',
     marginLeft: 15,
-    marginTop:-80,
+    marginTop:-20,
   },
   caja: {
     backgroundColor: '#f6f6f6',
@@ -482,7 +507,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   invitado:{
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#8B0000'
   },

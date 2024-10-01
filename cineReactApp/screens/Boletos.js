@@ -14,9 +14,9 @@ import React, { useState, useContext, useEffect} from 'react';
     const [abueB, setabueB] = useState(0);
     const [total, setTotal] = useState(0);
   
-    const handleNavigation =(title, idioma, hora,sucursal, fecha,image, childB, adultoB,abueB, total)=>{
-      navigation.navigate('PantallaSeleccionAsientos',{title, idioma, hora,sucursal, fecha,image, childB, adultoB,abueB, total});
-      console.log(title, idioma, hora,sucursal, fecha,image, childB, adultoB,abueB, total);
+    const handleNavigation =(title, idioma, hora,sucursal, fecha,image, childB, adultoB,abueB, total, sala)=>{
+      navigation.navigate('PantallaSeleccionAsientos',{title, idioma, hora,sucursal, fecha,image, childB, adultoB,abueB, total, sala});
+
     };
 
     const handleBack = () => {
@@ -111,7 +111,7 @@ import React, { useState, useContext, useEffect} from 'react';
             {/* Total Price and Continue Button */}
             <View style={styles.footer}>
               <Text style={styles.textoTotal}>Total US ${total}</Text>
-              <TouchableOpacity style={styles.continueButton} onPress={() => handleNavigation(title, idioma, hora,sucursal, fecha,image, childB, adultoB,abueB, total)}>
+              <TouchableOpacity style={styles.continueButton} onPress={() => handleNavigation(title, idioma, hora,sucursal, fecha,image, childB, adultoB,abueB, total, item.sala)}>
                 <Text style={styles.continueButtonText}>Continuar</Text>
               </TouchableOpacity>
             </View>
