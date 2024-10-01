@@ -260,7 +260,7 @@ export default function Cartelera() {
   return (
     //si miVariable es diferente de 2, se ingresa a la vista desde el drawer, caso contrario se ha seleccionado una peli en especifico desde el inicio
 
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+    <View style={{ flex: 1}}>
       {miVariable !== 2 ? (
         <View style={styles.container}>
           {/*Vista desde DRAWER*/}
@@ -284,6 +284,7 @@ export default function Cartelera() {
               data={selectedData}
               renderItem={renderItem}
               keyExtractor={(item) => item.titulo}
+              ListEmptyComponent={<Text style={styles.titleError}>No hay horarios disponibles</Text>}
             />
           ): (
             <Text style={styles.titleError}>{mensajeDra}</Text>

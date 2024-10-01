@@ -172,6 +172,7 @@ const Inicio = () => {
         {/* Sección de Selección de Cine */}
         <View style={styles.cinemaSelectionContainer}>
           <Text style={styles.cinemaSelectionText}>Selecciona tu sucursal</Text>
+          <View style={styles.centerElements}>
           <Picker
             selectedValue={selectedCinema}
             style={styles.picker}
@@ -179,11 +180,12 @@ const Inicio = () => {
           >
             <Picker.Item label="Sucursal X" value="cine1" />
             <Picker.Item label="Sucursal Y" value="cine2" />
-
           </Picker>
+          
           <TouchableOpacity style={styles.button}>
             <Text style={styles.buttonText}>Ver disponibilidad</Text>
           </TouchableOpacity>
+        </View>
         </View>
         <Text style={styles.encabezados}>CARTELERA</Text>
         <View style={styles.separator} />
@@ -310,8 +312,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 0,
     margin: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
+  
     shadowColor: 'rgba(0, 0, 0, 0.5)',
     shadowRadius: 50,
     shadowOffset: { width: 0, height: 10 },
@@ -323,11 +324,15 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginBottom: 8,
     fontWeight: 'bold',
-    shadowColor: 'rgba(0, 0, 0, 0.5)',
-    shadowRadius: 50,
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.8,
+    shadowColor: 'rgba(0, 0, 0, 0.5)', 
+    shadowRadius: 50, 
+    shadowOffset: { width: 0, height: 10 }, 
+    shadowOpacity: 0.8, 
     elevation: 20,
+    textAlign: 'left',
+  },
+  centerElements: {
+    alignItems: 'center', 
   },
   picker: {
     backgroundColor: '#f0f0f0',
@@ -336,13 +341,9 @@ const styles = StyleSheet.create({
     shadowRadius: 50,
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.8,
-    elevation: 20, width: 400,
+    elevation: 20, 
+    width: 390,
     marginBottom: 5,
-    shadowColor: 'rgba(0, 0, 0, 0.5)',
-    shadowRadius: 50,
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.8,
-    elevation: 20,
   },
   button: {
     backgroundColor: '#863333',

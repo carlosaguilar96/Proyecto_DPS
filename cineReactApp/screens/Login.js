@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Image, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Image, TouchableOpacity, Alert, ScrollView,Platform ,KeyboardAvoidingView  } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import Inicio from './Inicio';
@@ -284,106 +284,110 @@ export default function Login() {
   
 
   return (
-    <View style={styles.container}>
-      {/* Contenedor para el contenido principal */}
-      <View style={styles.mainContent}>
-        <Image source={require('../assets/img/FilmLogo.png')} style={styles.img} />
-        <View style={styles.caja}>
-          <Text style={styles.textcaja}>{mssgError ? mssgError : login ? 'LOG IN' : 'Registrarse'}</Text>
-          <View style={styles.separator} />
-          {!login && (
-
-           <View>
-            <TextInput
-              placeholder="Correo electrónico"
-              value={email}
-              onChangeText={setEmail}
-              style={styles.input}
-            />
-
-           <TextInput
-             placeholder="Nombre"
-             value={nombre}
-             onChangeText={setNombre}
-             style={styles.input}
-           />
-           
-           <TextInput
-             placeholder="Apellido"
-             value={apellido} 
-             onChangeText={setApellido} 
-             style={styles.input}
-           />
-
-            
-           <TextInputMask
-            type={'custom'}
-            options={{
-            mask: '99999999-9', // Define la máscara
-            }}
-            value={dui}
-            onChangeText={text => setDui(text)}
-            style={styles.input}
-            placeholder="DUI" // Placeholder que indica el formato
-            keyboardType="numeric"
-            />
+    <View style={{ flex: 1, backgroundColor: '#8B0000' }}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}
+        keyboardVerticalOffset={Platform.select({ ios: 0, android: 20 })}
+      >
+        <ScrollView  contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
+          {/* Contenedor para el contenido principal */}
+          <View style={styles.mainContent}>
+            <Image source={require('../assets/img/FilmLogo.png')} style={styles.img} />
+            <View style={styles.caja}>
+              <Text style={styles.textcaja}>{mssgError ? mssgError : login ? 'LOG IN' : 'Registrarse'}</Text>
+              <View style={styles.separator} />
+              {!login && (
+                <View>
+                  <TextInput
+                    placeholder="Correo electrónico"
+                    value={email}
+                    onChangeText={setEmail}
+                    style={styles.input}
+                  />
+                  <TextInput
+                    placeholder="Nombre"
+                    value={nombre}
+                    onChangeText={setNombre}
+                    style={styles.input}
+                  />
+                  <TextInput
+                    placeholder="Apellido"
+                    value={apellido}
+                    onChangeText={setApellido}
+                    style={styles.input}
+                  />
+                  <TextInputMask
+                    type={'custom'}
+                    options={{
+                      mask: '99999999-9',
+                    }}
+                    value={dui}
+                    onChangeText={text => setDui(text)}
+                    style={styles.input}
+                    placeholder="DUI"
+                    keyboardType="numeric"
+                  />
+                </View>
+              )}
+              <TextInput
+                placeholder="Usuario"
+                value={username}
+                onChangeText={setUsername}
+                style={styles.input}
+                autoCapitalize="none"
+              />
+              <TextInput
+                placeholder="Contraseña"
+                value={contra}
+                onChangeText={setContra}
+                style={styles.input}
+                secureTextEntry
+              />
+              {!login && (
+                <TextInput
+                  placeholder="Confirmar Contraseña"
+                  value={confirmContra}
+                  onChangeText={setConfirmContra}
+                  style={styles.input}
+                  secureTextEntry
+                />
+              )}
+              {login ? (
+                <>
+                  <TouchableOpacity style={styles.button} onPress={iniciarSesion}>
+                    <Text style={styles.buttonText}>Iniciar Sesión</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.button} onPress={cambioPantalla}>
+                    <Text style={styles.buttonText}>Registrate</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.button} onPress={() => EntrarInvitado()}>
+                    <Text style={styles.buttonText}>Entrar como invitado</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.button}>
+                    <Text style={styles.buttonText}>Acceder con Google</Text>
+                  </TouchableOpacity>
+                </>
+              ) : (
+                <>
+                  <TouchableOpacity style={styles.button} onPress={registrarCliente}>
+                    <Text style={styles.buttonText}>Registrate</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.button} onPress={cambioPantalla}>
+                    <Text style={styles.buttonText}>Volver al Inicio de Sesión</Text>
+                  </TouchableOpacity>
+                </>
+              )}
+            </View>
           </View>
-            
-          )}
-          <TextInput
-            placeholder="Usuario"
-            value={username}
-            onChangeText={setUsername}
-            style={styles.input}
-            autoCapitalize="none"
-          />
-          <TextInput
-            placeholder="Contraseña"
-            value={contra}
-            onChangeText={setContra}
-            style={styles.input}
-            secureTextEntry
-          />
-          {!login && (
-            <TextInput
-              placeholder="Confirmar Contraseña"
-              value={confirmContra}
-              onChangeText={setConfirmContra}
-              style={styles.input}
-              secureTextEntry
-            />
+        </ScrollView>
+      </KeyboardAvoidingView>
 
-          )}
-          {login ? (
-            <>
-              <TouchableOpacity style={styles.button} onPress={iniciarSesion}>
-                <Text style={styles.buttonText}>Iniciar Sesión</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.button} onPress={cambioPantalla}>
-                <Text style={styles.buttonText}>Registrate</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.button} onPress={()=>EntrarInvitado()}><Text style={styles.buttonText}>Entrar como invitado</Text></TouchableOpacity>
-            </>
-          ) : (
-            <>
-              <TouchableOpacity style={styles.button} onPress={registrarCliente}>
-                <Text style={styles.buttonText}>Registrate</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.button} onPress={cambioPantalla}>
-                <Text style={styles.buttonText}>Volver al Inicio de Sesión</Text>
-              </TouchableOpacity>
-            </>
-          )}
-        </View>
-      </View>
-      {/* Footer en la parte inferior */}
+      {/* Footer fijo en la parte inferior */}
       <View style={styles.footerContainer}>
-      
-      <View style={styles.textContainer}>
-        
-        <Text style={styles.footerText}>© 2024 FilmApp - Todos los derechos reservados</Text>
-        
-      </View>
+        <View style={styles.textContainer}>
+          <Text style={styles.footerText}>© 2024 FilmApp - Todos los derechos reservados</Text>
+        </View>
       </View>
     </View>
   );
@@ -429,12 +433,12 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     alignItems: 'center',
     marginTop: 10,
-    width: 250,
+    width: 350,
     
   },
   buttonText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 12,
     fontWeight: 'bold',
   },
   buttonText: {
@@ -448,11 +452,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginLeft: 15,
-    marginTop:-100,
+    marginTop:-80,
   },
   caja: {
     backgroundColor: '#f6f6f6',
-    padding: 20,
+    padding: 10,
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
