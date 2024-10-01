@@ -137,11 +137,12 @@ export default function Cartelera() {
   
   useEffect(() => {
     handleButtonPress('Hoy', DataToday);// Llama a la función por defecto
+    //Se carga cartelera desde el DRAWER
     
   }, []);
   const handleButtonPress = (day, data) => {
     setSelectedButton(day); // Actualiza el botón seleccionado
-    setSelectedData(data); // Actualiza los datos seleccionados
+    setSelectedData(data); // Actualiza los datos seleccionados desde DRAWER
   };
   
   //Render de peliculas desde el DRAWER
