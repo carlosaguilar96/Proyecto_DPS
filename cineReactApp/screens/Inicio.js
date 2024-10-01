@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState, useContext } from 'react';
 import { ScrollView, View, Text, Image, Dimensions, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { EstrenosData } from '../config/movieData'; // Importa los datos locales
 import MainContainer from '../assets/components/MainContainer';
 import Cartelera from './Cartelera';
 import { Picker } from '@react-native-picker/picker';
@@ -9,7 +8,9 @@ import Carousel from 'react-native-reanimated-carousel';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useFocusEffect } from '@react-navigation/native';
 import { AppContext } from '../assets/components/Context';
+import { Cupones } from '../config/movieData';
 import axios from 'axios';
+import { API_URL } from '@env';
 
 const { width } = Dimensions.get('window');
 const Inicio = () => {
@@ -25,6 +26,11 @@ const Inicio = () => {
   const { miVariable, setMiVariable } = useContext(AppContext); // Obtén la variable del contexto
 
   const [movieData, setMovieData] = useState([]);
+  const [EstrenosData, setEstrenosData] = useState([]);
+
+  const [mensajeCargando, setMensaje] = useState("Cargando...");
+  const [mensajeCargando2, setMensaje2] = useState("Cargando...");
+
 
   const HandleEffect = (item) => {
     setMiVariable(2); // Cambia el valor de miVariable al hacer clic en la card
@@ -33,8 +39,12 @@ const Inicio = () => {
 
   const obtenerCartelera = async () => {
     try {
-      const response = await axios.get('http:localhost:8000/api/peliculas/cartelera');
-      setMovieData(response.data.peliculas);
+      const response = await axios.get(`${API_URL}/api/peliculas/cartelera`);
+
+      if (response.data.peliculas.length != 0)
+        setMovieData(response.data.peliculas);
+      else
+        setMensaje("Sin películas añadidas");
 
     } catch (error) {
       if (error.request) {
@@ -48,6 +58,28 @@ const Inicio = () => {
   }
 
   obtenerCartelera();
+
+  const obtenerEstrenos = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/api/peliculas/estrenos`);
+
+      if (response.data.peliculas.length != 0)
+        setEstrenosData(response.data.peliculas);
+      else
+        setMensaje2("Sin películas añadidas");
+
+    } catch (error) {
+      if (error.request) {
+        Alert.alert('Error', 'No hubo respuesta del servidor');
+        return;
+      } else {
+        Alert.alert('Error', 'Error al hacer la solicitud');
+        return;
+      }
+    }
+  }
+
+  obtenerEstrenos();
 
   // Función para hacer scroll automático en la primera lista
   const scrollToNextCard1 = () => {
@@ -82,10 +114,11 @@ const Inicio = () => {
     return () => clearInterval(interval1);
   }, [currentIndex1]); */
 
+  /*
   useEffect(() => {
     const interval2 = setInterval(scrollToNextCard2, 3000); // Cambia 3000 por el intervalo deseado
     return () => clearInterval(interval2);
-  }, [currentIndex2]);
+  }, [currentIndex2]); */
 
   // Renderiza cada item en la lista
   const renderItem = ({ item, isEstreno }) => {
@@ -100,12 +133,12 @@ const Inicio = () => {
                 <View style={styles.estrenoBanner}>
                   <Text style={styles.estrenoText}>Estreno</Text>
                 </View>
-                <Image source={item.image} style={styles.imagenE} />
+                <Image source={{uri: `${API_URL}/img/peliculas/${item.imagen}`}} style={styles.imagenE} />
                 <Text style={styles.cardsE}>Ver horarios</Text>
               </>
             ) : (
               <>
-                <Image source={{uri: `http://localhost/img/peliculas/${item.imagen}`}} style={styles.imagen} />
+                <Image source={{ uri: `${API_URL}/img/peliculas/${item.imagen}` }} style={styles.imagen} />
                 <Text style={styles.cardstext}>Ver horarios</Text>
               </>
             )}
@@ -118,6 +151,7 @@ const Inicio = () => {
 
   // Función para renderizar cada FlatList
   const renderFlatList = (data, flatListRef, isEstreno = false) => (
+
     <FlatList
       ref={flatListRef}
       data={data}
@@ -155,14 +189,14 @@ const Inicio = () => {
         <View style={styles.separator} />
         {/* Usar la referencia y estado para el primer FlatList */}
         <View style={styles.flatListWrapper}>
-          {renderFlatList(movieData, flatListRef1,)}
+          {movieData.length > 0 ? renderFlatList(movieData, flatListRef1,) : (<Text style={styles.cargando}>{mensajeCargando}</Text>)}
         </View>
         {/* Estrenos */}
         <Text style={styles.encabezados}>LO MÁS RECIENTE</Text>
         <View style={styles.separator} />
         {/* Usar la referencia y estado para el segundo FlatList */}
         <View style={styles.flatListWrapper}>
-          {renderFlatList(EstrenosData, flatListRef2, true)}
+          {EstrenosData.length > 0 ? renderFlatList(EstrenosData, flatListRef2, true) : (<Text style={styles.cargando}>{mensajeCargando2}</Text>)}
         </View>
         {/* Carrusel automático con 3 imágenes visibles */}
         <Text style={styles.encabezados}>CUPONES</Text>
@@ -175,7 +209,7 @@ const Inicio = () => {
             height={250}  // Ajustamos el alto
             autoPlay={true}
             autoPlayInterval={1000}  // Cambiar cada 3 segundos
-            data={movieData}
+            data={Cupones}
             scrollAnimationDuration={1000}  // Duración de la animación de desplazamiento
             mode="horizontal-stack"  // Modo de carrusel en pila horizontal
             modeConfig={{
@@ -278,10 +312,10 @@ const styles = StyleSheet.create({
     margin: 0,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: 'rgba(0, 0, 0, 0.5)', 
+    shadowColor: 'rgba(0, 0, 0, 0.5)',
     shadowRadius: 50,
-    shadowOffset: { width: 0, height: 10 }, 
-    shadowOpacity: 0.8, 
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.8,
     elevation: 10,
   },
   cinemaSelectionText: {
@@ -289,25 +323,25 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginBottom: 8,
     fontWeight: 'bold',
-    shadowColor: 'rgba(0, 0, 0, 0.5)', 
-    shadowRadius: 50, 
-    shadowOffset: { width: 0, height: 10 }, 
-    shadowOpacity: 0.8, 
+    shadowColor: 'rgba(0, 0, 0, 0.5)',
+    shadowRadius: 50,
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.8,
     elevation: 20,
   },
   picker: {
     backgroundColor: '#f0f0f0',
     height: 45,
-shadowColor: 'rgba(0, 0, 0, 0.5)',
-    shadowRadius: 50, 
-    shadowOffset: { width: 0, height: 10 }, 
-    shadowOpacity: 0.8, 
-    elevation: 20,    width: 400,
+    shadowColor: 'rgba(0, 0, 0, 0.5)',
+    shadowRadius: 50,
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.8,
+    elevation: 20, width: 400,
     marginBottom: 5,
     shadowColor: 'rgba(0, 0, 0, 0.5)',
-    shadowRadius: 50, 
-    shadowOffset: { width: 0, height: 10 }, 
-    shadowOpacity: 0.8, 
+    shadowRadius: 50,
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.8,
     elevation: 20,
   },
   button: {
@@ -443,7 +477,12 @@ shadowColor: 'rgba(0, 0, 0, 0.5)',
     alignItems: 'center',
     justifyContent: 'center',
   },
-
+  cargando: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    paddingLeft: 15,
+    marginTop: 10,
+  }
 
 });
 

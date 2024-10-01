@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect} from 'react';
   import { View, Text, StyleSheet, Image, TouchableOpacity, FlatList, ScrollView, Button } from 'react-native';
   import { useRoute } from '@react-navigation/native';
   import { useNavigation } from '@react-navigation/native';
-  import Cabecera from './Cabecera';
+  import Cabecera from '../assets/components/Cabecera';
  
 
   export default function Boletos() {

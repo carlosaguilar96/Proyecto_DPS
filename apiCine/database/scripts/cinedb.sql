@@ -44,7 +44,9 @@ CREATE TABLE peliculas(
     sinopsis text,
     enCartelera int DEFAULT "1" NOT NULL, -- 1=en cartelera, 0=no en cartelera
     estadoEliminacion int DEFAULT "1" NOT NULL, -- 1=activa, 0=eliminada
-    imagen varchar(100) NOT NULL
+    imagen varchar(100) NOT NULL,
+    updated_at datetime,
+    created_at datetime
  )
 
 CREATE TABLE salas(

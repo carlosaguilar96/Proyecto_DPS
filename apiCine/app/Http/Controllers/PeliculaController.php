@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Pelicula;
 use Illuminate\Support\Facades\Validator;
+use Carbon\Carbon;
 use Exception;
 
 class PeliculaController extends Controller
@@ -15,7 +16,7 @@ class PeliculaController extends Controller
 
         $validator = Validator::make($request->all(), [
             "nombre" => 'required',
-            "duracion" => ['required','numeric', 'min:0'],
+            "duracion" => ['required', 'numeric', 'min:0'],
             "clasificacion" => 'required',
             "director" => 'required',
             "genero" => 'required',
@@ -77,7 +78,7 @@ class PeliculaController extends Controller
     public function mostrarCartelera()
     {
         $peliculas = Pelicula::all()->where('enCartelera', 1);
-        if(!$peliculas){
+        if (!$peliculas) {
             $data = [
                 'message' => 'No hay películas en cartelera',
                 'status' => 404
@@ -93,6 +94,26 @@ class PeliculaController extends Controller
         return response()->json($data, 200);
     }
 
+    public function mostrarEstrenos()
+    {
+        $peliculas = [];
+        $fechaHoy = Carbon::now();
+
+        foreach (Pelicula::all() as $pelicula) {
+            $fechaPelicula = Carbon::parse($pelicula->created_at);
+            $resta = $fechaPelicula->diffInDays($fechaHoy);
+
+            if ($resta <= 2)
+                $peliculas[] = $pelicula;
+        }
+
+        $data = [
+            'peliculas' => $peliculas,
+            'status' => 200
+        ];
+
+        return response()->json($data, 200);
+    }
     //Función para mostrar película específica
     public function show($id)
     {
@@ -122,10 +143,10 @@ class PeliculaController extends Controller
             ];
             return response()->json($data, 404);
         }
-        try{
+        try {
             $pelicula->estadoEliminacion = 0;
             $pelicula->save();
-        }catch(Exception $error){
+        } catch (Exception $error) {
             $data = [
                 'message' => 'Error al eliminar la película: ' . $error->getMessage(),
                 'status' => 500
@@ -151,10 +172,10 @@ class PeliculaController extends Controller
             ];
             return response()->json($data, 404);
         }
-        try{
+        try {
             $pelicula->estadoEliminacion = 1;
             $pelicula->save();
-        }catch(Exception $error){
+        } catch (Exception $error) {
             $data = [
                 'message' => 'Error al reactivar la película: ' . $error->getMessage(),
                 'status' => 500
@@ -180,10 +201,10 @@ class PeliculaController extends Controller
             ];
             return response()->json($data, 404);
         }
-        try{
+        try {
             $pelicula->enCartelera = 1;
             $pelicula->save();
-        }catch(Exception $error){
+        } catch (Exception $error) {
             $data = [
                 'message' => 'Error al poner la película en cartelera: ' . $error->getMessage(),
                 'status' => 500
@@ -209,10 +230,10 @@ class PeliculaController extends Controller
             ];
             return response()->json($data, 404);
         }
-        try{
+        try {
             $pelicula->enCartelera = 0;
             $pelicula->save();
-        }catch(Exception $error){
+        } catch (Exception $error) {
             $data = [
                 'message' => 'Error al quitar la película de cartelera: ' . $error->getMessage(),
                 'status' => 500
@@ -240,7 +261,7 @@ class PeliculaController extends Controller
         }
         $validator = Validator::make($request->all(), [
             "nombre" => 'required',
-            "duracion" => ['required','numeric', 'min:0'],
+            "duracion" => ['required', 'numeric', 'min:0'],
             "clasificacion" => 'required',
             "director" => 'required',
             "genero" => 'required',
@@ -264,9 +285,9 @@ class PeliculaController extends Controller
         $pelicula->genero = $request->genero;
         $pelicula->sinopsis = $request->sinopsis;
 
-        try{
+        try {
             $pelicula->save();
-        }catch(Exception $error){
+        } catch (Exception $error) {
             $data = [
                 'message' => 'Error al actualizar la película: ' . $error->getMessage(),
                 'status' => 500
