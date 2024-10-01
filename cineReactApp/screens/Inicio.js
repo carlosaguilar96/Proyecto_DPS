@@ -15,7 +15,7 @@ import { API_URL } from '@env';
 const { width } = Dimensions.get('window');
 const Inicio = () => {
   const navigation = useNavigation();
-  const [selectedCinema, setSelectedCinema] = useState('');
+  const [selectedCinema, setSelectedCinema] = useState(-1);
   const [sucursales, setSucursales] = useState([]);
 
   // Referencias y estados para cada FlatList
@@ -38,13 +38,12 @@ const Inicio = () => {
 
   const obtenerCartelera = async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/peliculas/cartelera/-1`);
+      const response = await axios.get(`${API_URL}/api/peliculas/cartelera/${selectedCinema}`);
 
       if (response.data.peliculas.length != 0)
         setMovieData(response.data.peliculas);
       else
         setMensaje("Sin películas añadidas");
-
     } catch (error) {
       if (error.request) {
         Alert.alert('Error', 'No hubo respuesta del servidor');
@@ -58,7 +57,7 @@ const Inicio = () => {
 
   const obtenerEstrenos = async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/peliculas/estrenos/-1`);
+      const response = await axios.get(`${API_URL}/api/peliculas/estrenos/${selectedCinema}`);
 
       if (response.data.peliculas.length != 0)
         setEstrenosData(response.data.peliculas);
@@ -140,9 +139,10 @@ const Inicio = () => {
     }
   }
 
-
+  // Al presionar el botón de ver disponibilidad, se actualizan los listados de estrenos y películas.
   const filtarPeliculas = () =>{
-
+    obtenerCartelera();
+    obtenerEstrenos();
   }
 
   useEffect(() => {
