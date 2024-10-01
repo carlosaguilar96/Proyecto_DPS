@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Pelicula;
+use App\Models\Sucursal;
+use App\Models\Sala;
+use App\Models\Funcion;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 use Exception;
@@ -75,9 +78,32 @@ class PeliculaController extends Controller
     }
 
     // Función para mostrar películas en cartelera
-    public function mostrarCartelera()
+    public function mostrarCartelera($id)
     {
-        $peliculas = Pelicula::all()->where('enCartelera', 1);
+
+        $peliculas = [];
+
+        if($id == -1){
+            $peliculas = Pelicula::all()->where('enCartelera', 1);
+        } else{
+
+            $salas = Sala::all()->where('codSucursal', $id);
+
+            foreach($salas as $sala){
+                $codigosSala[] = $sala->codSala;
+            }
+            
+            $funciones = Funcion::all()->whereIn('codSala',$codigosSala);
+            
+            foreach($funciones as $funcion){
+                $codigosPeliculas[] = $funcion->codPelicula;
+            }
+            $codigosPeliculas = array_unique($codigosPeliculas); // Se filtran los repetidos
+
+            $peliculas = Pelicula::all()->where('enCartelera', 1)->whereIn('codPelicula',$codigosPeliculas);
+            
+        }
+
         if (!$peliculas) {
             $data = [
                 'message' => 'No hay películas en cartelera',
@@ -94,12 +120,32 @@ class PeliculaController extends Controller
         return response()->json($data, 200);
     }
 
-    public function mostrarEstrenos()
+    public function mostrarEstrenos($id)
     {
         $peliculas = [];
         $fechaHoy = Carbon::now();
+        $peliculasBase = [];
 
-        foreach (Pelicula::all() as $pelicula) {
+        if($id == -1){
+            $peliculasBase = Pelicula::all();
+        } else{
+            $salas = Sala::all()->where('codSucursal', $id);
+
+            foreach($salas as $sala){
+                $codigosSala[] = $sala->codSala;
+            }
+            
+            $funciones = Funcion::all()->whereIn('codSala',$codigosSala);
+            
+            foreach($funciones as $funcion){
+                $codigosPeliculas[] = $funcion->codPelicula;
+            }
+            $codigosPeliculas = array_unique($codigosPeliculas); // Se filtran los repetidos
+
+            $peliculasBase = Pelicula::all()->where('enCartelera', 1)->whereIn('codPelicula',$codigosPeliculas);
+        }
+
+        foreach ($peliculasBase as $pelicula) {
             $fechaPelicula = Carbon::parse($pelicula->created_at);
             $resta = $fechaPelicula->diffInDays($fechaHoy);
 

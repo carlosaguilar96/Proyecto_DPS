@@ -98,13 +98,13 @@ export default function Cartelera() {
   const [mensajeDra, setMensajeDra] = useState("Cargando ...");
   const [modalVisible, setModalVisible] = useState(false);
 
-  const obtenerFunciones = async () =>{
+  const obtenerFunciones = async () => {
     try {
       const response = await axios.get(`${API_URL}/api/funciones/funcionesDetalladas`);
 
       if (response.data.funciones.length != 0)
         setFunciones(response.data.funciones);
-      
+
 
     } catch (error) {
       if (error.request) {
@@ -117,7 +117,9 @@ export default function Cartelera() {
     }
   }
 
-  obtenerFunciones();
+  useEffect(() => {
+    obtenerFunciones();
+  }, []);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -175,7 +177,7 @@ export default function Cartelera() {
     setSelectedButton(day); // Actualiza el botón seleccionado
     setSelectedData(data); // Actualiza los datos seleccionados desde DRAWER
 
-    if(Funcion.length > 0 && data.length == 0){
+    if (Funcion.length > 0 && data.length == 0) {
       setMensajeDra("No hay funciones disponibles " + day);
     }
   };
@@ -183,7 +185,7 @@ export default function Cartelera() {
   //Render de peliculas desde el DRAWER
   const renderItem = ({ item }) => (
     <View style={styles.card}>
-      <Image source={{uri: `${API_URL}/img/peliculas/${item.image}`}} style={styles.image} />
+      <Image source={{ uri: `${API_URL}/img/peliculas/${item.image}` }} style={styles.image} />
       <View style={styles.infoContainer}>
 
         <Text style={styles.title}>{item.titulo}</Text>
@@ -220,7 +222,7 @@ export default function Cartelera() {
     <View style={styles.container}>
       <View style={styles.rowContainer}>
         <View style={styles.card}>
-          <Image source={{uri: `${API_URL}/img/peliculas/${item.image}`}} style={styles.image} />
+          <Image source={{ uri: `${API_URL}/img/peliculas/${item.image}` }} style={styles.image} />
           <View style={styles.infoContainer}>
 
             <Text style={styles.title}>{item.titulo}</Text>
@@ -296,13 +298,13 @@ export default function Cartelera() {
               keyExtractor={(item) => item.titulo}
               ListEmptyComponent={<Text style={styles.titleError}>No hay horarios disponibles</Text>}
             />
-          ): (
+          ) : (
             <Text style={styles.titleError}>{mensajeDra}</Text>
           )}
 
         </View>
-      ) 
-      :
+      )
+        :
         (
           //vista principal desde el INICIO
           <ScrollView>
