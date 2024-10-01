@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Funcion;
+use App\Models\Pelicula;
+use App\Models\Sucursal;
+use App\Models\Sala;
 use Exception;
 
 class FuncionController extends Controller
@@ -66,6 +69,29 @@ class FuncionController extends Controller
     public function index()
     {
         $funciones = Funcion::all();
+        $data = [
+            'funciones' => $funciones,
+            'status' => 200
+        ];
+        return response()->json($data, 200);
+    }
+
+    // Un index que además de la información de las funciones muestra el nombre de la película, la imagen y la sucursal
+    public function indexDetallado(){
+        $funciones = [];
+
+        foreach(Funcion::all() as $funcion){
+            $pelicula = Pelicula::find($funcion->codPelicula);
+            $funcion->titulo = $pelicula->nombre;
+            $funcion->image = $pelicula->imagen;
+
+            $sala = Sala::find($funcion->codSala);
+            $sucursal = Sucursal::find($sala->codSucursal);
+            $funcion->sucursal = $sucursal->sucursal;
+
+            $funciones[] = $funcion;
+        }
+
         $data = [
             'funciones' => $funciones,
             'status' => 200

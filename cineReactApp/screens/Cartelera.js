@@ -1,25 +1,26 @@
-import React, { useState, useContext, useEffect} from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, FlatList, ScrollView } from 'react-native';
-import { Funcion } from '../config/movieData';
 import { useRoute } from '@react-navigation/native';
 import { useFocusEffect } from '@react-navigation/native';
-import { format, addDays,parseISO } from 'date-fns'; 
+import { format, addDays, parseISO } from 'date-fns';
 import { AppContext } from '../assets/components/Context';
 import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
+import { API_URL } from '@env';
 
 //Esto agrupa las fuciones que vienen del DRAWER por sucursal,idioma y titulo, es para que no se renderizen varias cards con la misma peli
 const agruparTitle = (data) => {
   const groupedData = data.reduce((acc, item) => {
-    if (!acc[item.title]) {
-      acc[item.title] = { ...item, horarios: [] }; 
+    if (!acc[item.titulo]) {
+      acc[item.titulo] = { ...item, horarios: [] };
     }
 
     // Comprobar si ya existe un horario para la sucursal actual
-    const existingSucursal = acc[item.title].horarios.find(h => h.sucursal === item.sucursal);
+    const existingSucursal = acc[item.titulo].horarios.find(h => h.sucursal === item.sucursal);
 
     if (!existingSucursal) {
       // Añadir un nuevo objeto para la sucursal si no existe
-      acc[item.title].horarios.push({
+      acc[item.titulo].horarios.push({
         sucursal: item.sucursal,
         idiomas: [{ idioma: item.idioma, detalles: [{ fecha: item.fecha, hora: item.hora }] }],
       });
@@ -50,16 +51,16 @@ const agruparTitle = (data) => {
 const agruparPeliculas = (peliculas) => {
   const groupedData = peliculas.reduce((acc, item) => {
     // Si no existe una entrada con el título de la película, se crea una nueva
-    if (!acc[item.title]) {
-      acc[item.title] = { ...item, horarios: [] };
+    if (!acc[item.titulo]) {
+      acc[item.titulo] = { ...item, horarios: [] };
     }
 
     // Buscar si ya existe un horario para la sucursal actual
-    const existingSucursal = acc[item.title].horarios.find(h => h.sucursal === item.sucursal);
+    const existingSucursal = acc[item.titulo].horarios.find(h => h.sucursal === item.sucursal);
 
     if (!existingSucursal) {
       // Añadir un nuevo objeto para la sucursal si no existe
-      acc[item.title].horarios.push({
+      acc[item.titulo].horarios.push({
         sucursal: item.sucursal,
         idiomas: [{ idioma: item.idioma, detalles: [{ fecha: item.fecha, hora: item.hora }] }],
       });
@@ -87,29 +88,49 @@ const agruparPeliculas = (peliculas) => {
 };
 
 
-
-
-
 export default function Cartelera() {
   const navigation = useNavigation();
   const route = useRoute();
   const { title } = route?.params || {};
   const { miVariable, setMiVariable } = useContext(AppContext); // Obtén la variable del contexto
+  const [Funcion, setFunciones] = useState([]);
+  const [mensajeDra, setMensajeDra] = useState("Cargando ...");
+
+  const obtenerFunciones = async () =>{
+    try {
+      const response = await axios.get(`${API_URL}/api/funciones/funcionesDetalladas`);
+
+      if (response.data.funciones.length != 0)
+        setFunciones(response.data.funciones);
+      
+
+    } catch (error) {
+      if (error.request) {
+        Alert.alert('Error', 'No hubo respuesta del servidor');
+        return;
+      } else {
+        Alert.alert('Error', 'Error al hacer la solicitud');
+        return;
+      }
+    }
+  }
+
+  obtenerFunciones();
 
   useFocusEffect(
-      React.useCallback(() => {
-          return () => {
-              setMiVariable(1); 
-          };
-      }, [])
+    React.useCallback(() => {
+      return () => {
+        setMiVariable(1);
+      };
+    }, [])
   );
 
   //navegacion a boletos
-  const handleNavigation = (title, hora, idioma,sucursal,fecha, image,item) =>{
-    navigation.navigate('Boletos', {title, hora, idioma,sucursal,fecha,image,item});
+  const handleNavigation = (title, hora, idioma, sucursal, fecha, image, item) => {
+    navigation.navigate('Boletos', { title, hora, idioma, sucursal, fecha, image, item });
   }
 
-//Esto toma la fecha del dia actual, el dia de mañana y pasado y lo pone en formato yyyy-MM-dd
+  //Esto toma la fecha del dia actual, el dia de mañana y pasado y lo pone en formato yyyy-MM-dd
   const today = new Date();
   const localMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
   const selectedDate = format(localMidnight, 'yyyy-MM-dd');
@@ -124,47 +145,51 @@ export default function Cartelera() {
   const [selectedData, setSelectedData] = useState([]); // Estado para la lista seleccionada
   const [selectedButton, setSelectedButton] = useState(null);//cambia que dia esta seleccionado
 
-  
+
   //Todos estos son del INICIO
-  const MovieToday = agruparPeliculas(Funcion.filter(item => item.title === title && format(parseISO(item.fecha), 'yyyy-MM-dd') === selectedDate));
-  const MovieTomorrow = agruparPeliculas(Funcion.filter(item => item.title === title && format(parseISO(item.fecha), 'yyyy-MM-dd') === selectedT)); 
-  const MovieTomorrowP = agruparPeliculas(Funcion.filter(item => item.title === title && format(parseISO(item.fecha), 'yyyy-MM-dd') === selectedP));   
-  
+  const MovieToday = agruparPeliculas(Funcion.filter(item => item.titulo === title && format(parseISO(item.fecha), 'yyyy-MM-dd') === selectedDate));
+  const MovieTomorrow = agruparPeliculas(Funcion.filter(item => item.titulo === title && format(parseISO(item.fecha), 'yyyy-MM-dd') === selectedT));
+  const MovieTomorrowP = agruparPeliculas(Funcion.filter(item => item.titulo === title && format(parseISO(item.fecha), 'yyyy-MM-dd') === selectedP));
+
   //Todos estos son del DRAWER
   const DataToday = agruparTitle(Funcion.filter(item => format(parseISO(item.fecha), 'yyyy-MM-dd') === selectedDate));
   const DataTomorrow = agruparTitle(Funcion.filter(item => format(parseISO(item.fecha), 'yyyy-MM-dd') === selectedT));
   const DataTomorrowP = agruparTitle(Funcion.filter(item => format(parseISO(item.fecha), 'yyyy-MM-dd') === selectedP));
-  
+
   useEffect(() => {
     handleButtonPress('Hoy', DataToday);// Llama a la función por defecto
     //Se carga cartelera desde el DRAWER
-    
-  }, []);
+
+  }, [Funcion.length > 0]);
   const handleButtonPress = (day, data) => {
     setSelectedButton(day); // Actualiza el botón seleccionado
     setSelectedData(data); // Actualiza los datos seleccionados desde DRAWER
+
+    if(Funcion.length > 0 && data.length == 0){
+      setMensajeDra("No hay funciones disponibles " + day);
+    }
   };
-  
+
   //Render de peliculas desde el DRAWER
   const renderItem = ({ item }) => (
     <View style={styles.card}>
-      <Image source={item.image} style={styles.image} />
+      <Image source={{uri: `${API_URL}/img/peliculas/${item.image}`}} style={styles.image} />
       <View style={styles.infoContainer}>
-  
-        <Text style={styles.title}>{item.title}</Text>
+
+        <Text style={styles.title}>{item.titulo}</Text>
         <View style={styles.horariosContainer}>
           {item.horarios && item.horarios.length > 0 ? (
             item.horarios.map((horario, index) => (
               <View key={index} style={styles.horarioRow}>
                 {/* Mostrar sucursal */}
                 <Text style={styles.sucursalTitle}>Sucursal {horario.sucursal}</Text>
-  
+
                 {/* Renderizar los detalles de horarios, agrupados por idioma en la misma línea */}
                 {horario.idiomas.map((idioma, indexIdioma) => (
                   <View key={indexIdioma} style={styles.idiomaContainer}>
                     <Text style={styles.horarioTitle}>{`${idioma.idioma} `}</Text>
                     {idioma.detalles.map((detalle, indexDetalle) => (
-                      <TouchableOpacity key={indexDetalle} style={styles.horarioButton} onPress={() => handleNavigation(item.title,detalle.hora, idioma.idioma, horario.sucursal, detalle.fecha, item.image, item)}>
+                      <TouchableOpacity key={indexDetalle} style={styles.horarioButton} onPress={() => handleNavigation(item.titulo, detalle.hora, idioma.idioma, horario.sucursal, detalle.fecha, item.image, item)}>
                         <Text style={styles.horarioText}>{`${detalle.hora} `}</Text>
                       </TouchableOpacity>
                     ))}
@@ -173,7 +198,7 @@ export default function Cartelera() {
               </View>
             ))
           ) : (
-            <Text>No hay horarios disponibles.</Text>
+            <Text style={styles.titleError}>No hay horarios disponibles.</Text>
           )}
         </View>
       </View>
@@ -184,115 +209,119 @@ export default function Cartelera() {
   const renderItemInicio = ({ item }) => (
     <View style={styles.container}>
       <View style={styles.rowContainer}>
-      <View style={styles.card}>
-      <Image source={item.image} style={styles.image} />
-      <View style={styles.infoContainer}>
-  
-        <Text style={styles.title}>{item.title}</Text>
-        <View style={styles.horariosContainer}>
-          {item.horarios && item.horarios.length > 0 ? (
-            item.horarios.map((horario, index) => (
-              <View key={index} style={styles.horarioRow}>
-                {/* Mostrar sucursal */}
-                <Text style={styles.sucursalTitle}>Sucursal {horario.sucursal}</Text>
-  
-                {/* Renderizar los detalles de horarios, agrupados por idioma en la misma línea */}
-                {horario.idiomas.map((idioma, indexIdioma) => (
-                  <View key={indexIdioma} style={styles.idiomaContainer}>
-                    <Text style={styles.horarioTitle}>{`${idioma.idioma} `}</Text>
-                    {idioma.detalles.map((detalle, indexDetalle) => (
-                      <TouchableOpacity key={indexDetalle} style={styles.horarioButton} onPress={() => handleNavigation(item.title,detalle.hora, idioma.idioma, horario.sucursal, detalle.fecha, item.image,item)}>
-                        <Text style={styles.horarioText}>{`${detalle.hora} `}</Text>
-                      </TouchableOpacity>
+        <View style={styles.card}>
+          <Image source={{uri: `${API_URL}/img/peliculas/${item.image}`}} style={styles.image} />
+          <View style={styles.infoContainer}>
+
+            <Text style={styles.title}>{item.titulo}</Text>
+            <View style={styles.horariosContainer}>
+              {item.horarios && item.horarios.length > 0 ? (
+                item.horarios.map((horario, index) => (
+                  <View key={index} style={styles.horarioRow}>
+                    {/* Mostrar sucursal */}
+                    <Text style={styles.sucursalTitle}>Sucursal {horario.sucursal}</Text>
+
+                    {/* Renderizar los detalles de horarios, agrupados por idioma en la misma línea */}
+                    {horario.idiomas.map((idioma, indexIdioma) => (
+                      <View key={indexIdioma} style={styles.idiomaContainer}>
+                        <Text style={styles.horarioTitle}>{`${idioma.idioma} `}</Text>
+                        {idioma.detalles.map((detalle, indexDetalle) => (
+                          <TouchableOpacity key={indexDetalle} style={styles.horarioButton} onPress={() => handleNavigation(item.titulo, detalle.hora, idioma.idioma, horario.sucursal, detalle.fecha, item.image, item)}>
+                            <Text style={styles.horarioText}>{`${detalle.hora} `}</Text>
+                          </TouchableOpacity>
+                        ))}
+                      </View>
                     ))}
                   </View>
-                ))}
-              </View>
-            ))
-          ) : (
-            <Text>No hay horarios disponibles.</Text>
-          )}
+                ))
+              ) : (
+                <Text style={styles.titleError}>No hay horarios disponibles.</Text>
+              )}
+            </View>
+          </View>
         </View>
-      </View>
-    </View>
       </View>
     </View>
   );
 
-//Flatlist peliculas desde INICIO
+  //Flatlist peliculas desde INICIO
   const FlatListInicio = ({ Movie }) => {
     return (
       <FlatList
         data={Movie}
         renderItem={renderItemInicio}
-        keyExtractor={(item) => item.title}
-        ListEmptyComponent={<Text style={styles.titleError}>No hay horarios disponibles</Text>}
+        keyExtractor={(item) => item.titulo}
+        ListEmptyComponent={<Text style={styles.titleError}>{Funcion.length > 0 ? "No hay funciones disponibles" : "Cargando ..."}</Text>}
         scrollEnabled={false}
       />
     );
   };
 
   return (
-//si miVariable es diferente de 2, se ingresa a la vista desde el drawer, caso contrario se ha seleccionado una peli en especifico desde el inicio
-    
+    //si miVariable es diferente de 2, se ingresa a la vista desde el drawer, caso contrario se ha seleccionado una peli en especifico desde el inicio
+
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-            {miVariable !== 2 ? (<View style={styles.container}>
-              {/*Vista desde DRAWER*/}
-              <View style={styles.rowContainer}>
-              <TouchableOpacity onPress={() => handleButtonPress('Hoy', DataToday)} style={[styles.button, selectedButton === 'Hoy' && styles.selectedButton]}>
+      {miVariable !== 2 ? (
+        <View style={styles.container}>
+          {/*Vista desde DRAWER*/}
+          <View style={styles.rowContainer}>
+            <TouchableOpacity onPress={() => handleButtonPress('Hoy', DataToday)} style={[styles.button, selectedButton === 'Hoy' && styles.selectedButton]}>
               <Text style={styles.dayText}>Hoy</Text>
-              </TouchableOpacity>
+            </TouchableOpacity>
 
-              <TouchableOpacity onPress={() => handleButtonPress('Mañana', DataTomorrow)} style={[styles.button, selectedButton === 'Mañana' && styles.selectedButton]}>
+            <TouchableOpacity onPress={() => handleButtonPress('Mañana', DataTomorrow)} style={[styles.button, selectedButton === 'Mañana' && styles.selectedButton]}>
               <Text style={styles.dayText}>Mañana</Text>
-              </TouchableOpacity>
+            </TouchableOpacity>
 
-              <TouchableOpacity  onPress={() => handleButtonPress('Pasado', DataTomorrowP)} style={[styles.button, selectedButton === 'Pasado' && styles.selectedButton]}>
+            <TouchableOpacity onPress={() => handleButtonPress('Pasado', DataTomorrowP)} style={[styles.button, selectedButton === 'Pasado' && styles.selectedButton]}>
               <Text style={styles.dayText}>Pasado</Text>
-              </TouchableOpacity>
-              </View>
-
-              {/*Flatlist desde DRAWER*/}
-              {selectedData.length > 0 && (
-                <FlatList
-                  data={selectedData}
-                  renderItem={renderItem}
-                  keyExtractor={(item) => item.title}
-                />
-              )}
-
-            </View>
-            ) : 
-            ( 
-              //vista principal desde el INICIO
-              <ScrollView>
-              <Text style={styles.sucursalTitle}>Hoy</Text>
-              <View style={styles.cardMovie}>
-             <FlatListInicio Movie={MovieToday}/>
-              </View>
-              <Text style={styles.sucursalTitle}>Mañana</Text>
-              <View style={styles.cardMovie}>
-              <FlatListInicio Movie={MovieTomorrow}/>
-              </View>
-              <Text style={styles.daytitle}>Pasado</Text>
-              <FlatListInicio Movie={MovieTomorrowP}/>
-            </ScrollView>
-           
-            )}
+            </TouchableOpacity>
           </View>
-);
+
+          {/*Flatlist desde DRAWER*/}
+          {selectedData.length > 0 ? (
+            <FlatList
+              data={selectedData}
+              renderItem={renderItem}
+              keyExtractor={(item) => item.titulo}
+            />
+          ): (
+            <Text style={styles.titleError}>{mensajeDra}</Text>
+          )}
+
+        </View>
+      ) 
+      :
+        (
+          //vista principal desde el INICIO
+          <ScrollView>
+            <Text style={styles.sucursalTitle}>Hoy</Text>
+            <View style={styles.cardMovie}>
+              <FlatListInicio Movie={MovieToday} />
+            </View>
+            <Text style={styles.sucursalTitle}>Mañana</Text>
+            <View style={styles.cardMovie}>
+              <FlatListInicio Movie={MovieTomorrow} />
+            </View>
+            <Text style={styles.daytitle}>Pasado</Text>
+            <FlatListInicio Movie={MovieTomorrowP} />
+          </ScrollView>
+
+        )}
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
-  containerMovie:{
+  containerMovie: {
     flexDirection: 'row', // Alinea el texto en fila
     justifyContent: 'space-around', // Espaciado entre los botones
     alignItems: 'center', // Centra verticalmente
     marginVertical: 10, // Esp
   },
 
-  titleError:{
-    margin:10,
+  titleError: {
+    margin: 10,
     fontSize: 20,
   },
 
@@ -301,26 +330,26 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#b00',
     marginVertical: 10,
-    
+
   },
   daytitle: {
     fontSize: 20,
     fontWeight: 'bold',
     color: '#b00',
     marginVertical: 10,
-    paddingTop:20,
+    paddingTop: 20,
   },
   card: {
     flexDirection: 'row',
     backgroundColor: '#fff',
     borderRadius: 8,
     marginBottom: 20,
-   
+
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.8,
     shadowRadius: 2,
-    elevation:10,
+    elevation: 10,
   },
   cardMovie: {
     flexDirection: 'row',
@@ -353,7 +382,7 @@ const styles = StyleSheet.create({
   horariosContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    marginRight:50,
+    marginRight: 50,
   },
   horarioTitle: {
     fontSize: 14,
@@ -372,7 +401,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#333',
   },
-  
+
   button: {
     backgroundColor: '#b30000', // Color rojo claro similar para los botones
     paddingHorizontal: 40,
@@ -383,7 +412,7 @@ const styles = StyleSheet.create({
     shadowRadius: 50, // Radio más pequeño para una sombra más definida
     shadowOffset: { width: 0, height: 50 }, // Offset vertical para más profundidad
     shadowOpacity: 0.8, // Sombra más opaca
-    elevation: 10, 
+    elevation: 10,
   },
   dayText: {
     color: '#fff',

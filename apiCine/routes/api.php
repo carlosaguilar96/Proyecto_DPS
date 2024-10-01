@@ -104,6 +104,8 @@ Route::put('/salas/update/{id}', [SalaController::class, 'update']);
 Route::post('/funciones/crearFuncion', [FuncionController::class, 'store']);
 //Ruta para mostrar todas las funciones
 Route::get('/funciones/index', [FuncionController::class, 'index']);
+// Ruta para mostrar funciones detalladas
+Route::get('/funciones/funcionesDetalladas', [FuncionController::class, 'indexDetallado']);
 //Ruta para mostrar una función
 Route::get('/funciones/show/{id}', [FuncionController::class, 'show']);
 //Rutas para reactivar y eliminar funciones

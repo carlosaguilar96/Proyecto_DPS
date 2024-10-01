@@ -34,7 +34,7 @@ const Inicio = () => {
 
   const HandleEffect = (item) => {
     setMiVariable(2); // Cambia el valor de miVariable al hacer clic en la card
-    navigation.navigate('Cartelera', { title: item.title });
+    navigation.navigate('Cartelera', { title: item.nombre });
   }
 
   const obtenerCartelera = async () => {
