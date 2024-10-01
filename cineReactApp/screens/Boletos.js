@@ -72,7 +72,7 @@ import React, { useState, useContext, useEffect} from 'react';
               </View>
     
               <View style={styles.ticketRow}>
-              <Text style={styles.subtituloT}>Adulto general:</Text>
+              <Text style={styles.subtituloT}>Adulto general: </Text>
                 <View style={styles.counter}>
                   <TouchableOpacity
                     style={styles.counterButton}

@@ -483,8 +483,10 @@ const styles = StyleSheet.create({
     color: '#8B0000'
   },
   footerText:{
-    fontSize: 17,
+    fontSize: 12,
     padding: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 
