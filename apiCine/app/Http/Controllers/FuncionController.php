@@ -8,6 +8,8 @@ use App\Models\Funcion;
 use App\Models\Pelicula;
 use App\Models\Sucursal;
 use App\Models\Sala;
+use App\Models\Compra;
+use App\Models\Asiento;
 use Exception;
 
 class FuncionController extends Controller
@@ -94,6 +96,37 @@ class FuncionController extends Controller
 
         $data = [
             'funciones' => $funciones,
+            'status' => 200
+        ];
+        return response()->json($data, 200);
+    }
+
+    public function devolverAsientos($id)
+    {
+
+        $compras =  Compra::all()->where('codFuncion', $id);
+
+        $funcion = Funcion::find($id);
+        if (!$funcion) {
+            $data = [
+                'message' => 'Función no encontrada',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        }
+        
+        $asientos = [];
+
+        foreach($compras as $compra){
+            $asientosCompra = Asiento::all()->where('codCompra', $compra->codCompra);
+
+            foreach($asientosCompra as $asiento){
+                $asientos[] = $asiento->numButaca;
+            }
+        }
+
+        $data = [
+            'asientos' => $asientos,
             'status' => 200
         ];
         return response()->json($data, 200);

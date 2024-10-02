@@ -106,6 +106,8 @@ Route::post('/funciones/crearFuncion', [FuncionController::class, 'store']);
 Route::get('/funciones/index', [FuncionController::class, 'index']);
 // Ruta para mostrar funciones detalladas
 Route::get('/funciones/funcionesDetalladas', [FuncionController::class, 'indexDetallado']);
+// Ruta para devolver los asientos ocupados de una función.
+Route::get('/funciones/devolverAsientos/{id}', [FuncionController::class, 'devolverAsientos']);
 //Ruta para mostrar una función
 Route::get('/funciones/show/{id}', [FuncionController::class, 'show']);
 //Rutas para reactivar y eliminar funciones
