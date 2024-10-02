@@ -1,6 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Image, TouchableOpacity, Alert, ScrollView,Platform ,KeyboardAvoidingView  } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import Inicio from './Inicio';
 import { TextInputMask } from 'react-native-masked-text';
@@ -14,7 +15,7 @@ import { LogBox } from 'react-native';
 import MenuAdmin from './MenuAdmin';
 import ModificarPelicula from './EditPelicula';
 import AñadirPelicula from './AddPelicula';
-
+import PerfilUser from './PerfilUser';
 
 LogBox.ignoreLogs([
   'Found screens with the same name nested inside one another',
@@ -89,12 +90,19 @@ export default function Login() {
       return;
     }
 
-    //Esta validación ya no se hace en el cliente, la hace el servidor
-    /*const usuarioExistente = Usuarios.find(usuario => usuario.email === email);
-    if (usuarioExistente) {
-      setMssgError('El correo electrónico ya está registrado.');
-      return;
-    }*/
+    const usuarioInfo = { 
+      nombreUsuario: username,
+    };
+    
+    // Almacenar la información del usuario en AsyncStorage
+    try {
+      await AsyncStorage.setItem('usuarioInfo', JSON.stringify(usuarioInfo));
+      console.log('Información del usuario almacenada correctamente');
+    } catch (error) {
+      console.log('Error al almacenar información del usuario:', error);
+    }
+    
+
 
     //Ingreso del cliente a la BD
     try { 
@@ -107,6 +115,8 @@ export default function Login() {
         correoE: email,
       });
       Alert.alert('Registro exitoso', 'Usuario creado correctamente');
+
+      
       setMiVariable2(2);
       //El MiVariable es una variable de Context que al cambiar se mantiene como tal independientemente de lo que haga  o a que ruta vaya en la app
       setIngreso(true);
@@ -158,8 +168,21 @@ export default function Login() {
         } else{
           setMiVariable2(2);
         }
+
+        const usuarioInfo = { 
+          nombreUsuario: username,
+        };
+
+        try {
+          await AsyncStorage.setItem('usuarioInfo', JSON.stringify(usuarioInfo));
+          console.log('Información del usuario almacenada correctamente');
+        } catch (error) {
+          console.log('Error al almacenar información del usuario:', error);
+        }
+
         setIngreso(true);
         setMssgError('');
+      
       } else{
         setMssgError('Credenciales incorrectas.');
         return;
@@ -202,7 +225,7 @@ export default function Login() {
     }*/
   };
 
-  const validarCierre = () => {
+  const validarCierre = async () => {
     setIngreso(false);
     setLogin(true);
     setUsername('');
@@ -213,6 +236,13 @@ export default function Login() {
     setContra('');
     setConfirmContra('');
     setMssgError('');
+
+    try{
+      await AsyncStorage.removeItem('usuarioInfo');
+      console.log('Sesión cerrada y datos de usuario eliminados.');
+    } catch (error) {
+      console.log('Error al cerrar sesión:', error);
+    }
   };
 
 
@@ -265,7 +295,9 @@ export default function Login() {
             }}
           >
             <Drawer.Screen name="Inicio" component={Inicio} />
+            <Drawer.Screen name="Mi Perfil" component={PerfilUser}/>
             <Drawer.Screen name="Cartelera" component={Cartelera} />
+            
             <Drawer.Screen
               name="Boletos"
               component={Boletos}
@@ -480,7 +512,7 @@ const styles = StyleSheet.create({
     height: 145,
     alignItems: 'center',
     justifyContent: 'center',
-    marginLeft: 15,
+    marginLeft: 20,
     marginTop:-20,
   },
   caja: {

@@ -4,7 +4,6 @@ import { useRoute } from '@react-navigation/native';
 import { useFocusEffect } from '@react-navigation/native';
 import { format, addDays, parseISO } from 'date-fns';
 import { AppContext } from '../assets/components/Context';
-import { AppProvider } from '../assets/components/Context';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import { API_URL } from '@env';
