@@ -6,19 +6,18 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const menuOptions = [
   { name: 'Añadir Sala', icon: 'add' },
-  { name: 'AddPelicula', icon: 'add' },
+  { name: 'Añadir Película', icon: 'add' },
   { name: 'Añadir Función', icon: 'add' },
   { name: 'Añadir Administrador', icon: 'add' },
   { name: 'Modificar Sala', icon: 'edit' },
-  { name: 'EditPelicula', icon: 'edit' },
+  { name: 'Modificar Película', icon: 'edit' },
   { name: 'Modificar Función', icon: 'edit' },
   { name: 'Modificar Administrador', icon: 'edit' },
 ];
 
 const MenuButton = ({ item }) => {
-    const navigation = useNavigation();
   return (
-    <TouchableOpacity style={styles.button} onPress={() => navigation.navigate(item.name)}>
+    <TouchableOpacity style={styles.button}>
       <Icon name={item.icon} size={40} color="#fff" />
       <Text style={styles.buttonText}>{item.name}</Text>
     </TouchableOpacity>
@@ -52,10 +51,9 @@ function AddSalaScreen() {
 }
 
 function AddPeliculaScreen() {
-const navigation = useNavigation();
   return (
     <View style={styles.screenContainer}>
-      <TouchableOpacity onPress={()=>navigation.navigate('AddPelicula')}>
+      <TouchableOpacity>
       <Text style={styles.text}>Añadir Película</Text>
       </TouchableOpacity>
     </View>
