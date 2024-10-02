@@ -204,25 +204,7 @@ export default function Login() {
         return;
       }
     }
-    /*const usuario = Usuarios.find(usuario => usuario.email === email && usuario.contra === contra);
-    if (!validarEmail(email)) {
-      setMssgError('El correo electrónico ingresado no es válido.');
-      return;
-    }
-    if (usuario) {
-
-      if (usuario.rol === "admin") {
-      setMiVariable2(3);    
-    }
-    else{
-      setMiVariable2(2);    
-    }
-
-      setIngreso(true);
-      setMssgError(''); 
-    } else {
-      setMssgError('Credenciales incorrectas.');
-    }*/
+    
   };
 
   const validarCierre = async () => {
