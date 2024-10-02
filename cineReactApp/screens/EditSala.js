@@ -12,9 +12,7 @@ const ModificarSala = () => {
 
   return (
     <View style={estilos.contenedor}>
-      <View style={estilos.cabecera}>
-        <Text style={estilos.textoCabecera}>Modificar Sala</Text>
-      </View>
+      
       <View style={estilos.tarjeta}>
         <View style={estilos.detallesSala}>
           <Text style={estilos.tituloSucursal}>{sala.sucursal}</Text>

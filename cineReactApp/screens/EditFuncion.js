@@ -17,9 +17,7 @@ const ModificarFuncion = () => {
 
   return (
     <View style={estilos.contenedor}>
-      <View style={estilos.cabecera}>
-        <Text style={estilos.textoCabecera}>Modificar Función</Text>
-      </View>
+      
       <View style={estilos.tarjeta}>
         <View style={estilos.detallesFuncion}>
           <Text style={estilos.tituloSucursal}>{funcion.sucursal}</Text>

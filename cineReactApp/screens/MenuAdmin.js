@@ -4,123 +4,63 @@ import { useNavigation } from '@react-navigation/native';
 import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
+
 const menuOptions = [
   { name: 'Añadir Sala', icon: 'add' },
-  { name: 'Añadir Película', icon: 'add' },
-  { name: 'Añadir Función', icon: 'add' },
+  { name: 'Añadir Pelicula', icon: 'add' },
+  { name: 'Añadir Funcion', icon: 'add' },
   { name: 'Añadir Administrador', icon: 'add' },
-  { name: 'Modificar Sala', icon: 'edit' },
+  /*{ name: 'Modificar Sala', icon: 'edit' },
   { name: 'Modificar Película', icon: 'edit' },
   { name: 'Modificar Función', icon: 'edit' },
-  { name: 'Modificar Administrador', icon: 'edit' },
+  { name: 'Modificar Administrador', icon: 'edit' },*/
 ];
-
-const MenuButton = ({ item }) => {
-  return (
-    <TouchableOpacity style={styles.button}>
-      <Icon name={item.icon} size={40} color="#fff" />
-      <Text style={styles.buttonText}>{item.name}</Text>
-    </TouchableOpacity>
-  );
-};
-
-// Pantalla principal con los botones
-function MainScreen() {
-  return (
-    <View style={styles.container}>
-      <FlatList
-        data={menuOptions}
-        renderItem={({ item }) => <MenuButton item={item} />}
-        keyExtractor={(item) => item.name}
-        numColumns={2}
-        columnWrapperStyle={styles.row}
-        contentContainerStyle={styles.listContainer}
-      />
-    </View>
-  );
-}
-
-// Pantallas de añadir
-function AddSalaScreen() {
-  return (
-    <View style={styles.screenContainer}>
-      
-      <Text style={styles.text}>Añadir Sala</Text>
-    </View>
-  );
-}
-
-function AddPeliculaScreen() {
-  return (
-    <View style={styles.screenContainer}>
-      <TouchableOpacity>
-      <Text style={styles.text}>Añadir Película</Text>
-      </TouchableOpacity>
-    </View>
-  );
-}
-
-function AddFuncionScreen() {
-  return (
-    <View style={styles.screenContainer}>
-      <TouchableOpacity>
-      <Text style={styles.text}>Añadir Función</Text>
-      </TouchableOpacity>
-    </View>
-  );
-}
-
-function AddAdministradorScreen() {
-  return (
-    <View style={styles.screenContainer}>
-      <Text style={styles.text}>Añadir Administrador</Text>
-    </View>
-  );
-}
-
-// Pantallas de modificar
-function ModifySalaScreen() {
-  return (
-    <View style={styles.screenContainer}>
-      <Text style={styles.text}>Modificar Sala</Text>
-    </View>
-  );
-}
-
-function ModifyPeliculaScreen() {
-  const navigation = useNavigation();
-
-  return (
-    <View style={styles.screenContainer}>
-      <TouchableOpacity onPress={()=>navigation.navigate('EditPelicula')}>
-      <Text style={styles.text}>Modificar Película</Text>
-      </TouchableOpacity>
-    </View>
-  );
-}
-
-function ModifyFuncionScreen() {
-  return (
-    <View style={styles.screenContainer}>
-      <Text style={styles.text}>Modificar Función</Text>
-    </View>
-  );
-}
-
-function ModifyAdministradorScreen() {
-  return (
-    <View style={styles.screenContainer}>
-      <Text style={styles.text}>Modificar Administrador</Text>
-    </View>
-  );
-}
-
-const Drawer = createDrawerNavigator();
 
 export default function MenuAdmin() {
 
+  const navigation = useNavigation();
+  const MenuButton = ({ item }) => {
+    return (
+      <TouchableOpacity style={styles.button} onPress={() => handleOnPress(item.name)}>
+        <Icon name={item.icon} size={40} color="#fff" />
+        <Text style={styles.buttonText}>{item.name}</Text>
+      </TouchableOpacity>
+    );
+  };
+  
+  const handleOnPress = (name) =>{
+    if(name == "Añadir Sala"){
+      navigation.navigate('Añadir Sala');
+    }
+    if(name == "Añadir Pelicula"){
+      navigation.navigate('Añadir Pelicula');
+    }
+    if(name == "Añadir Funcion"){
+      navigation.navigate('Añadir Funcion');
+    }
+    if(name == "Añadir Administrador"){
+      navigation.navigate('Añadir Administrador');
+    }
+  }
+
+
+  const MainScreen = () => {
+    return (
+      <View style={styles.container}>
+        <FlatList
+          data={menuOptions}
+          renderItem={({ item }) => <MenuButton item={item} />}
+          keyExtractor={(item) => item.name}
+          numColumns={2}
+          columnWrapperStyle={styles.row}
+          contentContainerStyle={styles.listContainer}
+        />
+      </View>
+    );
+  }
+
   return (
-      <Drawer.Navigator
+     /* <Drawer.Navigator
         initialRouteName="Home"
         drawerContentOptions={{
           activeTintColor: '#fff',
@@ -138,7 +78,7 @@ export default function MenuAdmin() {
             drawerIcon: ({ color }) => (<Icon name="home" size={20} color={color} />),
           }} 
         />
-        {/* Opciones de Añadir */}
+       
         <Drawer.Screen 
           name="Añadir Sala" 
           component={AddSalaScreen} 
@@ -168,7 +108,7 @@ export default function MenuAdmin() {
           }} 
         />
 
-        {/* Opciones de Modificar */}
+    
         <Drawer.Screen 
           name="Modificar Sala" 
           component={ModifySalaScreen} 
@@ -197,7 +137,8 @@ export default function MenuAdmin() {
             drawerIcon: ({ color }) => (<Icon name="edit" size={20} color={color} />)
           }} 
         />
-      </Drawer.Navigator>
+      </Drawer.Navigator>*/
+      <MainScreen/>
   );
 }
 

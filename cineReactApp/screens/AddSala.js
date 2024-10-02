@@ -13,9 +13,7 @@ const AñadirSala = () => {
 
   return (
     <ScrollView style={estilos.contenedor}>
-      <View style={estilos.cabecera}>
-        <Text style={estilos.textoCabecera}>Añadir Sala</Text>
-      </View>
+      
 
       <View style={estilos.formulario}>
         <Text>Sucursal:</Text>

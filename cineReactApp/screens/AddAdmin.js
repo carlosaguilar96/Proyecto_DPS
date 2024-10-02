@@ -15,9 +15,6 @@ const AñadirAdministrador = () => {
 
   return (
     <ScrollView style={estilos.contenedor}>
-      <View style={estilos.cabecera}>
-        <Text style={estilos.textoCabecera}>Añadir Administrador</Text>
-      </View>
 
       <View style={estilos.formulario}>
         <Text>Nombre:</Text>

@@ -5,9 +5,7 @@ import { FontAwesome } from '@expo/vector-icons';
 const ModificarPelicula = () => {
   return (
     <View style={estilos.contenedor}>
-      <View style={estilos.cabecera}>
-        <Text style={estilos.textoCabecera}>Modificar Película</Text>
-      </View>
+      
       <View style={estilos.tarjeta}>
         <Image
           source={{ uri: 'https://via.placeholder.com/100' }} 

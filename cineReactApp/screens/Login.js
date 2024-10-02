@@ -8,6 +8,7 @@ import { TextInputMask } from 'react-native-masked-text';
 import Cartelera from './Cartelera';
 import { AppContext } from '../assets/components/Context';
 import { AppProvider } from '../assets/components/Context';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import Boletos from './Boletos';
 import axios from 'axios';
 import { API_URL } from '@env';
@@ -16,6 +17,13 @@ import MenuAdmin from './MenuAdmin';
 import ModificarPelicula from './EditPelicula';
 import AñadirPelicula from './AddPelicula';
 import PerfilUser from './PerfilUser';
+import ModificarFuncion from './EditFuncion';
+import ModificarSala from './EditSala';
+import ModificarAdministrador from './EditAdmin';
+import AñadirFuncion from './AddFuncion';
+import AñadirSala from './AddSala';
+import AñadirAdministrador from './AddAdmin';
+
 
 LogBox.ignoreLogs([
   'Found screens with the same name nested inside one another',
@@ -141,7 +149,7 @@ export default function Login() {
   };
 
   const EntrarInvitado = () =>{
-    setMiVariable2(1);
+    setMiVariable2(3);
     setIngreso(true);
     setMssgError('');
   }
@@ -273,14 +281,21 @@ export default function Login() {
               headerTintColor: '#fff',
             }}
           >
-            <Drawer.Screen name="Inicio" component={Inicio} />
-            <Drawer.Screen name="Cartelera" component={Cartelera} />
+            <Drawer.Screen name="Inicio" component={Inicio} 
+            options={{
+              drawerIcon: ({ color }) => (<Icon name="home" size={20} color={color} />)
+            }}/>
+            <Drawer.Screen name="Cartelera" component={Cartelera} 
+            options={{
+              drawerIcon: ({ color }) => (<Icon name="movie" size={20} color={color} />)
+            }}/>
             <Drawer.Screen
               name="Inicio sesion"
               component={Login}
               options={{
                 headerShown: false,
                 drawerLockMode: 'locked-closed', // Bloquea el drawer en la pantalla de Login
+                drawerIcon: ({ color }) => (<Icon name="login" size={20} color={color} />)
               }}
             />
           </Drawer.Navigator>
@@ -294,9 +309,19 @@ export default function Login() {
               headerTintColor: '#fff',
             }}
           >
-            <Drawer.Screen name="Inicio" component={Inicio} />
-            <Drawer.Screen name="Mi Perfil" component={PerfilUser}/>
-            <Drawer.Screen name="Cartelera" component={Cartelera} />
+            <Drawer.Screen name="Inicio" component={Inicio} 
+            options={{
+              drawerIcon: ({ color }) => (<Icon name="home" size={20} color={color} />)
+            }}/>
+            <Drawer.Screen name="Mi Perfil" component={PerfilUser}
+            options={{
+              drawerIcon: ({ color }) => (<Icon name="person" size={20} color={color} />)
+            }}
+            />
+            <Drawer.Screen name="Cartelera" component={Cartelera} 
+            options={{
+              drawerIcon: ({ color }) => (<Icon name="movie" size={20} color={color} />)
+            }}/>
             
             <Drawer.Screen
               name="Boletos"
@@ -306,28 +331,70 @@ export default function Login() {
                 headerShown: false,
               }}
             />
-            <Drawer.Screen name="Cerrar Sesión">
+            <Drawer.Screen name="Cerrar Sesión" options={{
+            drawerIcon: ({ color }) => (<Icon name="logout" size={20} color={color} />),
+          }}>
               {() => (
                 <TouchableOpacity>
                   <Text>¿Seguro que deseas cerrar sesión?</Text>
                   <Button title="Cerrar Sesión" onPress={validarCierre} />
                 </TouchableOpacity>
               )}
+              
             </Drawer.Screen>
           </Drawer.Navigator>
         ) : (//DRAWER ADMIN
           <Drawer.Navigator
             initialRouteName="MenuAdmin"
+            
+            screenOptions={{
+              headerStyle: {
+                backgroundColor: '#b30000',
+              },
+              headerTintColor: '#fff',
+            }}
           >
-            <Drawer.Screen name="MenuAdmin" component={MenuAdmin} 
+            <Drawer.Screen name="Menu Admin" component={MenuAdmin} 
             options={{
-              headerShown: false,
-              drawerLockMode: 'locked-closed',
+              drawerIcon: ({ color }) => (<Icon name="home" size={20} color={color} />)
             }}
             />
-            <Drawer.Screen name="AddPelicula" component={AñadirPelicula} />
-            <Drawer.Screen name="EditPelicula" component={ModificarPelicula}/>
-            <Drawer.Screen name="Cerrar Sesión">     
+            <Drawer.Screen name="Añadir Pelicula" component={AñadirPelicula} 
+            options={{
+              drawerIcon: ({ color }) => (<Icon name="add" size={20} color={color} />)
+            }} />
+            <Drawer.Screen name="Añadir Funcion" component={AñadirFuncion} 
+            options={{
+              drawerIcon: ({ color }) => (<Icon name="add" size={20} color={color} />)
+            }} />
+            <Drawer.Screen name="Añadir Sala" component={AñadirSala} 
+            options={{
+              drawerIcon: ({ color }) => (<Icon name="add" size={20} color={color} />)
+            }} />
+            <Drawer.Screen name="Añadir Administrador" component={AñadirAdministrador} 
+            options={{
+              drawerIcon: ({ color }) => (<Icon name="add" size={20} color={color} />)
+            }} />
+            <Drawer.Screen name="Editar Pelicula" component={ModificarPelicula}
+            options={{
+              drawerIcon: ({ color }) => (<Icon name="edit" size={20} color={color} />)
+            }} />
+            <Drawer.Screen name="Editar Administrador"  component={ModificarAdministrador}
+            options={{
+              drawerIcon: ({ color }) => (<Icon name="edit" size={20} color={color} />)
+            }}/>
+            <Drawer.Screen name="Editar Funcion"  component={ModificarFuncion}
+            options={{
+              drawerIcon: ({ color }) => (<Icon name="edit" size={20} color={color} />)
+            }}/>
+            <Drawer.Screen name="Editar Sala"  component={ModificarSala}
+            options={{
+              drawerIcon: ({ color }) => (<Icon name="edit" size={20} color={color} />)
+            }}/>
+            <Drawer.Screen name="Cerrar Sesión" options={{
+            drawerIcon: ({ color }) => (<Icon name="logout" size={20} color={color} />),
+         
+          }}>     
               {() => (
                 <TouchableOpacity>
                   <Text>¿Seguro que deseas cerrar sesión?</Text>

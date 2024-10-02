@@ -15,9 +15,7 @@ const ModificarAdministrador = () => {
 
   return (
     <View style={estilos.contenedor}>
-      <View style={estilos.cabecera}>
-        <Text style={estilos.textoCabecera}>Modificar Administrador</Text>
-      </View>
+      
       <View style={estilos.tarjeta}>
         <Text style={estilos.textoTarjetaCabecera}>Admin 1</Text>
         <View style={estilos.detallesAdministrador}>
