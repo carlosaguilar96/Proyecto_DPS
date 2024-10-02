@@ -149,7 +149,7 @@ export default function Login() {
   };
 
   const EntrarInvitado = () =>{
-    setMiVariable2(3);
+    setMiVariable2(1);
     setIngreso(true);
     setMssgError('');
   }
