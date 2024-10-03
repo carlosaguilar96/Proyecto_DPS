@@ -58,9 +58,9 @@ class CineController extends Controller
     }
 
     //Función para mostrar cine específico
-    public function show($id)
+    public function index()
     {
-        $cine = Cine::find($id);
+        $cine = Cine::all();
         if(!$cine){
             $data = [
                 'message' => 'Cine no encontrado',
@@ -69,7 +69,7 @@ class CineController extends Controller
             return response()->json($data, 404);
         }
         $data = [
-            'cine' => $cine,
+            'cine' => $cine[0],
             'status' => 200
         ];
         return response()->json($data, 200);

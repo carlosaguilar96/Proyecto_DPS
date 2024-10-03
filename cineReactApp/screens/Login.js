@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Image, TouchableOpacity, Alert, ScrollView,Platform ,KeyboardAvoidingView  } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Image, TouchableOpacity, Alert, ScrollView, Platform, KeyboardAvoidingView } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createDrawerNavigator } from '@react-navigation/drawer';
@@ -45,6 +45,22 @@ export default function Login() {
   const [username, setUsername] = useState('');
   const { miVariable2, setMiVariable2 } = useContext(AppContext);
 
+  const [logo, setLogo] = useState("");
+
+  const obtenerLogoCine = async () => {
+
+    try {
+      const response = await axios.get(`${API_URL}/api/cines/index`);
+
+      setLogo(response.data.cine.logo_path);
+    } catch (error) {
+      console.log("Error al traer el logo del cine: " + error);
+    }
+  }
+
+  useEffect(() => {
+    obtenerLogoCine()
+  }, []);
 
   const validarEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -53,19 +69,19 @@ export default function Login() {
 
   const registrarCliente = async () => {
     //Todas estas validaciones son en el lado del cliente
-    if(username == ""){
+    if (username == "") {
       setMssgError("Ingresar un nombre de usuario.");
       return;
     }
-    if(nombre == ""){
+    if (nombre == "") {
       setMssgError("Ingresar un nombre.");
       return;
     }
-    if(apellido == ""){
+    if (apellido == "") {
       setMssgError("Ingresar un apellido.");
       return;
     }
-    if(dui == ""){
+    if (dui == "") {
       setMssgError("Ingresar DUI.");
       return;
     }
@@ -73,7 +89,7 @@ export default function Login() {
       setMssgError('Ingresar DUI válido.');
       return;
     }
-    if(email == ""){
+    if (email == "") {
       setMssgError("Ingresar correo electrónico.");
       return;
     }
@@ -81,7 +97,7 @@ export default function Login() {
       setMssgError('El correo electrónico ingresado no es válido.');
       return;
     }
-    if(contra == ""){
+    if (contra == "") {
       setMssgError("Ingresar contraseña.");
       return;
     }
@@ -89,7 +105,7 @@ export default function Login() {
       setMssgError('La contraseña debe tener al menos 8 caracteres.');
       return;
     }
-    if(confirmContra == ""){
+    if (confirmContra == "") {
       setMssgError("Ingresar confirmación de contraseña.");
       return;
     }
@@ -98,10 +114,10 @@ export default function Login() {
       return;
     }
 
-    const usuarioInfo = { 
+    const usuarioInfo = {
       nombreUsuario: username,
     };
-    
+
     // Almacenar la información del usuario en AsyncStorage
     try {
       await AsyncStorage.setItem('usuarioInfo', JSON.stringify(usuarioInfo));
@@ -109,11 +125,11 @@ export default function Login() {
     } catch (error) {
       console.log('Error al almacenar información del usuario:', error);
     }
-    
+
 
 
     //Ingreso del cliente a la BD
-    try { 
+    try {
       const response = await axios.post(`${API_URL}/api/usuarios/crearCliente`, {
         nombreUsuario: username,
         contrasena: contra,
@@ -124,7 +140,7 @@ export default function Login() {
       });
       Alert.alert('Registro exitoso', 'Usuario creado correctamente');
 
-      
+
       setMiVariable2(2);
       //El MiVariable es una variable de Context que al cambiar se mantiene como tal independientemente de lo que haga  o a que ruta vaya en la app
       setIngreso(true);
@@ -132,7 +148,7 @@ export default function Login() {
     } catch (error) {
       if (error.response) {
         const errores = error.response.data.errors;
-        let mensaje ="";
+        let mensaje = "";
         for (const campo in errores) {
           mensaje += `Error en ${campo}: ${errores[campo].join(', ')}`;
         }
@@ -148,20 +164,20 @@ export default function Login() {
     }
   };
 
-  const EntrarInvitado = () =>{
+  const EntrarInvitado = () => {
     setMiVariable2(1);
     setIngreso(true);
     setMssgError('');
   }
 
- 
+
 
   const iniciarSesion = async () => {
-    if(username == ""){
+    if (username == "") {
       setMssgError("Ingresar un nombre de usuario.");
       return;
     }
-    if(contra == ""){
+    if (contra == "") {
       setMssgError("Ingresar contraseña.");
       return;
     }
@@ -170,14 +186,14 @@ export default function Login() {
         user: username,
         password: contra,
       });
-      if(response.data.usuario){
-        if(response.data.usuario.nivelAcceso == 1){
+      if (response.data.usuario) {
+        if (response.data.usuario.nivelAcceso == 1) {
           setMiVariable2(3);
-        } else{
+        } else {
           setMiVariable2(2);
         }
 
-        const usuarioInfo = { 
+        const usuarioInfo = {
           nombreUsuario: username,
         };
 
@@ -190,15 +206,15 @@ export default function Login() {
 
         setIngreso(true);
         setMssgError('');
-      
-      } else{
+
+      } else {
         setMssgError('Credenciales incorrectas.');
         return;
       }
     } catch (error) {
       if (error.response) {
         const errores = error.response.data.errors;
-        let mensaje ="";
+        let mensaje = "";
         for (const campo in errores) {
           mensaje += `Error en ${campo}: ${errores[campo].join(', ')}`;
         }
@@ -212,7 +228,7 @@ export default function Login() {
         return;
       }
     }
-    
+
   };
 
   const validarCierre = async () => {
@@ -227,7 +243,7 @@ export default function Login() {
     setConfirmContra('');
     setMssgError('');
 
-    try{
+    try {
       await AsyncStorage.removeItem('usuarioInfo');
       console.log('Sesión cerrada y datos de usuario eliminados.');
     } catch (error) {
@@ -263,14 +279,14 @@ export default function Login() {
               headerTintColor: '#fff',
             }}
           >
-            <Drawer.Screen name="Inicio" component={Inicio} 
-            options={{
-              drawerIcon: ({ color }) => (<Icon name="home" size={20} color={color} />)
-            }}/>
-            <Drawer.Screen name="Cartelera" component={Cartelera} 
-            options={{
-              drawerIcon: ({ color }) => (<Icon name="movie" size={20} color={color} />)
-            }}/>
+            <Drawer.Screen name="Inicio" component={Inicio}
+              options={{
+                drawerIcon: ({ color }) => (<Icon name="home" size={20} color={color} />)
+              }} />
+            <Drawer.Screen name="Cartelera" component={Cartelera}
+              options={{
+                drawerIcon: ({ color }) => (<Icon name="movie" size={20} color={color} />)
+              }} />
             <Drawer.Screen
               name="Inicio sesion"
               component={Login}
@@ -291,20 +307,20 @@ export default function Login() {
               headerTintColor: '#fff',
             }}
           >
-            <Drawer.Screen name="Inicio" component={Inicio} 
-            options={{
-              drawerIcon: ({ color }) => (<Icon name="home" size={20} color={color} />)
-            }}/>
+            <Drawer.Screen name="Inicio" component={Inicio}
+              options={{
+                drawerIcon: ({ color }) => (<Icon name="home" size={20} color={color} />)
+              }} />
             <Drawer.Screen name="Mi Perfil" component={PerfilUser}
-            options={{
-              drawerIcon: ({ color }) => (<Icon name="person" size={20} color={color} />)
-            }}
+              options={{
+                drawerIcon: ({ color }) => (<Icon name="person" size={20} color={color} />)
+              }}
             />
-            <Drawer.Screen name="Cartelera" component={Cartelera} 
-            options={{
-              drawerIcon: ({ color }) => (<Icon name="movie" size={20} color={color} />)
-            }}/>
-            
+            <Drawer.Screen name="Cartelera" component={Cartelera}
+              options={{
+                drawerIcon: ({ color }) => (<Icon name="movie" size={20} color={color} />)
+              }} />
+
             <Drawer.Screen
               name="Boletos"
               component={Boletos}
@@ -314,21 +330,21 @@ export default function Login() {
               }}
             />
             <Drawer.Screen name="Cerrar Sesión" options={{
-            drawerIcon: ({ color }) => (<Icon name="logout" size={20} color={color} />),
-          }}>
+              drawerIcon: ({ color }) => (<Icon name="logout" size={20} color={color} />),
+            }}>
               {() => (
                 <TouchableOpacity>
                   <Text>¿Seguro que deseas cerrar sesión?</Text>
                   <Button title="Cerrar Sesión" onPress={validarCierre} />
                 </TouchableOpacity>
               )}
-              
+
             </Drawer.Screen>
           </Drawer.Navigator>
         ) : (//DRAWER ADMIN
           <Drawer.Navigator
             initialRouteName="MenuAdmin"
-            
+
             screenOptions={{
               headerStyle: {
                 backgroundColor: '#b30000',
@@ -336,47 +352,47 @@ export default function Login() {
               headerTintColor: '#fff',
             }}
           >
-            <Drawer.Screen name="Menu Admin" component={MenuAdmin} 
-            options={{
-              drawerIcon: ({ color }) => (<Icon name="home" size={20} color={color} />)
-            }}
+            <Drawer.Screen name="Menu Admin" component={MenuAdmin}
+              options={{
+                drawerIcon: ({ color }) => (<Icon name="home" size={20} color={color} />)
+              }}
             />
-            <Drawer.Screen name="Añadir Pelicula" component={AñadirPelicula} 
-            options={{
-              drawerIcon: ({ color }) => (<Icon name="add" size={20} color={color} />)
-            }} />
-            <Drawer.Screen name="Añadir Funcion" component={AñadirFuncion} 
-            options={{
-              drawerIcon: ({ color }) => (<Icon name="add" size={20} color={color} />)
-            }} />
-            <Drawer.Screen name="Añadir Sala" component={AñadirSala} 
-            options={{
-              drawerIcon: ({ color }) => (<Icon name="add" size={20} color={color} />)
-            }} />
-            <Drawer.Screen name="Añadir Administrador" component={AñadirAdministrador} 
-            options={{
-              drawerIcon: ({ color }) => (<Icon name="add" size={20} color={color} />)
-            }} />
+            <Drawer.Screen name="Añadir Pelicula" component={AñadirPelicula}
+              options={{
+                drawerIcon: ({ color }) => (<Icon name="add" size={20} color={color} />)
+              }} />
+            <Drawer.Screen name="Añadir Funcion" component={AñadirFuncion}
+              options={{
+                drawerIcon: ({ color }) => (<Icon name="add" size={20} color={color} />)
+              }} />
+            <Drawer.Screen name="Añadir Sala" component={AñadirSala}
+              options={{
+                drawerIcon: ({ color }) => (<Icon name="add" size={20} color={color} />)
+              }} />
+            <Drawer.Screen name="Añadir Administrador" component={AñadirAdministrador}
+              options={{
+                drawerIcon: ({ color }) => (<Icon name="add" size={20} color={color} />)
+              }} />
             <Drawer.Screen name="Editar Pelicula" component={ModificarPelicula}
-            options={{
-              drawerIcon: ({ color }) => (<Icon name="edit" size={20} color={color} />)
-            }} />
-            <Drawer.Screen name="Editar Administrador"  component={ModificarAdministrador}
-            options={{
-              drawerIcon: ({ color }) => (<Icon name="edit" size={20} color={color} />)
-            }}/>
-            <Drawer.Screen name="Editar Funcion"  component={ModificarFuncion}
-            options={{
-              drawerIcon: ({ color }) => (<Icon name="edit" size={20} color={color} />)
-            }}/>
-            <Drawer.Screen name="Editar Sala"  component={ModificarSala}
-            options={{
-              drawerIcon: ({ color }) => (<Icon name="edit" size={20} color={color} />)
-            }}/>
+              options={{
+                drawerIcon: ({ color }) => (<Icon name="edit" size={20} color={color} />)
+              }} />
+            <Drawer.Screen name="Editar Administrador" component={ModificarAdministrador}
+              options={{
+                drawerIcon: ({ color }) => (<Icon name="edit" size={20} color={color} />)
+              }} />
+            <Drawer.Screen name="Editar Funcion" component={ModificarFuncion}
+              options={{
+                drawerIcon: ({ color }) => (<Icon name="edit" size={20} color={color} />)
+              }} />
+            <Drawer.Screen name="Editar Sala" component={ModificarSala}
+              options={{
+                drawerIcon: ({ color }) => (<Icon name="edit" size={20} color={color} />)
+              }} />
             <Drawer.Screen name="Cerrar Sesión" options={{
-            drawerIcon: ({ color }) => (<Icon name="logout" size={20} color={color} />),
-         
-          }}>     
+              drawerIcon: ({ color }) => (<Icon name="logout" size={20} color={color} />),
+
+            }}>
               {() => (
                 <TouchableOpacity>
                   <Text>¿Seguro que deseas cerrar sesión?</Text>
@@ -389,7 +405,7 @@ export default function Login() {
       </AppProvider>
     );
   }
-  
+
 
   return (
     <View style={{ flex: 1, backgroundColor: '#8B0000' }}>
@@ -398,10 +414,12 @@ export default function Login() {
         style={{ flex: 1 }}
         keyboardVerticalOffset={Platform.select({ ios: 0, android: 20 })}
       >
-        <ScrollView  contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
           {/* Contenedor para el contenido principal */}
           <View style={styles.mainContent}>
-            <Image source={require('../assets/img/FilmLogo.png')} style={styles.img} />
+            {logo != "" ? (
+                <Image source={{ uri: `${API_URL}/img/${logo}` }} style={styles.img}/>
+            ) : <View />}
             <View style={styles.caja}>
               <Text style={styles.textcaja}>{mssgError ? mssgError : login ? 'LOG IN' : 'Registrarse'}</Text>
               <View style={styles.separator} />
@@ -494,9 +512,9 @@ export default function Login() {
       {/* Footer fijo en la parte inferior */}
       <View style={styles.footerContainer}>
         <View style={styles.textContainer}>
-        <TouchableOpacity>
-        <Text style={styles.invitado}>    ¿Olvidaste tu Contraseña?</Text>
-        </TouchableOpacity> 
+          <TouchableOpacity>
+            <Text style={styles.invitado}>    ¿Olvidaste tu Contraseña?</Text>
+          </TouchableOpacity>
           <Text style={styles.footerText}>© 2024 FilmApp - Todos los derechos reservados</Text>
         </View>
       </View>
@@ -509,14 +527,14 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-  
+
   },
   footerContainer: {
-    backgroundColor: '#E0E0E0', 
+    backgroundColor: '#E0E0E0',
     padding: 20,
     borderTopWidth: 1,
     borderTopColor: '#ccc',
-    alignItems:'center',
+    alignItems: 'center',
     justifyContent: 'center',
   },
   textContainer: {
@@ -544,7 +562,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 10,
     width: 360,
-    
+
   },
   buttonText: {
     color: '#fff',
@@ -556,13 +574,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
-  img:{
-    width: 350,
-    height: 145,
+  img: {
     alignItems: 'center',
     justifyContent: 'center',
-    marginLeft: 20,
-    marginTop:-20,
+    margin:20,
+    width: '80%',
+    height: 200,
   },
   caja: {
     backgroundColor: '#f6f6f6',
@@ -587,16 +604,16 @@ const styles = StyleSheet.create({
     shadowRadius: 1,
     elevation: 1,
   },
-  textcaja:{
+  textcaja: {
     fontSize: 22,
     fontWeight: 'bold',
   },
-  invitado:{
+  invitado: {
     fontSize: 20,
     fontWeight: 'bold',
     color: '#8B0000'
   },
-  footerText:{
+  footerText: {
     fontSize: 12,
     padding: 5,
     alignItems: 'center',

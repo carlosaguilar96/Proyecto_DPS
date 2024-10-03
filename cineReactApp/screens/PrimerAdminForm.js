@@ -38,6 +38,7 @@ const PrimerAdminForm = ({ retornarLogin }) => {
     };
 
 
+    // Validación de la información del admin y registro en la BD
     const registrarAdmin = async () => {
         //Todas estas validaciones son en el lado del cliente
         Keyboard.dismiss();
@@ -148,7 +149,7 @@ const PrimerAdminForm = ({ retornarLogin }) => {
 
     }
 
-    // Creación del cine
+    // Validación de la información del cine
     const validarCine = () => {
         Keyboard.dismiss();
         if (nombreCine == "") {
@@ -177,6 +178,7 @@ const PrimerAdminForm = ({ retornarLogin }) => {
 
     }
 
+    // Registro del cine
     const registrarCine = async () => {
         const formData = new FormData(); // Objeto que se enviará a la API que incluirá el logo
 
@@ -231,6 +233,7 @@ const PrimerAdminForm = ({ retornarLogin }) => {
         setMssgError('');
     }
 
+    // Validación de la información de la sucursal
     const guardarSucursal = () => {
         Keyboard.dismiss();
         if (nombreSucursal == "") {
@@ -274,6 +277,7 @@ const PrimerAdminForm = ({ retornarLogin }) => {
 
     }
 
+    // Registro de la sucursal en la BD
     const registrarSucursal = async (sucursal) => {
 
         try {
@@ -308,6 +312,7 @@ const PrimerAdminForm = ({ retornarLogin }) => {
         };
     }
 
+    // Render Item de la sucursal
     const renderSucursal = ({ item }) => {
         return (
             <View style={{ marginTop: 10 }}>
@@ -331,7 +336,7 @@ const PrimerAdminForm = ({ retornarLogin }) => {
                 <Text style={styles.textCaja}>{titulo}</Text>
                 <Text style={styles.error}>{mssgError}</Text>
                 {
-                    etapa == 1 ? (
+                    etapa == 1 ? ( // Creación del ADMIN
                         <View>
                             <TextInput
                                 placeholder="Correo electrónico"
@@ -389,7 +394,7 @@ const PrimerAdminForm = ({ retornarLogin }) => {
                                 <Text style={styles.buttonText}>Registrarse</Text>
                             </TouchableOpacity>
                         </View>
-                    ) : etapa == 2 ? (
+                    ) : etapa == 2 ? ( // Creación del Cine
                         <View>
                             <TextInput
                                 placeholder="Nombre del cine"
@@ -423,7 +428,7 @@ const PrimerAdminForm = ({ retornarLogin }) => {
                                 <Text style={styles.buttonText}>Crear Cine</Text>
                             </TouchableOpacity>
                         </View>
-                    ) : (
+                    ) : ( // Creación de las sucursales
                         <View>
                             <TextInput
                                 placeholder="Nombre de la sucursal"
