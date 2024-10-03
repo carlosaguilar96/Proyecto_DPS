@@ -25,7 +25,7 @@ export default function App() {
       const response = await axios.get(`${API_URL}/api/usuarios/indexAdmins`);
 
       console.log(response.data.usuarios.length);
-      if (response.data.usuarios.length == 1) // CAMBIAR LUEGO POR == 0
+      if (response.data.usuarios.length == 0) 
         setHayAdmin(false);
 
     } catch (error) {
