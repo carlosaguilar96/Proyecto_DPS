@@ -93,6 +93,7 @@ export default function Cartelera() {
   const route = useRoute();
   const { title } = route?.params || {};
   const { miVariable, setMiVariable } = useContext(AppContext); // Obtén la variable del contexto
+  const { miVariable2, setMiVariable2 } = useContext(AppContext); 
   const [Funcion, setFunciones] = useState([]);
   const [mensajeDra, setMensajeDra] = useState("Cargando ...");
   const [modalVisible, setModalVisible] = useState(false);
@@ -139,7 +140,7 @@ export default function Cartelera() {
   const handleModalClose = () => {
     // Cerrar el modal y redirigir a 'Inicio Sesion'
     setModalVisible(false);
-    navigation.navigate('Inicio Sesion');
+    navigation.navigate('Inicio sesion');
   };
   //Esto toma la fecha del dia actual, el dia de mañana y pasado y lo pone en formato yyyy-MM-dd
   const today = new Date();
