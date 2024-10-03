@@ -47,7 +47,7 @@ const [id, setid] = useState(0);
     }
 
   const CambiarEstado = () => {
-    // Cerrar el modal y cambiar estado
+      //AQUI DEBERIA CAMBIARSE EL ESTADO, en id esta el id de pelicula
     setModalVisible(false);
     console.log(id);
   };
@@ -69,22 +69,27 @@ const [id, setid] = useState(0);
       <ScrollView>
       <FlatListMovie Movie={movieData} />
               {/* Modal */}
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={() => setModalVisible(false)}
-        >
-          <View style={estilos.modalContainer}>
-            <View style={estilos.modalContent}>
-              <Text style={estilos.modalText}>Seguro que deseas cambiar el estado de la pelicula?</Text>
-              <View style={estilos.buttonContainer}>
-                <Button title="Cancelar" onPress={() => setModalVisible(false)} />
-                <Button title="Aceptar" onPress={() => CambiarEstado()} />
-              </View>
-            </View>
+              <Modal
+      animationType="slide"
+      transparent={true}
+      visible={modalVisible}
+      onRequestClose={() => setModalVisible(false)}
+    >
+      <View style={estilos.modalContainer}>
+        <View style={estilos.modalContent}>
+          <Text style={estilos.modalText}>¿Seguro que deseas cambiar el estado de la película?</Text>
+          
+          <View style={estilos.buttonContainer}>
+            <TouchableOpacity style={estilos.botonCancelar} onPress={() => setModalVisible(false)}>
+              <Text style={estilos.botonTexto}>Cancelar</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={estilos.botonAceptar} onPress={() => CambiarEstado()}>
+              <Text style={estilos.botonTexto}>Aceptar</Text>
+            </TouchableOpacity>
           </View>
-        </Modal>
+        </View>
+      </View>
+    </Modal>
 
       </ScrollView>
 
@@ -150,21 +155,37 @@ const estilos = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)', // Fondo semitransparente
   },
   modalContent: {
-    width: 300,
-    padding: 20,
+    width: '80%',
     backgroundColor: 'white',
+    padding: 20,
     borderRadius: 10,
-    alignItems: 'center',
   },
   modalText: {
-    marginBottom: 15,
+    fontSize: 18,
+    marginBottom: 20,
     textAlign: 'center',
   },
   buttonContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    width: '100%',
- 
+    justifyContent: 'space-between',
+  },
+  botonAceptar: {
+    backgroundColor: '#4CAF50',
+    padding: 10,
+    borderRadius: 5,
+    flex: 1,
+    marginLeft: 5,
+  },
+  botonCancelar: {
+    backgroundColor: '#f44336',
+    padding: 10,
+    borderRadius: 5,
+    flex: 1,
+    marginRight: 5,
+  },
+  botonTexto: {
+    color: 'white',
+    textAlign: 'center',
   },
 });
 

@@ -52,7 +52,8 @@ const ModificarSala = () => {
   
   
   const CambiarEstado = () => {
-  // Cerrar el modal y cambiar estado con lo de la API
+    //AQUI DEBERIA CAMBIARSE EL ESTADO, en id esta el id de sala
+
   setModalVisible(false);
   console.log(id);
   };
@@ -100,7 +101,6 @@ const ModificarSala = () => {
       <FlatList
         data={Salas}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id} 
         scrollEnabled={false} 
       />
     );
@@ -110,23 +110,35 @@ const ModificarSala = () => {
   return (
     <ScrollView>
     <FlatListSala Salas={salas} />
-     {/* Modal */}
-     <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={() => setModalVisible(false)}
-        >
-          <View style={estilos.modalContainer}>
-            <View style={estilos.modalContent}>
-              <Text style={estilos.modalText}>Seguro que deseas cambiar el estado de la pelicula?</Text>
-              <View style={estilos.buttonContainer}>
-                <Button title="Cancelar" onPress={() => setModalVisible(false)} />
-                <Button title="Aceptar" onPress={() => CambiarEstado()} />
-              </View>
+          <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={estilos.modalContainer}>
+          <View style={estilos.modalContent}>
+            <Text style={estilos.modalText}>
+              Seguro que deseas cambiar el estado de la película?
+            </Text>
+            <View style={estilos.buttonContainer}>
+              <TouchableOpacity
+                style={[estilos.botonModal, estilos.botonCancelar]}
+                onPress={() => setModalVisible(false)}
+              >
+                <Text style={estilos.textoBotonModal}>Cancelar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[estilos.botonModal, estilos.botonAceptar]}
+                onPress={() => CambiarEstado()}
+              >
+                <Text style={estilos.textoBotonModal}>Aceptar</Text>
+              </TouchableOpacity>
             </View>
           </View>
-        </Modal>
+        </View>
+      </Modal>
+
     </ScrollView>
   );
 
@@ -189,25 +201,50 @@ const estilos = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Fondo semitransparente
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Fondo oscuro semitransparente
   },
   modalContent: {
-    width: 300,
+    width: '80%',
+    backgroundColor: '#fff',
     padding: 20,
-    backgroundColor: 'white',
     borderRadius: 10,
-    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
+    elevation: 5,
   },
   modalText: {
-    marginBottom: 15,
+    fontSize: 18,
     textAlign: 'center',
+    marginBottom: 20,
   },
   buttonContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    width: '100%',
- 
+    justifyContent: 'space-between',
+    marginTop: 20,
   },
+  botonModal: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flex: 1,
+    marginHorizontal: 10,
+  },
+  botonCancelar: {
+    backgroundColor: '#d9534f', // Rojo para cancelar
+  },
+  botonAceptar: {
+    backgroundColor: '#5cb85c', // Verde para aceptar
+  },
+  textoBotonModal: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  
 });
 
 export default ModificarSala;
