@@ -6,7 +6,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 
 const ModificarFuncion = () => {
   const [showModal, setShowModal] = useState(false);
-  const [showModalDeny, setShowModalDeny] = useState(false);
+  const [ShowModalEstado, setShowModalEstado] = useState(false);
   const [id, setid] = useState(0);
   const [date, setDate] = useState(new Date());
   const [formattedDate, setFormattedDate] = useState('');
@@ -56,9 +56,14 @@ const ModificarFuncion = () => {
     setShowModal(true); // Mostrar el modal
   };
 
-  const CambiarEstado = (CodFuncion) => {
+  const handleEstado = (CodFuncion) => {
     setid(CodFuncion); // Establecer el item seleccionado
-    setShowModalDeny(true); // Mostrar el modal
+    setShowModalEstado(true); // Mostrar el modal
+  };
+
+  const CambiarEstado = () => {
+    setShowModalEstado(false); // Mostrar el modal
+    console.log(id);
   };
 
   const renderItem = ({ item }) => {
@@ -80,11 +85,11 @@ const ModificarFuncion = () => {
                 <FontAwesome name="edit" size={30} color="white" />
               </TouchableOpacity>
               {item.estadoE === 0 ? (
-              <TouchableOpacity style={estilos.botonIcono} onPress={() => CambiarEstado(item.id)}>
+              <TouchableOpacity style={estilos.botonIcono} onPress={() => handleEstado(item.id)}>
               <FontAwesome name="ban" size={30} color="white" />
             </TouchableOpacity>
             ):(
-              <TouchableOpacity style={estilos.botonIcono} onPress={() => CambiarEstado(item.id)}>
+              <TouchableOpacity style={estilos.botonIcono} onPress={() => handleEstado(item.id)}>
               <FontAwesome name="check" size={30} color="white" />
             </TouchableOpacity>
             )}
@@ -95,13 +100,7 @@ const ModificarFuncion = () => {
     );
   };
 
-  const handleModalClose = () => {
-    // Cerrar el modal y cambiar el estado 
-    setShowModalDeny(false);
-    console.log(id);
-  };
-
-  const handleModalCloseEdit = () => {
+  const editFuncion = () => {
     // Cerrar el modal y cambiar estado
     setShowModal(false);
     console.log(formattedDate,formattedTime, id);
@@ -160,7 +159,7 @@ const ModificarFuncion = () => {
 
             {/* Botones para aceptar o cancelar */}
             <View style={estilos.modalButtons}>
-              <Button title="Guardar" onPress={() => handleModalCloseEdit()} />
+              <Button title="Guardar" onPress={() => editFuncion()} />
               <Button title="Cancelar" onPress={() => setShowModal(false)} />
             </View>
           </View>
@@ -170,15 +169,15 @@ const ModificarFuncion = () => {
        <Modal
           animationType="slide"
           transparent={true}
-          visible={showModalDeny}
-          onRequestClose={() => setShowModalDeny(false)}
+          visible={ShowModalEstado}
+          onRequestClose={() => setShowModalEstado(false)}
         >
           <View style={estilos.modalContainer}>
             <View style={estilos.modalContent}>
               <Text style={estilos.modalText}>Seguro que deseas cambiar el estado de la pelicula?</Text>
               <View style={estilos.buttonContainer}>
-                <Button title="Cancelar" onPress={() => setShowModalDeny(false)} />
-                <Button title="Aceptar" onPress={() => handleModalClose()} />
+                <Button title="Cancelar" onPress={() => setShowModalEstado(false)} />
+                <Button title="Aceptar" onPress={() => CambiarEstado()} />
               </View>
             </View>
           </View>
@@ -240,8 +239,10 @@ const estilos = StyleSheet.create({
     padding: 20,
     borderRadius: 10,
     alignItems: 'center',
+    
   },
   modalTitle: {
+    
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 20,
@@ -251,6 +252,12 @@ const estilos = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     width: '100%',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+    paddingTop:10,
   },
 });
 

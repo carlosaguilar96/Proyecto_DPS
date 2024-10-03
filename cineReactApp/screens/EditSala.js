@@ -100,7 +100,7 @@ const ModificarSala = () => {
       <FlatList
         data={Salas}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id} 
+        keyExtractor={(item) => item.sucursal} 
         scrollEnabled={false} 
       />
     );
