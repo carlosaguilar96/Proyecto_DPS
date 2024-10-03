@@ -91,7 +91,7 @@ export const Funcion = [
       precioTE: 5,
   },
   {
-      id: '7',
+      id: '9',
       title: 'Película 5',
       image: require('../assets/img/film.png'),
       fecha: '2024-10-01',

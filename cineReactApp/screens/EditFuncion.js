@@ -1,45 +1,58 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, FlatList} from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
+import { Funcion } from '../config/movieData';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 const ModificarFuncion = () => {
   // Información de prueba
-  const funcion = {
-    sucursal: 'Sucursal Central',
-    pelicula: 'Película de Prueba',
-    sala: 'Sala 1',
-    fecha: '2024-10-01',
-    horario: '10:00 AM',
-    precioNinos: 5,
-    precioAdultos: 10,
-    precioTerceraEdad: 7,
-  };
-
-  return (
-    <View style={estilos.contenedor}>
+  
+  const renderItem = ({ item }) => {
+    return (
+      <View style={estilos.contenedor}>
       
       <View style={estilos.tarjeta}>
         <View style={estilos.detallesFuncion}>
-          <Text style={estilos.tituloSucursal}>{funcion.sucursal}</Text>
-          <Text style={estilos.textoGrande}>Película: {funcion.pelicula}</Text>
-          <Text style={estilos.textoGrande}>Sala: {funcion.sala}</Text>
-          <Text style={estilos.textoGrande}>Fecha: {funcion.fecha}</Text>
-          <Text style={estilos.textoGrande}>Horario: {funcion.horario}</Text>
-          <Text style={estilos.textoGrande}>Precio Niños: ${funcion.precioNinos}</Text>
-          <Text style={estilos.textoGrande}>Precio Adultos: ${funcion.precioAdultos}</Text>
-          <Text style={estilos.textoGrande}>Precio 3ra Edad: ${funcion.precioTerceraEdad}</Text>
+          <Text style={estilos.tituloSucursal}>{item.sucursal}</Text>
+          <Text style={estilos.textoGrande}>Película: {item.title}</Text>
+          <Text style={estilos.textoGrande}>Sala: {item.sala}</Text>
+          <Text style={estilos.textoGrande}>Fecha: {item.fecha}</Text>
+          <Text style={estilos.textoGrande}>Horario: {item.hora}</Text>
+          <Text style={estilos.textoGrande}>Precio Niños: ${item.precioNino}</Text>
+          <Text style={estilos.textoGrande}>Precio Adultos: ${item.precioAdulto}</Text>
+          <Text style={estilos.textoGrande}>Precio 3ra Edad: ${item.precioTE}</Text>
           <View style={estilos.contenedorBotones}>
             <TouchableOpacity style={estilos.botonIcono} onPress={() => {}}>
               <FontAwesome name="edit" size={30} color="white" />
             </TouchableOpacity>
             <TouchableOpacity style={estilos.botonIcono} onPress={() => {}}>
-              <FontAwesome name="trash" size={30} color="white" />
+              <FontAwesome name="ban" size={30} color="white" />
             </TouchableOpacity>
           </View>
         </View>
       </View>
     </View>
+    ); 
+  }
+
+  const FlatListMovie = ({ Movie }) => {
+    return (
+      <FlatList
+        data={Movie}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.CodFuncion} 
+        scrollEnabled={false} 
+      />
+    );
+  };
+
+ 
+  return (
+    <ScrollView>
+    <FlatListMovie Movie={Funcion} />
+    </ScrollView>
   );
+
 };
 
 const estilos = StyleSheet.create({
@@ -67,7 +80,7 @@ const estilos = StyleSheet.create({
     shadowRadius: 2,
     elevation: 1,
   },
-  detallesFuncion: {
+  detallesitem: {
     justifyContent: 'center',
   },
   tituloSucursal: {
