@@ -55,9 +55,10 @@ class SucursalController extends Controller
     }
 
     //Función para mostar sucursales por cine
-    public function index($id)
+    public function index()
     {
-        $sucursales = Sucursal::where('codCine', $id)->get();;
+
+        $sucursales = Sucursal::all();
         $data = [
             'sucursales' => $sucursales,
             'status' => 200
