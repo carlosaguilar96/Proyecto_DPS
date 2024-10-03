@@ -1,11 +1,11 @@
 import react, { useState } from "react";
-import { View, StyleSheet, Text, TextInput, Alert, Keyboard, FlatList, TouchableOpacity } from "react-native";
+import { View, StyleSheet, Text, TextInput, Alert, Keyboard, FlatList, TouchableOpacity, Image } from "react-native";
 import { TextInputMask } from "react-native-masked-text";
 import * as ImagePicker from 'expo-image-picker';
 import axios from 'axios';
 import { API_URL } from '@env';
 
-const PrimerAdminForm = ({retornarLogin}) => {
+const PrimerAdminForm = ({ retornarLogin }) => {
 
     const [titulo, setTitulo] = useState("Crear Primer Administrador");
     const [etapa, setEtapa] = useState(1);
@@ -40,6 +40,7 @@ const PrimerAdminForm = ({retornarLogin}) => {
 
     const registrarAdmin = async () => {
         //Todas estas validaciones son en el lado del cliente
+        Keyboard.dismiss();
         if (email == "") {
             setMssgError("Ingresar correo electrónico.");
             return;
@@ -148,7 +149,8 @@ const PrimerAdminForm = ({retornarLogin}) => {
     }
 
     // Creación del cine
-    const registrarCine = async () => {
+    const validarCine = () => {
+        Keyboard.dismiss();
         if (nombreCine == "") {
             setMssgError("Ingresar un nombre para el cine.");
             return;
@@ -166,6 +168,16 @@ const PrimerAdminForm = ({retornarLogin}) => {
             return;
         }
 
+        Alert.alert("Mensaje", "¿Estás seguro? El logo del Cine no se podrá cambiar después", [
+            {
+                text: "Sí", onPress: registrarCine
+            },
+            { text: "No" }
+        ])
+
+    }
+
+    const registrarCine = async () => {
         const formData = new FormData(); // Objeto que se enviará a la API que incluirá el logo
 
         formData.append('logo', {
@@ -209,7 +221,6 @@ const PrimerAdminForm = ({retornarLogin}) => {
             }
         }
     }
-
     const limpiarCine = () => {
         setNombreCine('');
         setMision('');
@@ -221,6 +232,7 @@ const PrimerAdminForm = ({retornarLogin}) => {
     }
 
     const guardarSucursal = () => {
+        Keyboard.dismiss();
         if (nombreSucursal == "") {
             setMssgError("Ingresar un nombre para la sucursal.");
             return;
@@ -238,18 +250,28 @@ const PrimerAdminForm = ({retornarLogin}) => {
             return;
         }
 
-        const miSucursal =
-        {
-            nombre: nombreSucursal,
-            ubicacion: ubicacionS,
-            telefono: telefono
-        };
+        Alert.alert("Mensaje", "¿Estás seguro? Las sucursales ya no se podrán eliminar", [
+            {
+                text: "Sí",
+                onPress: () => {
+                    const miSucursal =
+                    {
+                        nombre: nombreSucursal,
+                        ubicacion: ubicacionS,
+                        telefono: telefono
+                    };
 
-        const arreglo = [...sucursales, miSucursal];
+                    const arreglo = [...sucursales, miSucursal];
 
-        setSucursales(arreglo);
-        registrarSucursal(miSucursal);
-        limpiarSucursal();
+                    registrarSucursal(miSucursal);
+                    setSucursales(arreglo);
+                    limpiarSucursal();
+                }
+            },
+            { text: "No" }
+        ])
+
+
     }
 
     const registrarSucursal = async (sucursal) => {
@@ -288,10 +310,9 @@ const PrimerAdminForm = ({retornarLogin}) => {
 
     const renderSucursal = ({ item }) => {
         return (
-            <View>
-                <Text>Nombre: {item.nombre}</Text>
-                <Text>Ubicación: {item.ubicacion}</Text>
-                <Text>Teléfono: {item.telefono}</Text>
+            <View style={{ marginTop: 10 }}>
+                <Text>{item.nombre}: {item.ubicacion}</Text>
+                <View style={styles.separator} /> 
             </View>
         )
     }
@@ -305,162 +326,158 @@ const PrimerAdminForm = ({retornarLogin}) => {
     }
     return (
         <View style={styles.center}>
-            <Text>{titulo}</Text>
-            <Text>{mssgError}</Text>
 
-            {
-                etapa == 1 ? (
-                    <View>
-                        <TextInput
-                            placeholder="Correo electrónico"
-                            value={email}
-                            onChangeText={setEmail}
-                            style={styles.input}
-                            keyboardType="email-address"
-                        />
-                        <TextInput
-                            placeholder="Nombre"
-                            value={nombre}
-                            onChangeText={setNombre}
-                            style={styles.input}
-                        />
-                        <TextInput
-                            placeholder="Apellido"
-                            value={apellido}
-                            onChangeText={setApellido}
-                            style={styles.input}
-                        />
-                        <TextInputMask
-                            type={'custom'}
-                            options={{
-                                mask: '99999999-9',
-                            }}
-                            value={dui}
-                            onChangeText={text => setDui(text)}
-                            style={styles.input}
-                            placeholder="DUI"
-                            keyboardType="numeric"
-                        />
-                        <TextInput
-                            placeholder="Usuario"
-                            value={username}
-                            onChangeText={setUsername}
-                            style={styles.input}
-                            autoCapitalize="none"
-                        />
-                        <TextInput
-                            placeholder="Contraseña"
-                            value={contra}
-                            onChangeText={setContra}
-                            style={styles.input}
-                            secureTextEntry
-                        />
-                        <TextInput
-                            placeholder="Confirmar Contraseña"
-                            value={confirmContra}
-                            onChangeText={setConfirmContra}
-                            style={styles.input}
-                            secureTextEntry
-                        />
+            <View style={styles.caja}>
+                <Text style={styles.textCaja}>{titulo}</Text>
+                <Text style={styles.error}>{mssgError}</Text>
+                {
+                    etapa == 1 ? (
+                        <View>
+                            <TextInput
+                                placeholder="Correo electrónico"
+                                value={email}
+                                onChangeText={setEmail}
+                                style={styles.input}
+                                keyboardType="email-address"
+                            />
+                            <TextInput
+                                placeholder="Nombre"
+                                value={nombre}
+                                onChangeText={setNombre}
+                                style={styles.input}
+                            />
+                            <TextInput
+                                placeholder="Apellido"
+                                value={apellido}
+                                onChangeText={setApellido}
+                                style={styles.input}
+                            />
+                            <TextInputMask
+                                type={'custom'}
+                                options={{
+                                    mask: '99999999-9',
+                                }}
+                                value={dui}
+                                onChangeText={text => setDui(text)}
+                                style={styles.input}
+                                placeholder="DUI"
+                                keyboardType="numeric"
+                            />
+                            <TextInput
+                                placeholder="Usuario"
+                                value={username}
+                                onChangeText={setUsername}
+                                style={styles.input}
+                                autoCapitalize="none"
+                            />
+                            <TextInput
+                                placeholder="Contraseña"
+                                value={contra}
+                                onChangeText={setContra}
+                                style={styles.input}
+                                secureTextEntry
+                            />
+                            <TextInput
+                                placeholder="Confirmar Contraseña"
+                                value={confirmContra}
+                                onChangeText={setConfirmContra}
+                                style={styles.input}
+                                secureTextEntry
+                            />
 
-                        <TouchableOpacity style={styles.button} onPress={registrarAdmin}>
-                            <Text style={styles.buttonText}>Registrate</Text>
-                        </TouchableOpacity>
-                    </View>
-                ) : etapa == 2 ? (
-                    <View>
-                        <TextInput
-                            placeholder="Nombre del cine"
-                            value={nombreCine}
-                            onChangeText={setNombreCine}
-                            style={styles.input}
-                        />
-                        <TextInput
-                            placeholder="Misión"
-                            value={mision}
-                            onChangeText={setMision}
-                            style={styles.input}
-                            multiline={true}
-                            numberOfLines={2}
-                        />
-                        <TextInput
-                            placeholder="Visión"
-                            value={vision}
-                            onChangeText={setVision}
-                            style={styles.input}
-                            multiline={true}
-                            numberOfLines={2}
-                        />
-
-                        <TouchableOpacity onPress={abrirGaleria}>
-                            <Text style={styles.buttonText}>Seleccionar logo</Text>
-                        </TouchableOpacity>
-                        <Text>Archivo seleccionado: {logo ? logo.fileName : 'Ninguno'}</Text>
-                        <TouchableOpacity style={styles.button} onPress={registrarCine}>
-                            <Text style={styles.buttonText}>Crear Cine</Text>
-                        </TouchableOpacity>
-                    </View>
-                ) : (
-                    <View>
-                        <TextInput
-                            placeholder="Nombre de la sucursal"
-                            value={nombreSucursal}
-                            onChangeText={setNombreSucursal}
-                            style={styles.input}
-                        />
-                        <TextInput
-                            placeholder="Ubicación"
-                            value={ubicacionS}
-                            onChangeText={setUbicacionS}
-                            style={styles.input}
-                            multiline={true}
-                            numberOfLines={2}
-                        />
-                        <TextInputMask
-                            type={'custom'}
-                            options={{
-                                mask: '9999-9999',
-                            }}
-                            value={telefono}
-                            onChangeText={text => setTelefono(text)}
-                            style={styles.input}
-                            placeholder="Teléfono"
-                            keyboardType="numeric"
-                        />
-
-                        <TouchableOpacity style={styles.button} onPress={() =>
-                            Alert.alert("Mensaje", "¿Estás seguro? Las sucursales ya no se podrán eliminar", [
-                                {
-                                    text: "Sí",
-                                    onPress: guardarSucursal
-                                },
-                                { text: "No" }
-                            ])
-                        }>
-                            <Text style={styles.buttonText}>Añadir Sucursal</Text>
-                        </TouchableOpacity>
-
-
-                        <FlatList
-                            data={sucursales}
-                            renderItem={renderSucursal}
-                            ListEmptyComponent={<View />}
-                            style={{ flexGrow: 0 }}
-                        />
-
-                        {sucursales.length != 0 ? (
-                            <TouchableOpacity style={styles.button} onPress={() =>
-                                Alert.alert("Mensaje", "Ya no podrás añadir más sucursales, ¿estás seguro?", [
-                                    { text: "Sí", onPress: () => retornarLogin(true) },
-                                    { text: "No" }
-                                ])}>
-                                <Text style={styles.buttonText}>Finalizar</Text>
+                            <TouchableOpacity style={styles.button} onPress={registrarAdmin}>
+                                <Text style={styles.buttonText}>Registrarse</Text>
                             </TouchableOpacity>
-                        ) : (<View />)}
+                        </View>
+                    ) : etapa == 2 ? (
+                        <View>
+                            <TextInput
+                                placeholder="Nombre del cine"
+                                value={nombreCine}
+                                onChangeText={setNombreCine}
+                                style={styles.input}
+                            />
+                            <TextInput
+                                placeholder="Misión"
+                                value={mision}
+                                onChangeText={setMision}
+                                style={styles.input}
+                                multiline={true}
+                                numberOfLines={2}
+                            />
+                            <TextInput
+                                placeholder="Visión"
+                                value={vision}
+                                onChangeText={setVision}
+                                style={styles.input}
+                                multiline={true}
+                                numberOfLines={2}
+                            />
+                            <View style={styles.imagenContainer}>
+                                <TouchableOpacity onPress={abrirGaleria} style={styles.buttonGaleria}>
+                                    <Text style={styles.buttonText}>Seleccionar logo</Text>
+                                </TouchableOpacity>
+                                {logo ? (<Image source={{ uri: logo.uri }} style={styles.logoImagen} />) : (<View />)}
+                            </View>
+                            <TouchableOpacity style={styles.button} onPress={validarCine}>
+                                <Text style={styles.buttonText}>Crear Cine</Text>
+                            </TouchableOpacity>
+                        </View>
+                    ) : (
+                        <View>
+                            <TextInput
+                                placeholder="Nombre de la sucursal"
+                                value={nombreSucursal}
+                                onChangeText={setNombreSucursal}
+                                style={styles.input}
+                            />
+                            <TextInput
+                                placeholder="Ubicación"
+                                value={ubicacionS}
+                                onChangeText={setUbicacionS}
+                                style={styles.input}
+                                multiline={true}
+                                numberOfLines={2}
+                            />
+                            <TextInputMask
+                                type={'custom'}
+                                options={{
+                                    mask: '9999-9999',
+                                }}
+                                value={telefono}
+                                onChangeText={text => setTelefono(text)}
+                                style={styles.input}
+                                placeholder="Teléfono"
+                                keyboardType="numeric"
+                            />
 
-                    </View>
-                )
-            }
+                            <TouchableOpacity style={styles.button} onPress={guardarSucursal}>
+                                <Text style={styles.buttonText}>Añadir Sucursal</Text>
+                            </TouchableOpacity>
+
+
+                            <FlatList
+                                data={sucursales}
+                                renderItem={renderSucursal}
+                                ListEmptyComponent={<View />}
+                                style={{ flexGrow: 0 }}
+                            />
+
+                            {sucursales.length != 0 ? (
+                                <TouchableOpacity style={styles.button} onPress={() =>
+                                    Alert.alert("Mensaje", "Ya no podrás añadir más sucursales, ¿estás seguro?", [
+                                        { text: "Sí", onPress: () => retornarLogin(true) },
+                                        { text: "No" }
+                                    ])}>
+                                    <Text style={styles.buttonText}>Finalizar</Text>
+                                </TouchableOpacity>
+                            ) : (<View />)}
+
+                        </View>
+                    )
+                }
+            </View>
+
         </View>
 
     )
@@ -474,5 +491,82 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        backgroundColor: '#8B0000',
+
+    },
+    caja: {
+        backgroundColor: '#f6f6f6',
+        padding: 10,
+        borderRadius: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    textCaja: {
+        fontSize: 22,
+        fontWeight: 'bold',
+    },
+    input: {
+        height: 40,
+        width: 360,
+        borderColor: '#383232',
+        backgroundColor: 'white',
+        borderWidth: 1,
+        borderRadius: 5,
+        marginBottom: 15,
+        paddingHorizontal: 10,
+    },
+    button: {
+        backgroundColor: '#383232',
+        padding: 10,
+        borderRadius: 5,
+        alignItems: 'center',
+        marginTop: 10,
+        width: 360,
+
+    },
+    buttonGaleria: {
+        padding: 10,
+        borderRadius: 5,
+        alignItems: 'center',
+        marginTop: 10,
+        width: 200,
+        height: 50,
+        backgroundColor: '#7a7a7a',
+    },
+    buttonText: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    error: {
+        fontSize: 18,
+        textDecorationLine: 'underline',
+        marginTop: 15,
+        marginBottom: 15,
+    },
+    logoImagen: {
+        width: 120,
+        height: 120,
+
+    },
+    imagenContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between'
+    },
+    separator: {
+        height: 2,
+        width: '100%',
+        backgroundColor: '#ccc',
+        borderRadius: 1,
+        marginVertical: 10,
+        marginBottom: 5,
+        shadowColor: '#fff',
+        shadowOffset: {
+            width: 0,
+            height: 3,
+        },
+        shadowOpacity: 0.3,
+        shadowRadius: 1,
+        elevation: 1,
     },
 });
