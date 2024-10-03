@@ -176,7 +176,9 @@ export default function Cartelera() {
     setSelectedButton(day); // Actualiza el botón seleccionado
     setSelectedData(data); // Actualiza los datos seleccionados desde DRAWER
 
-    if (Funcion.length > 0 && data.length == 0) {
+    if(Funcion.length == 0){
+      setMensajeDra("No hay funciones disponibles");
+    }else if (Funcion.length > 0 && data.length == 0) {
       setMensajeDra("No hay funciones disponibles " + day);
     }
   };
@@ -256,13 +258,13 @@ export default function Cartelera() {
   );
 
   //Flatlist peliculas desde INICIO
-  const FlatListInicio = ({ Movie }) => {
+  const FlatListInicio = ({ Movie, Dia }) => {
     return (
       <FlatList
         data={Movie}
         renderItem={renderItemInicio}
         keyExtractor={(item) => item.titulo}
-        ListEmptyComponent={<Text style={styles.titleError}>{Funcion.length > 0 ? "No hay funciones disponibles" : "Cargando ..."}</Text>}
+        ListEmptyComponent={<Text style={styles.titleError}>{Funcion.length > 0 ? `No hay funciones disponibles ${Dia}` : "Sin funciones"}</Text>}
         scrollEnabled={false}
       />
     );
@@ -309,14 +311,14 @@ export default function Cartelera() {
           <ScrollView>
             <Text style={styles.sucursalTitle}>Hoy</Text>
             <View style={styles.cardMovie}>
-              <FlatListInicio Movie={MovieToday} />
+              <FlatListInicio Movie={MovieToday} Dia="Hoy"/>
             </View>
             <Text style={styles.sucursalTitle}>Mañana</Text>
             <View style={styles.cardMovie}>
-              <FlatListInicio Movie={MovieTomorrow} />
+              <FlatListInicio Movie={MovieTomorrow} Dia="Mañana"/>
             </View>
             <Text style={styles.daytitle}>Pasado</Text>
-            <FlatListInicio Movie={MovieTomorrowP} />
+            <FlatListInicio Movie={MovieTomorrowP} Dia="Pasado"/>
           </ScrollView>
 
         )}

@@ -41,14 +41,15 @@ const Inicio = () => {
   const obtenerCartelera = async () => {
     try {
       const response = await axios.get(`${API_URL}/api/peliculas/cartelera/${selectedCinema}`);
-
+      
       if (response.data.peliculas.length != 0)
         setMovieData(response.data.peliculas);
       else
         setMensaje("Sin películas añadidas");
     } catch (error) {
       if (error.request) {
-        Alert.alert('Error', 'No hubo respuesta del servidor');
+        Alert.alert('Error', 'No hay películas disponibles');
+        setSelectedCinema(-1);
         return;
       } else {
         Alert.alert('Error', 'Error al hacer la solicitud');
@@ -64,11 +65,11 @@ const Inicio = () => {
       if (response.data.peliculas.length != 0)
         setEstrenosData(response.data.peliculas);
       else
-        setMensaje2("Sin películas añadidas");
+        setMensaje2("Sin estrenos añadidos");
 
     } catch (error) {
       if (error.request) {
-        Alert.alert('Error', 'No hubo respuesta del servidor');
+        Alert.alert('Error', 'No hay estrenos disponibles');
         return;
       } else {
         Alert.alert('Error', 'Error al hacer la solicitud');
@@ -186,7 +187,7 @@ const Inicio = () => {
             <Picker
               selectedValue={selectedCinema}
               style={styles.picker}
-              onValueChange={(itemValue) => setSelectedCinema(itemValue)}
+              onValueChange={(itemValue) => {setSelectedCinema(itemValue)}}
             >
               <Picker.Item label="Todas las sucursales" value={-1} />
               {sucursales.map((item) => (

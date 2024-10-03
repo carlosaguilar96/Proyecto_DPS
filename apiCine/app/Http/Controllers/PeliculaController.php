@@ -89,12 +89,28 @@ class PeliculaController extends Controller
 
             $salas = Sala::all()->where('codSucursal', $id);
 
+            if(count($salas) == 0){
+                $data = [
+                    'message' => 'No hay salas en la sucursal',
+                    'status' => 404
+                ];
+                return response()->json($data, 404);
+            }
+
             foreach($salas as $sala){
                 $codigosSala[] = $sala->codSala;
             }
             
             $funciones = Funcion::all()->whereIn('codSala',$codigosSala);
             
+            if(count($funciones) == 0){
+                $data = [
+                    'message' => 'No hay funciones en la sucursal',
+                    'status' => 404
+                ];
+                return response()->json($data, 404);
+            }
+
             foreach($funciones as $funcion){
                 $codigosPeliculas[] = $funcion->codPelicula;
             }
@@ -104,7 +120,7 @@ class PeliculaController extends Controller
             
         }
 
-        if (!$peliculas) {
+        if (count($peliculas) == 0) {
             $data = [
                 'message' => 'No hay películas en cartelera',
                 'status' => 404
@@ -131,12 +147,28 @@ class PeliculaController extends Controller
         } else{
             $salas = Sala::all()->where('codSucursal', $id);
 
+            if(count($salas) == 0){
+                $data = [
+                    'message' => 'No hay salas en la sucursal',
+                    'status' => 404
+                ];
+                return response()->json($data, 404);
+            }
+
             foreach($salas as $sala){
                 $codigosSala[] = $sala->codSala;
             }
             
             $funciones = Funcion::all()->whereIn('codSala',$codigosSala);
             
+            if(count($funciones) == 0){
+                $data = [
+                    'message' => 'No hay funciones en la sucursal',
+                    'status' => 404
+                ];
+                return response()->json($data, 404);
+            }
+
             foreach($funciones as $funcion){
                 $codigosPeliculas[] = $funcion->codPelicula;
             }
@@ -145,6 +177,15 @@ class PeliculaController extends Controller
             $peliculasBase = Pelicula::all()->where('enCartelera', 1)->whereIn('codPelicula',$codigosPeliculas);
         }
 
+        
+        if(count($peliculasBase) == 0){
+            $data = [
+                'message' => 'No hay películas en cartelera',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        }
+        
         foreach ($peliculasBase as $pelicula) {
             $fechaPelicula = Carbon::parse($pelicula->created_at);
             $resta = $fechaPelicula->diffInDays($fechaHoy);
