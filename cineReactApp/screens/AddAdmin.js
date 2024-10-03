@@ -6,8 +6,9 @@ const AñadirAdministrador = () => {
   const [apellido, setApellido] = useState('');
   const [dui, setDui] = useState('');
   const [email, setEmail] = useState('');
-  const [telefono, setTelefono] = useState('');
   const [contrasena, setContrasena] = useState('');
+  const [usuario,setUsuario] = useState('');
+  const [confirmContra, setConfirmContra] = useState('');
 
   const manejarGuardarCambios = () => {
     console.log({ nombre, apellido, dui, email, telefono, contrasena });
@@ -15,8 +16,16 @@ const AñadirAdministrador = () => {
 
   return (
     <ScrollView style={estilos.contenedor}>
-
+      
       <View style={estilos.formulario}>
+      <Text>Usuario:</Text>
+        <TextInput 
+          style={estilos.entrada}
+          value={usuario}
+          onChangeText={setUsuario}
+          placeholder="Username"
+        />
+
         <Text>Nombre:</Text>
         <TextInput 
           style={estilos.entrada}
@@ -50,20 +59,21 @@ const AñadirAdministrador = () => {
           keyboardType="email-address"
         />
 
-        <Text>Teléfono:</Text>
-        <TextInput 
-          style={estilos.entrada}
-          value={telefono}
-          onChangeText={setTelefono}
-          placeholder="Teléfono"
-          keyboardType="phone-pad"
-        />
 
         <Text>Contraseña:</Text>
         <TextInput 
           style={estilos.entrada}
           value={contrasena}
           onChangeText={setContrasena}
+          placeholder="Contraseña"
+          secureTextEntry
+        />
+
+        <Text>Confirmar Contraseña:</Text>
+        <TextInput 
+          style={estilos.entrada}
+          value={confirmContra}
+          onChangeText={setConfirmContra}
           placeholder="Contraseña"
           secureTextEntry
         />

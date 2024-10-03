@@ -1,42 +1,91 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, {useState} from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView,FlatList, Modal,Button} from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
+import { administrador } from '../config/movieData';
 
 const ModificarAdministrador = () => {
   // Información de prueba
-  const administrador = {
-    nombre: 'Juan',
-    apellido: 'Pérez',
-    dui: '12345678-9',
-    email: 'juan.perez@example.com',
-    telefono: '1234-5678',
-    contrasena: '********',
-  };
+const [modalVisible,setModalVisible] = useState('');
+const [nombreAdmin, setNombreAdmin] = useState('');
 
-  return (
-    <View style={estilos.contenedor}>
+const handleModalOpen = (nombreAdmin) =>{
+  setModalVisible(true);
+  setNombreAdmin(nombreAdmin);
+}
+
+const handleModalClose = () => {
+// Cerrar el modal y cambiar estado
+setModalVisible(false);
+console.log(nombreAdmin);
+};
+  
+  const renderItem = ({ item }) => {
+    return (
+      <View style={estilos.contenedor}>
       
       <View style={estilos.tarjeta}>
-        <Text style={estilos.textoTarjetaCabecera}>Admin 1</Text>
+        
         <View style={estilos.detallesAdministrador}>
-          <Text style={estilos.textoGrande}>Nombre: {administrador.nombre}</Text>
-          <Text style={estilos.textoGrande}>Apellido: {administrador.apellido}</Text>
-          <Text style={estilos.textoGrande}>DUI: {administrador.dui}</Text>
-          <Text style={estilos.textoGrande}>Email: {administrador.email}</Text>
-          <Text style={estilos.textoGrande}>Teléfono: {administrador.telefono}</Text>
-          <Text style={estilos.textoGrande}>Contraseña: {administrador.contrasena}</Text>
-          <View style={estilos.contenedorBotones}>
-            <TouchableOpacity style={estilos.botonIcono} onPress={() => {}}>
+        <Text style={estilos.textoTarjetaCabecera}>Admin 1</Text>
+          <Text style={estilos.textoGrande}>Nombre: {item.nombre}</Text>
+          <Text style={estilos.textoGrande}>Apellido: {item.apellido}</Text>
+          <Text style={estilos.textoGrande}>DUI: {item.dui}</Text>
+          <Text style={estilos.textoGrande}>Email: {item.email}</Text>
+          
+        </View>
+        <View style={estilos.contenedorBotones}>
+        {item.estadoE == "Inactivo" ? (
+              <TouchableOpacity style={estilos.botonIcono} onPress={() => handleModalOpen(item.nombreAdmin)}>
+              <FontAwesome name="ban" size={30} color="white" />
+            </TouchableOpacity>
+            ):(
+              <TouchableOpacity style={estilos.botonIcono} onPress={() => handleModalOpen(item.nombreAdmin)}>
               <FontAwesome name="edit" size={30} color="white" />
             </TouchableOpacity>
-            <TouchableOpacity style={estilos.botonIcono} onPress={() => {}}>
-              <FontAwesome name="trash" size={30} color="white" />
-            </TouchableOpacity>
+            )}
           </View>
-        </View>
       </View>
     </View>
+
+    );}
+
+  const FlatListAdmin = ({ Movie }) => {
+    return (
+      <FlatList
+        data={Movie}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.CodPelicula} 
+        scrollEnabled={false} 
+      />
+    );
+  };
+
+ 
+  return (
+    <ScrollView>
+    <FlatListAdmin Movie={administrador} />
+       {/* Modal */}
+       <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => setModalVisible(false)}
+        >
+          <View style={estilos.modalContainer}>
+            <View style={estilos.modalContent}>
+              <Text style={estilos.modalText}>Seguro que deseas cambiar el estado de la pelicula?</Text>
+              <View style={estilos.buttonContainer}>
+                <Button title="Cancelar" onPress={() => setModalVisible(false)} />
+                <Button title="Aceptar" onPress={() => handleModalClose()} />
+              </View>
+            </View>
+          </View>
+        </Modal>
+    </ScrollView>
   );
+
+
+
 };
 
 const estilos = StyleSheet.create({
@@ -54,6 +103,7 @@ const estilos = StyleSheet.create({
     textAlign: 'center',
   },
   tarjeta: {
+    flexDirection: 'row',
     padding: 15,
     margin: 15,
     backgroundColor: '#f8f8f8',
@@ -78,8 +128,10 @@ const estilos = StyleSheet.create({
   },
   contenedorBotones: {
     flexDirection: 'row',
-    justifyContent: 'space-evenly',
     marginTop: 20,
+    justifyContent: 'center',
+    marginLeft: 15,
+    alignItems: 'center',
   },
   botonIcono: {
     backgroundColor: '#8B0000',
@@ -88,6 +140,28 @@ const estilos = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginHorizontal: 5,
+  },  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Fondo semitransparente
+  },
+  modalContent: {
+    width: 300,
+    padding: 20,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+ 
   },
 });
 

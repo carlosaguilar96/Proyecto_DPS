@@ -1,35 +1,92 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, {useState} from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, FlatList,Button,Modal } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
+import { Salas } from '../config/movieData';
 
 const ModificarSala = () => {
-  // Información de prueba
-  const sala = {
-    sucursal: 'Sucursal Central',
-    numAsientos: 100,
-    tipoSala: 'IMAX',
-  };
+  const [modalVisible,setModalVisible] = useState('');
+  const [codSala, setCodSala] = useState('');
 
-  return (
-    <View style={estilos.contenedor}>
-      
-      <View style={estilos.tarjeta}>
-        <View style={estilos.detallesSala}>
-          <Text style={estilos.tituloSucursal}>{sala.sucursal}</Text>
-          <Text style={estilos.textoGrande}>Número de Asientos: {sala.numAsientos}</Text>
-          <Text style={estilos.textoGrande}>Tipo de Sala: {sala.tipoSala}</Text>
-          <View style={estilos.contenedorBotones}>
-            <TouchableOpacity style={estilos.botonIcono} onPress={() => {}}>
+  const handleModalOpen = (codSala) =>{
+    setModalVisible(true);
+    setCodSala(codSala);
+  }
+  
+  const handleModalClose = () => {
+  // Cerrar el modal y cambiar estado
+  setModalVisible(false);
+  console.log(codSala);
+  };
+  const renderItem = ({ item }) => {
+    return (
+      <View style={estilos.contenedor}>
+        
+        <View style={estilos.tarjeta}>
+          <View style={estilos.detallesSala}>
+            <Text style={estilos.tituloSucursal}>{item.codSala}</Text>
+            <Text style={estilos.textoGrande}>Sucursal: {item.codsucursal}</Text>
+            <Text style={estilos.textoGrande}>Número de Asientos: {item.capacidad}</Text>
+            <Text style={estilos.textoGrande}>Tipo de Sala: {item.tipo}</Text>
+            
+          </View>
+          
+            {/* <TouchableOpacity style={estilos.botonIcono} onPress={() => {}}>
+                <FontAwesome name="edit" size={30} color="white" />
+              </TouchableOpacity>*/} 
+               <View style={estilos.contenedorBotones}>
+            {item.estadoE == "Inactivo" ? (
+              <TouchableOpacity style={estilos.botonIcono} onPress={() => handleModalOpen(item.codSala)}>
+              <FontAwesome name="ban" size={30} color="white" />
+            </TouchableOpacity>
+            ):(
+              <TouchableOpacity style={estilos.botonIcono} onPress={() => handleModalOpen(item.codSala)}>
               <FontAwesome name="edit" size={30} color="white" />
             </TouchableOpacity>
-            <TouchableOpacity style={estilos.botonIcono} onPress={() => {}}>
-              <FontAwesome name="trash" size={30} color="white" />
-            </TouchableOpacity>
-          </View>
+            )}
+                
+              </View>
+
         </View>
       </View>
-    </View>
+    );
+  }
+  
+
+  const FlatListSala = ({ Movie }) => {
+    return (
+      <FlatList
+        data={Movie}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.CodSala} 
+        scrollEnabled={false} 
+      />
+    );
+  };
+
+ 
+  return (
+    <ScrollView>
+    <FlatListSala Movie={Salas} />
+     {/* Modal */}
+     <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => setModalVisible(false)}
+        >
+          <View style={estilos.modalContainer}>
+            <View style={estilos.modalContent}>
+              <Text style={estilos.modalText}>Seguro que deseas cambiar el estado de la pelicula?</Text>
+              <View style={estilos.buttonContainer}>
+                <Button title="Cancelar" onPress={() => setModalVisible(false)} />
+                <Button title="Aceptar" onPress={() => handleModalClose()} />
+              </View>
+            </View>
+          </View>
+        </Modal>
+    </ScrollView>
   );
+
 };
 
 const estilos = StyleSheet.create({
@@ -47,6 +104,7 @@ const estilos = StyleSheet.create({
     textAlign: 'center',
   },
   tarjeta: {
+    flexDirection: 'row',
     padding: 15,
     margin: 15,
     backgroundColor: '#f8f8f8',
@@ -68,9 +126,10 @@ const estilos = StyleSheet.create({
   textoGrande: {
     fontSize: 18,
     marginBottom: 5,
+    paddingRight:60,
   },
   contenedorBotones: {
-    flexDirection: 'row',
+    paddingLeft:20,
     justifyContent: 'space-evenly',
     marginTop: 20,
   },
@@ -81,6 +140,29 @@ const estilos = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginHorizontal: 5,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Fondo semitransparente
+  },
+  modalContent: {
+    width: 300,
+    padding: 20,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+ 
   },
 });
 
