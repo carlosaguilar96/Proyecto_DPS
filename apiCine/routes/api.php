@@ -31,6 +31,8 @@ Route::put('/usuarios/modificarUsuario/{id}', [UsuarioController::class, 'update
 Route::put('/usuarios/cambiarPassword/{id}', [UsuarioController::class, 'changePass']);
 //Ruta para iniciar sesión
 Route::post('/iniciarSesion', [UsuarioController::class, 'login']);
+//Ruta para restablecer contraseña de usuario
+Route::put('/restablecerContra', [UsuarioController::class, 'restContra']);
 
 //RUTAS PARA CINES
 //Ruta para crear cine
