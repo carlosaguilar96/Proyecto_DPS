@@ -6,7 +6,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 
 const ModificarPelicula = () => {
 const [modalVisible,setModalVisible] = useState('');
-const [codPeli, setCodPeli] = useState(0);
+const [id, setid] = useState(0);
     // Componente renderItem para el FlatList
     const renderItem = ({ item }) => {
       return (
@@ -25,13 +25,13 @@ const [codPeli, setCodPeli] = useState(0);
               
             </View>
             <View style={estilos.contenedorBotones}>
-            {item.estadoE == "Inactivo" ? (
-              <TouchableOpacity style={estilos.botonIcono} onPress={() => handleModalOpen(item.CodPelicula)}>
+            {item.estadoE === 0 ? (
+              <TouchableOpacity style={estilos.botonIcono} onPress={() => handleModalOpen(item.id)}>
               <FontAwesome name="ban" size={30} color="white" />
             </TouchableOpacity>
             ):(
-              <TouchableOpacity style={estilos.botonIcono} onPress={() => handleModalOpen(item.CodPelicula)}>
-              <FontAwesome name="edit" size={30} color="white" />
+              <TouchableOpacity style={estilos.botonIcono} onPress={() => handleModalOpen(item.id)}>
+              <FontAwesome name="check" size={30} color="white" />
             </TouchableOpacity>
             )}
                 
@@ -41,15 +41,15 @@ const [codPeli, setCodPeli] = useState(0);
       );
     };
   
-    const handleModalOpen = (CodPelicula) =>{
+    const handleModalOpen = (id) =>{
       setModalVisible(true);
-      setCodPeli(CodPelicula);
+      setid(id);
     }
 
-  const handleModalClose = () => {
+  const CambiarEstado = () => {
     // Cerrar el modal y cambiar estado
     setModalVisible(false);
-    console.log(codPeli);
+    console.log(id);
   };
 
     // Componente FlatList para mostrar la lista de películas
@@ -58,7 +58,7 @@ const [codPeli, setCodPeli] = useState(0);
         <FlatList
           data={Movie}
           renderItem={renderItem}
-          keyExtractor={(item) => item.CodPelicula} 
+          keyExtractor={(item) => item.id} 
           scrollEnabled={false} 
         />
       );
@@ -80,7 +80,7 @@ const [codPeli, setCodPeli] = useState(0);
               <Text style={estilos.modalText}>Seguro que deseas cambiar el estado de la pelicula?</Text>
               <View style={estilos.buttonContainer}>
                 <Button title="Cancelar" onPress={() => setModalVisible(false)} />
-                <Button title="Aceptar" onPress={() => handleModalClose()} />
+                <Button title="Aceptar" onPress={() => CambiarEstado()} />
               </View>
             </View>
           </View>

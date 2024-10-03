@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 
 const AñadirAdministrador = () => {
   const [nombre, setNombre] = useState('');
@@ -7,11 +7,61 @@ const AñadirAdministrador = () => {
   const [dui, setDui] = useState('');
   const [email, setEmail] = useState('');
   const [contrasena, setContrasena] = useState('');
-  const [usuario,setUsuario] = useState('');
+  const [username,setUsername] = useState('');
   const [confirmContra, setConfirmContra] = useState('');
+  const [mssgError, setMssgError] = useState('');
 
-  const manejarGuardarCambios = () => {
-    console.log({ nombre, apellido, dui, email, telefono, contrasena });
+  const validarEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const manejarGuardarCambios = async() => {
+    if(username == ""){
+      setMssgError("Ingresar un nombre de usuario.");
+      return;
+    }
+    if(nombre == ""){
+      setMssgError("Ingresar un nombre.");
+      return;
+    }
+    if(apellido == ""){
+      setMssgError("Ingresar un apellido.");
+      return;
+    }
+    if(dui == ""){
+      setMssgError("Ingresar DUI.");
+      return;
+    }
+    if (dui.length != 10) {
+      setMssgError('Ingresar DUI válido.');
+      return;
+    }
+    if(email == ""){
+      setMssgError("Ingresar correo electrónico.");
+      return;
+    }
+    if (!validarEmail(email)) {
+      setMssgError('El correo electrónico ingresado no es válido.');
+      return;
+    }
+    if(contrasena == ""){
+      setMssgError("Ingresar contraseña.");
+      return;
+    }
+    if (contrasena.length < 8) {
+      setMssgError('La contraseña debe tener al menos 8 caracteres.');
+      return;
+    }
+    if(confirmContra == ""){
+      setMssgError("Ingresar confirmación de contraseña.");
+      return;
+    }
+    if (contrasena !== confirmContra) {
+      setMssgError('Las contraseñas no coinciden.');
+      return;
+    }
+    console.log({ nombre, apellido, dui, email, contrasena });
   };
 
   return (
@@ -21,8 +71,8 @@ const AñadirAdministrador = () => {
       <Text>Usuario:</Text>
         <TextInput 
           style={estilos.entrada}
-          value={usuario}
-          onChangeText={setUsuario}
+          value={username}
+          onChangeText={setUsername}
           placeholder="Username"
         />
 

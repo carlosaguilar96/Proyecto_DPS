@@ -4,17 +4,16 @@ import { Picker } from '@react-native-picker/picker';
 
 const AñadirSala = () => {
   const [sucursal, setSucursal] = useState('');
-  const [numAsientos, setNumAsientos] = useState(0);
   const [tipoSala, setTipoSala] = useState('');
 
   const manejarAñadirSala = () => {
-    console.log({ sucursal, numAsientos, tipoSala });
+
+    console.log({ sucursal, tipoSala });
   };
 
   return (
     <ScrollView style={estilos.contenedor}>
       
-
       <View style={estilos.formulario}>
         <Text>Sucursal:</Text>
         <Picker
@@ -27,17 +26,6 @@ const AñadirSala = () => {
           <Picker.Item label="Sucursal 2" value="sucursal2" />
         </Picker>
 
-        <Text>Número de Asientos:</Text>
-        <View style={estilos.asientosContainer}>
-          <Button title="-" onPress={() => setNumAsientos(Math.max(0, numAsientos - 1))} />
-          <TextInput
-            style={estilos.entradaAsientos}
-            value={String(numAsientos)}
-            onChangeText={(value) => setNumAsientos(Number(value))}
-            keyboardType="numeric"
-          />
-          <Button title="+" onPress={() => setNumAsientos(numAsientos + 1)} />
-        </View>
 
         <Text>Tipo de Sala:</Text>
         <Picker
@@ -46,9 +34,7 @@ const AñadirSala = () => {
           onValueChange={(itemValue) => setTipoSala(itemValue)}
         >
           <Picker.Item label="Elija el tipo de sala" value="" />
-          <Picker.Item label="2D" value="2D" />
-          <Picker.Item label="3D" value="3D" />
-          <Picker.Item label="IMAX" value="IMAX" />
+          <Picker.Item label="Estandar" value="Estandar" />
         </Picker>
 
         <TouchableOpacity style={estilos.botonAñadir} onPress={manejarAñadirSala}>

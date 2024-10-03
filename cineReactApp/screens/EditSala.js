@@ -3,61 +3,104 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView, FlatList,Button,M
 import { FontAwesome } from '@expo/vector-icons';
 import { Salas } from '../config/movieData';
 
-const ModificarSala = () => {
-  const [modalVisible,setModalVisible] = useState('');
-  const [codSala, setCodSala] = useState('');
 
-  const handleModalOpen = (codSala) =>{
+const agruparPorSucursal = (salas) => { 
+  const salasAgrupadas = salas.reduce((acc, item) => {
+    // Verificar si ya existe una entrada para la sucursal
+    const existingSucursal = acc.find(h => h.sucursal === item.sucursal);
+
+    if (!existingSucursal) {
+      // Si no existe, se crea una nueva entrada para la sucursal con los detalles de la película
+      acc.push({
+        sucursal: item.sucursal,
+        salas: [{
+          id: item.id,
+          capacidad: item.capacidad, 
+          codsucursal: item.codsucursal,
+          tipo: item.tipo,
+          estadoE: item.estadoE,
+        }]
+      });
+    } else {
+      // Si ya existe la sucursal, añadir los detalles de la película
+      existingSucursal.salas.push({
+          id: item.id,
+          capacidad: item.capacidad, 
+          codsucursal: item.codsucursal,
+          tipo: item.tipo,
+          estadoE: item.estadoE,
+      });
+    }
+
+    return acc;
+  }, []);
+
+  return salasAgrupadas;
+};
+
+
+const ModificarSala = () => {
+  const salas = agruparPorSucursal(Salas);
+  const [modalVisible,setModalVisible] = useState('');
+  const [id, setid] = useState(0);
+
+  const handleModalOpen = (id) =>{
     setModalVisible(true);
-    setCodSala(codSala);
+    setid(id);
   }
+
   
-  const handleModalClose = () => {
-  // Cerrar el modal y cambiar estado
+  
+  const CambiarEstado = () => {
+  // Cerrar el modal y cambiar estado con lo de la API
   setModalVisible(false);
-  console.log(codSala);
+  console.log(id);
   };
+
   const renderItem = ({ item }) => {
     return (
       <View style={estilos.contenedor}>
+        <Text style={estilos.tituloSucursal}>Sucursal {item.sucursal}</Text>
         
-        <View style={estilos.tarjeta}>
-          <View style={estilos.detallesSala}>
-            <Text style={estilos.tituloSucursal}>{item.codSala}</Text>
-            <Text style={estilos.textoGrande}>Sucursal: {item.codsucursal}</Text>
-            <Text style={estilos.textoGrande}>Número de Asientos: {item.capacidad}</Text>
-            <Text style={estilos.textoGrande}>Tipo de Sala: {item.tipo}</Text>
-            
-          </View>
+            {item.salas.map((sala, index) => (
+              <View style={estilos.tarjeta}>
+            <View key={index}>
+            <Text style={estilos.textoGrande}>{`Sala: ${sala.id}`}</Text>
+            <Text style={estilos.textoGrande}>{`Número de Asientos: ${sala.capacidad}`}</Text>
+            <Text style={estilos.textoGrande}>{`Tipo de Sala: ${sala.tipo}`}</Text>
+            </View>
+            <View style={estilos.contenedorBotones}>
+            {sala.estadoE === 0 ? (
+              <TouchableOpacity style={estilos.botonIcono} onPress={() => handleModalOpen(sala.id)}>
+              <FontAwesome name="ban" size={30} color="white" />
+            </TouchableOpacity>
+            ):(
+              <TouchableOpacity style={estilos.botonIcono} onPress={() => handleModalOpen(sala.id)}>
+              <FontAwesome name="check" size={30} color="white" />
+            </TouchableOpacity>
+            )}
+                
+              
+        </View>
+      </View>
+    ))}
+          
           
             {/* <TouchableOpacity style={estilos.botonIcono} onPress={() => {}}>
                 <FontAwesome name="edit" size={30} color="white" />
               </TouchableOpacity>*/} 
-               <View style={estilos.contenedorBotones}>
-            {item.estadoE == "Inactivo" ? (
-              <TouchableOpacity style={estilos.botonIcono} onPress={() => handleModalOpen(item.codSala)}>
-              <FontAwesome name="ban" size={30} color="white" />
-            </TouchableOpacity>
-            ):(
-              <TouchableOpacity style={estilos.botonIcono} onPress={() => handleModalOpen(item.codSala)}>
-              <FontAwesome name="edit" size={30} color="white" />
-            </TouchableOpacity>
-            )}
-                
-              </View>
-
-        </View>
+               
       </View>
     );
   }
   
 
-  const FlatListSala = ({ Movie }) => {
+  const FlatListSala = ({ Salas }) => {
     return (
       <FlatList
-        data={Movie}
+        data={Salas}
         renderItem={renderItem}
-        keyExtractor={(item) => item.CodSala} 
+        keyExtractor={(item) => item.id} 
         scrollEnabled={false} 
       />
     );
@@ -66,7 +109,7 @@ const ModificarSala = () => {
  
   return (
     <ScrollView>
-    <FlatListSala Movie={Salas} />
+    <FlatListSala Salas={salas} />
      {/* Modal */}
      <Modal
           animationType="slide"
@@ -79,7 +122,7 @@ const ModificarSala = () => {
               <Text style={estilos.modalText}>Seguro que deseas cambiar el estado de la pelicula?</Text>
               <View style={estilos.buttonContainer}>
                 <Button title="Cancelar" onPress={() => setModalVisible(false)} />
-                <Button title="Aceptar" onPress={() => handleModalClose()} />
+                <Button title="Aceptar" onPress={() => CambiarEstado()} />
               </View>
             </View>
           </View>
@@ -93,6 +136,7 @@ const estilos = StyleSheet.create({
   contenedor: {
     flex: 1,
     backgroundColor: '#fff',
+    paddingTop:10,
   },
   cabecera: {
     backgroundColor: '#8B0000',
@@ -115,13 +159,11 @@ const estilos = StyleSheet.create({
     shadowRadius: 2,
     elevation: 1,
   },
-  detallesSala: {
-    justifyContent: 'center',
-  },
+  
   tituloSucursal: {
     fontSize: 22,
     fontWeight: 'bold',
-    marginBottom: 10,
+    paddingLeft: 20
   },
   textoGrande: {
     fontSize: 18,
@@ -129,9 +171,11 @@ const estilos = StyleSheet.create({
     paddingRight:60,
   },
   contenedorBotones: {
-    paddingLeft:20,
-    justifyContent: 'space-evenly',
-    marginTop: 20,
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+
+    alignItems: 'center',
   },
   botonIcono: {
     backgroundColor: '#8B0000',

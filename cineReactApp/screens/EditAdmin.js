@@ -6,17 +6,17 @@ import { administrador } from '../config/movieData';
 const ModificarAdministrador = () => {
   // Información de prueba
 const [modalVisible,setModalVisible] = useState('');
-const [nombreAdmin, setNombreAdmin] = useState('');
+const [id, setid] = useState(0);
 
-const handleModalOpen = (nombreAdmin) =>{
+const handleModalOpen = (id) =>{
   setModalVisible(true);
-  setNombreAdmin(nombreAdmin);
+  setid(id);
 }
 
-const handleModalClose = () => {
+const CambiarEstado = () => {
 // Cerrar el modal y cambiar estado
 setModalVisible(false);
-console.log(nombreAdmin);
+console.log(id);
 };
   
   const renderItem = ({ item }) => {
@@ -26,7 +26,7 @@ console.log(nombreAdmin);
       <View style={estilos.tarjeta}>
         
         <View style={estilos.detallesAdministrador}>
-        <Text style={estilos.textoTarjetaCabecera}>Admin 1</Text>
+        <Text style={estilos.textoTarjetaCabecera}>Admin {item.id}</Text>
           <Text style={estilos.textoGrande}>Nombre: {item.nombre}</Text>
           <Text style={estilos.textoGrande}>Apellido: {item.apellido}</Text>
           <Text style={estilos.textoGrande}>DUI: {item.dui}</Text>
@@ -34,13 +34,13 @@ console.log(nombreAdmin);
           
         </View>
         <View style={estilos.contenedorBotones}>
-        {item.estadoE == "Inactivo" ? (
-              <TouchableOpacity style={estilos.botonIcono} onPress={() => handleModalOpen(item.nombreAdmin)}>
+        {item.estadoE === 0  ? (
+              <TouchableOpacity style={estilos.botonIcono} onPress={() => handleModalOpen(item.id)}>
               <FontAwesome name="ban" size={30} color="white" />
             </TouchableOpacity>
             ):(
-              <TouchableOpacity style={estilos.botonIcono} onPress={() => handleModalOpen(item.nombreAdmin)}>
-              <FontAwesome name="edit" size={30} color="white" />
+              <TouchableOpacity style={estilos.botonIcono} onPress={() => handleModalOpen(item.id)}>
+              <FontAwesome name="check" size={30} color="white" />
             </TouchableOpacity>
             )}
           </View>
@@ -54,7 +54,7 @@ console.log(nombreAdmin);
       <FlatList
         data={Movie}
         renderItem={renderItem}
-        keyExtractor={(item) => item.CodPelicula} 
+        keyExtractor={(item) => item.id} 
         scrollEnabled={false} 
       />
     );
@@ -76,7 +76,7 @@ console.log(nombreAdmin);
               <Text style={estilos.modalText}>Seguro que deseas cambiar el estado de la pelicula?</Text>
               <View style={estilos.buttonContainer}>
                 <Button title="Cancelar" onPress={() => setModalVisible(false)} />
-                <Button title="Aceptar" onPress={() => handleModalClose()} />
+                <Button title="Aceptar" onPress={() => CambiarEstado()} />
               </View>
             </View>
           </View>

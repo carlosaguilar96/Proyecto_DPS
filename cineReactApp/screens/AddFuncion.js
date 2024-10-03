@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { format, addDays, parseISO } from 'date-fns';
 
 const AñadirFuncion = () => {
   const [sucursal, setSucursal] = useState('');
@@ -17,7 +18,12 @@ const AñadirFuncion = () => {
       Alert.alert('Error', 'Por favor, complete todos los campos.');
       return;
     }
-    console.log({ sucursal, pelicula, sala, fecha, horario, precios });
+    else{
+      const parseFecha = format(fecha, 'yyyy-MM-dd');
+      setFecha(parseFecha);
+      console.log({ sucursal, pelicula, sala, parseFecha, horario, precios });
+    }
+    
   };
 
   const actualizarPrecio = (tipo, valor) => {
