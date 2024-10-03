@@ -10,8 +10,9 @@ const AñadirFuncion = () => {
   const [sala, setSala] = useState('');
   const [fecha, setFecha] = useState(new Date());
   const [mostrarFechaPicker, setMostrarFechaPicker] = useState(false);
-  const [horario, setHorario] = useState('');
-  const [precios, setPrecios] = useState({ ninos: 0, adultos: 0, terceraEdad: 0 });
+  const [horario, setHorario] = useState(new Date());
+  const [mostrarHorarioPicker, setMostrarHorarioPicker] = useState(false);
+  const [precios, setPrecios] = useState({ ninos: '', adultos: '', terceraEdad: '' });
 
   const manejarAñadirFuncion = () => {
     if (!sucursal || !pelicula || !sala || !horario) {
@@ -24,13 +25,6 @@ const AñadirFuncion = () => {
       console.log({ sucursal, pelicula, sala, parseFecha, horario, precios });
     }
     
-  };
-
-  const actualizarPrecio = (tipo, valor) => {
-    setPrecios((prevPrecios) => ({
-      ...prevPrecios,
-      [tipo]: Math.max(0, prevPrecios[tipo] + valor),
-    }));
   };
 
   return (
@@ -91,20 +85,50 @@ const AñadirFuncion = () => {
         )}
 
         <Text>Horario:</Text>
-        <Picker
-          selectedValue={horario}
-          style={estilos.entrada}
-          onValueChange={(itemValue) => setHorario(itemValue)}
-        >
-          <Picker.Item label="Seleccione un horario" value="" />
-          <Picker.Item label="10:00 AM" value="10:00 AM" />
-          <Picker.Item label="1:00 PM" value="1:00 PM" />
-        </Picker>
+        <TouchableOpacity onPress={() => setMostrarHorarioPicker(true)}>
+          <Text style={estilos.entrada}>{horario.toLocaleTimeString()}</Text>
+        </TouchableOpacity>
+        {mostrarHorarioPicker && (
+          <DateTimePicker
+            value={horario}
+            mode="time"
+            display="default"
+            onChange={(event, selectedTime) => {
+              setMostrarHorarioPicker(false);
+              setHorario(selectedTime || horario);
+            }}
+            style={estilos.entrada}
+          />
+        )}
 
         <Text>Precio de las entradas:</Text>
-        <PrecioInput label="Niños" valor={precios.ninos} actualizarPrecio={(valor) => actualizarPrecio('ninos', valor)} />
-        <PrecioInput label="Adultos" valor={precios.adultos} actualizarPrecio={(valor) => actualizarPrecio('adultos', valor)} />
-        <PrecioInput label="3ra Edad" valor={precios.terceraEdad} actualizarPrecio={(valor) => actualizarPrecio('terceraEdad', valor)} />
+        <View style={estilos.precioContainer}>
+          <Text>Niños:</Text>
+          <TextInput
+            style={estilos.precioInput}
+            value={precios.ninos}
+            onChangeText={(value) => setPrecios({ ...precios, ninos: value })}
+            keyboardType="numeric"
+          />
+        </View>
+        <View style={estilos.precioContainer}>
+          <Text>Adultos:</Text>
+          <TextInput
+            style={estilos.precioInput}
+            value={precios.adultos}
+            onChangeText={(value) => setPrecios({ ...precios, adultos: value })}
+            keyboardType="numeric"
+          />
+        </View>
+        <View style={estilos.precioContainer}>
+          <Text>3ra Edad:</Text>
+          <TextInput
+            style={estilos.precioInput}
+            value={precios.terceraEdad}
+            onChangeText={(value) => setPrecios({ ...precios, terceraEdad: value })}
+            keyboardType="numeric"
+          />
+        </View>
 
         <TouchableOpacity style={estilos.botonAñadir} onPress={manejarAñadirFuncion}>
           <Text style={estilos.textoBotonAñadir}>Añadir Función</Text>
@@ -113,22 +137,6 @@ const AñadirFuncion = () => {
     </ScrollView>
   );
 };
-
-const PrecioInput = ({ label, valor, actualizarPrecio }) => (
-  <View style={estilos.precioContainer}>
-    <Text>{label}:</Text>
-    <View style={estilos.precioInputContainer}>
-      <Button title="-" onPress={() => actualizarPrecio(-1)} />
-      <TextInput
-        style={estilos.precioInput}
-        value={String(valor)}
-        onChangeText={(value) => actualizarPrecio(Number(value) - valor)}
-        keyboardType="numeric"
-      />
-      <Button title="+" onPress={() => actualizarPrecio(1)} />
-    </View>
-  </View>
-);
 
 const estilos = StyleSheet.create({
   contenedor: {
@@ -160,13 +168,8 @@ const estilos = StyleSheet.create({
   precioContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     marginVertical: 10,
-  },
-  precioInputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginLeft: 10,
   },
   precioInput: {
     borderWidth: 1,
@@ -174,7 +177,7 @@ const estilos = StyleSheet.create({
     borderRadius: 5,
     padding: 10,
     marginHorizontal: 10,
-    width: 60,
+    width: 100,
     textAlign: 'center',
     backgroundColor: 'white',
   },

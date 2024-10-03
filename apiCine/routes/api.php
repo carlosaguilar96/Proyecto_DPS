@@ -31,12 +31,14 @@ Route::put('/usuarios/modificarUsuario/{id}', [UsuarioController::class, 'update
 Route::put('/usuarios/cambiarPassword/{id}', [UsuarioController::class, 'changePass']);
 //Ruta para iniciar sesión
 Route::post('/iniciarSesion', [UsuarioController::class, 'login']);
+//Ruta para restablecer contraseña de usuario
+Route::put('/restablecerContra', [UsuarioController::class, 'restContra']);
 
 //RUTAS PARA CINES
 //Ruta para crear cine
 Route::post('/cines/crearCine', [CineController::class, 'store']);
 //Ruta para mostrar cine
-Route::get('/cines/show/{id}', [CineController::class, 'show']);
+Route::get('/cines/index', [CineController::class, 'index']);
 //Ruta para modificar cine
 Route::put('/cines/update/{id}', [CineController::class, 'update']);
 // Solo hay un cine por base de datos
