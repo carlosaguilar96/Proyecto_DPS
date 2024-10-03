@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
@@ -8,18 +8,30 @@ const AñadirFuncion = () => {
   const [pelicula, setPelicula] = useState('');
   const [sala, setSala] = useState('');
   const [fecha, setFecha] = useState(new Date());
+  const [mostrarFechaPicker, setMostrarFechaPicker] = useState(false);
   const [horario, setHorario] = useState('');
-  const [precioNinos, setPrecioNinos] = useState(0);
-  const [precioAdultos, setPrecioAdultos] = useState(0);
-  const [precioTerceraEdad, setPrecioTerceraEdad] = useState(0);
+  const [precios, setPrecios] = useState({ ninos: 0, adultos: 0, terceraEdad: 0 });
 
   const manejarAñadirFuncion = () => {
-    console.log({ sucursal, pelicula, sala, fecha, horario, precioNinos, precioAdultos, precioTerceraEdad });
+    if (!sucursal || !pelicula || !sala || !horario) {
+      Alert.alert('Error', 'Por favor, complete todos los campos.');
+      return;
+    }
+    console.log({ sucursal, pelicula, sala, fecha, horario, precios });
+  };
+
+  const actualizarPrecio = (tipo, valor) => {
+    setPrecios((prevPrecios) => ({
+      ...prevPrecios,
+      [tipo]: Math.max(0, prevPrecios[tipo] + valor),
+    }));
   };
 
   return (
     <ScrollView style={estilos.contenedor}>
-      
+      <View style={estilos.cabecera}>
+        <Text style={estilos.textoCabecera}>Añadir Función</Text>
+      </View>
 
       <View style={estilos.formulario}>
         <Text>Sucursal:</Text>
@@ -56,13 +68,21 @@ const AñadirFuncion = () => {
         </Picker>
 
         <Text>Fecha:</Text>
-        <DateTimePicker
-          value={fecha}
-          mode="date"
-          display="default"
-          onChange={(event, selectedDate) => setFecha(selectedDate || fecha)}
-          style={estilos.entrada}
-        />
+        <TouchableOpacity onPress={() => setMostrarFechaPicker(true)}>
+          <Text style={estilos.entrada}>{fecha.toDateString()}</Text>
+        </TouchableOpacity>
+        {mostrarFechaPicker && (
+          <DateTimePicker
+            value={fecha}
+            mode="date"
+            display="default"
+            onChange={(event, selectedDate) => {
+              setMostrarFechaPicker(false);
+              setFecha(selectedDate || fecha);
+            }}
+            style={estilos.entrada}
+          />
+        )}
 
         <Text>Horario:</Text>
         <Picker
@@ -76,47 +96,9 @@ const AñadirFuncion = () => {
         </Picker>
 
         <Text>Precio de las entradas:</Text>
-        <View style={estilos.precioContainer}>
-          <Text>Niños:</Text>
-          <View style={estilos.precioInputContainer}>
-            <Button title="-" onPress={() => setPrecioNinos(Math.max(0, precioNinos - 1))} />
-            <TextInput
-              style={estilos.precioInput}
-              value={String(precioNinos)}
-              onChangeText={(value) => setPrecioNinos(Number(value))}
-              keyboardType="numeric"
-            />
-            <Button title="+" onPress={() => setPrecioNinos(precioNinos + 1)} />
-          </View>
-        </View>
-
-        <View style={estilos.precioContainer}>
-          <Text>Adultos:</Text>
-          <View style={estilos.precioInputContainer}>
-            <Button title="-" onPress={() => setPrecioAdultos(Math.max(0, precioAdultos - 1))} />
-            <TextInput
-              style={estilos.precioInput}
-              value={String(precioAdultos)}
-              onChangeText={(value) => setPrecioAdultos(Number(value))}
-              keyboardType="numeric"
-            />
-            <Button title="+" onPress={() => setPrecioAdultos(precioAdultos + 1)} />
-          </View>
-        </View>
-
-        <View style={estilos.precioContainer}>
-          <Text>3ra Edad:</Text>
-          <View style={estilos.precioInputContainer}>
-            <Button title="-" onPress={() => setPrecioTerceraEdad(Math.max(0, precioTerceraEdad - 1))} />
-            <TextInput
-              style={estilos.precioInput}
-              value={String(precioTerceraEdad)}
-              onChangeText={(value) => setPrecioTerceraEdad(Number(value))}
-              keyboardType="numeric"
-            />
-            <Button title="+" onPress={() => setPrecioTerceraEdad(precioTerceraEdad + 1)} />
-          </View>
-        </View>
+        <PrecioInput label="Niños" valor={precios.ninos} actualizarPrecio={(valor) => actualizarPrecio('ninos', valor)} />
+        <PrecioInput label="Adultos" valor={precios.adultos} actualizarPrecio={(valor) => actualizarPrecio('adultos', valor)} />
+        <PrecioInput label="3ra Edad" valor={precios.terceraEdad} actualizarPrecio={(valor) => actualizarPrecio('terceraEdad', valor)} />
 
         <TouchableOpacity style={estilos.botonAñadir} onPress={manejarAñadirFuncion}>
           <Text style={estilos.textoBotonAñadir}>Añadir Función</Text>
@@ -125,6 +107,22 @@ const AñadirFuncion = () => {
     </ScrollView>
   );
 };
+
+const PrecioInput = ({ label, valor, actualizarPrecio }) => (
+  <View style={estilos.precioContainer}>
+    <Text>{label}:</Text>
+    <View style={estilos.precioInputContainer}>
+      <Button title="-" onPress={() => actualizarPrecio(-1)} />
+      <TextInput
+        style={estilos.precioInput}
+        value={String(valor)}
+        onChangeText={(value) => actualizarPrecio(Number(value) - valor)}
+        keyboardType="numeric"
+      />
+      <Button title="+" onPress={() => actualizarPrecio(1)} />
+    </View>
+  </View>
+);
 
 const estilos = StyleSheet.create({
   contenedor: {
@@ -156,7 +154,7 @@ const estilos = StyleSheet.create({
   precioContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center', // Centra horizontalmente
+    justifyContent: 'center',
     marginVertical: 10,
   },
   precioInputContainer: {
