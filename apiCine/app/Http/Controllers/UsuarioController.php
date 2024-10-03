@@ -6,7 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Usuario;
 use Illuminate\Support\Facades\Validator;
 use Exception;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\RestablecerContra;
 
 class UsuarioController extends Controller
 {
@@ -356,6 +357,63 @@ class UsuarioController extends Controller
         } catch (Exception $error){
             $data = [
                 'message' => 'Error al iniciar sesión: ' . $error->getMessage(),
+                'status' => 500
+            ];
+
+            return response()->json($data, 500);
+        }
+    }
+
+    //Función para restablecer contraseña de usuario
+    public function restContra(Request $request){
+        $validator = Validator::make($request->all() , [
+            'user'  => 'required'
+        ]);
+
+        if($validator->fails()){
+            $data = [
+                'message' => 'Error en la validación',
+                'errors' => $validator->errors(),
+                'status' => 400
+            ];
+
+            return response()->json($data, 400);
+        }
+
+        try{
+            $userName = $request->input("user");
+
+            $usuario = Usuario::find($userName);
+            if(!$usuario){
+                $data = [
+                    'message' => 'Usuario no encontrado',
+                    'status' => 404
+                ];
+                return response()->json($data, 404);
+            }
+
+            $permittedChars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            $pass = '';
+            $strength = 8;
+
+            $stringLenght = strlen($permittedChars);
+
+            for ($i = 0; $i < $strength; $i++) {
+                $randomCharacter = $permittedChars[mt_rand(0, $stringLenght - 1)];
+                $pass .= $randomCharacter;
+            }
+            $usuario->contrasena = Hash('SHA256', $pass);
+            $usuario->save();
+            Mail::to($usuario->correoE)->send(new RestablecerContra($usuario->nombreUsuario, $pass));
+            $data = [
+                'message' => 'Contraseña restablecida',
+                'usuario' => $usuario,
+                'status' => 200
+            ];
+            return response()->json($data, 200);
+        } catch (Exception $error){
+            $data = [
+                'message' => 'Error al restablecer contraseña: ' . $error->getMessage(),
                 'status' => 500
             ];
 

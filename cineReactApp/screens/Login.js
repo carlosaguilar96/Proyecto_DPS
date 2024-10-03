@@ -44,6 +44,7 @@ export default function Login() {
   const [mssgError, setMssgError] = useState('');
   const [username, setUsername] = useState('');
   const { miVariable2, setMiVariable2 } = useContext(AppContext);
+  const [restContra, setRestContra] = useState(false);
 
 
   const validarEmail = (email) => {
@@ -197,6 +198,10 @@ export default function Login() {
       }
     } catch (error) {
       if (error.response) {
+        if(error.response.data.status === 404){
+          setMssgError('Usuario no existe');
+          return;
+        }
         const errores = error.response.data.errors;
         let mensaje ="";
         for (const campo in errores) {
@@ -248,6 +253,54 @@ export default function Login() {
     setMssgError('');
   };
 
+  const cambioARestContra = () =>{
+    setRestContra(true);
+    setMssgError("Restablecer contraseña");
+    setUsername('');
+  };
+
+  const cambioPantalla2 = () => {
+    setLogin(true);
+    setUsername('');
+    setMssgError('');
+    setRestContra(false);
+  };
+
+  const restablecerContra = async () => {
+    if(username == ""){
+      setMssgError("Ingresar un nombre de usuario.");
+      return;
+    }
+    try {
+      const response = await axios.put(`${API_URL}/api/restablecerContra`, {
+        user: username,
+      });
+      if(response.data.usuario){
+        Alert.alert('Restablecimiento de contraseña', 'Tu nueva contraseña ha sido enviada al correo. Recuerda cambiarla al ingresar.')
+        cambioPantalla2();
+      }
+    } catch (error) {
+      if (error.response) {
+        if(error.response.data.status === 404){
+          setMssgError('Usuario no existe');
+          return;
+        }
+        const errores = error.response.data.errors;
+        let mensaje ="";
+        for (const campo in errores) {
+          mensaje += `Error en ${campo}: ${errores[campo].join(', ')}`;
+        }
+        setMssgError(mensaje);
+        return;
+      } else if (error.request) {
+        Alert.alert('Error', 'No hubo respuesta del servidor');
+        return;
+      } else {
+        Alert.alert('Error', 'Error al hacer la solicitud');
+        return;
+      }
+    }
+  };
 
   if (ingreso) {
     return (
@@ -405,6 +458,24 @@ export default function Login() {
             <View style={styles.caja}>
               <Text style={styles.textcaja}>{mssgError ? mssgError : login ? 'LOG IN' : 'Registrarse'}</Text>
               <View style={styles.separator} />
+              {restContra ? ( 
+                <>
+                <TextInput
+                  placeholder="Usuario"
+                  value={username}
+                  onChangeText={setUsername}
+                  style={styles.input}
+                  autoCapitalize="none"
+                />
+                <TouchableOpacity style={styles.button} onPress={restablecerContra}>
+                  <Text style={styles.buttonText}>Restablecer</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.button} onPress={cambioPantalla2}>
+                  <Text style={styles.buttonText}>Volver al Inicio de Sesión</Text>
+                </TouchableOpacity>
+              </>
+              ) : (
+                <>
               {!login && (
                 <View>
                   <TextInput
@@ -485,7 +556,7 @@ export default function Login() {
                     <Text style={styles.buttonText}>Volver al Inicio de Sesión</Text>
                   </TouchableOpacity>
                 </>
-              )}
+              )}</>)}
             </View>
           </View>
         </ScrollView>
@@ -494,7 +565,7 @@ export default function Login() {
       {/* Footer fijo en la parte inferior */}
       <View style={styles.footerContainer}>
         <View style={styles.textContainer}>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={cambioARestContra}>
         <Text style={styles.invitado}>    ¿Olvidaste tu Contraseña?</Text>
         </TouchableOpacity> 
           <Text style={styles.footerText}>© 2024 FilmApp - Todos los derechos reservados</Text>
