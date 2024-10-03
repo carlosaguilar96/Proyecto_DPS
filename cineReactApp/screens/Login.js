@@ -115,19 +115,6 @@ export default function Login() {
       return;
     }
 
-    const usuarioInfo = {
-      nombreUsuario: username,
-    };
-
-    // Almacenar la información del usuario en AsyncStorage
-    try {
-      await AsyncStorage.setItem('usuarioInfo', JSON.stringify(usuarioInfo));
-      console.log('Información del usuario almacenada correctamente');
-    } catch (error) {
-      console.log('Error al almacenar información del usuario:', error);
-    }
-
-
 
     //Ingreso del cliente a la BD
     try {
@@ -141,6 +128,18 @@ export default function Login() {
       });
       Alert.alert('Registro exitoso', 'Usuario creado correctamente');
 
+      const Nombreuser = {
+        nombreUsuario: username,
+        sesion: 2,
+      };
+  
+      // Almacenar la información del usuario en AsyncStorage
+      try {
+        await AsyncStorage.setItem('Nombreuser', JSON.stringify(Nombreuser));
+        console.log('Información del usuario almacenada correctamente');
+      } catch (error) {
+        console.log('Error al almacenar información del usuario:', error);
+      }
 
       setMiVariable2(2);
       //El MiVariable es una variable de Context que al cambiar se mantiene como tal independientemente de lo que haga  o a que ruta vaya en la app
@@ -165,7 +164,16 @@ export default function Login() {
     }
   };
 
-  const EntrarInvitado = () => {
+  const EntrarInvitado = async() => {
+    const Nombreuser = {
+      sesion: 1,
+    };
+    try {
+      await AsyncStorage.setItem('Nombreuser', JSON.stringify(Nombreuser));
+      console.log('Información del usuario almacenada correctamente');
+    } catch (error) {
+      console.log('Error al almacenar información del usuario:', error);
+    }
     setMiVariable2(1);
     setIngreso(true);
     setMssgError('');
@@ -182,6 +190,19 @@ export default function Login() {
       setMssgError("Ingresar contraseña.");
       return;
     }
+
+    const Nombreuser = {
+          nombreUsuario: username,
+          sesion: 2,
+        };
+
+    try {
+      await AsyncStorage.setItem('Nombreuser', JSON.stringify(Nombreuser));
+      console.log('Información del usuario almacenada correctamente');
+    } catch (error) {
+      console.log('Error al almacenar información del usuario:', error);
+    }
+
     try {
       const response = await axios.post(`${API_URL}/api/iniciarSesion`, {
         user: username,
@@ -192,17 +213,6 @@ export default function Login() {
           setMiVariable2(3);
         } else {
           setMiVariable2(2);
-        }
-
-        const usuarioInfo = {
-          nombreUsuario: username,
-        };
-
-        try {
-          await AsyncStorage.setItem('usuarioInfo', JSON.stringify(usuarioInfo));
-          console.log('Información del usuario almacenada correctamente');
-        } catch (error) {
-          console.log('Error al almacenar información del usuario:', error);
         }
 
         setIngreso(true);
@@ -226,9 +236,11 @@ export default function Login() {
         setMssgError(mensaje);
         return;
       } else if (error.request) {
+        setMssgError('');
         Alert.alert('Error', 'No hubo respuesta del servidor');
         return;
       } else {
+        setMssgError('');
         Alert.alert('Error', 'Error al hacer la solicitud');
         return;
       }

@@ -7,6 +7,7 @@ import { AppContext } from '../assets/components/Context';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import { API_URL } from '@env';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 //Esto agrupa las fuciones que vienen del DRAWER por sucursal,idioma y titulo, es para que no se renderizen varias cards con la misma peli
 const agruparTitle = (data) => {
@@ -129,12 +130,17 @@ export default function Cartelera() {
     }, [])
   );
 
-  const handleNavigation = (title, hora, idioma,sucursal,fecha, image,item) =>{
-    if(miVariable2 === 1){
+  const handleNavigation = async (title, hora, idioma,sucursal,fecha, image,item) =>{
+    const infouser = await AsyncStorage.getItem('Nombreuser');
+
+    const parsedUsuarioInfo = JSON.parse(infouser);
+    if(parsedUsuarioInfo.sesion === 1){
       setModalVisible(true);
     }
-    else
-    navigation.navigate('Boletos', {title, hora, idioma,sucursal,fecha,image,item});
+    else{
+      navigation.navigate('Boletos', {title, hora, idioma,sucursal,fecha,image,item});
+    }
+    
   }
 
   const handleModalClose = () => {
