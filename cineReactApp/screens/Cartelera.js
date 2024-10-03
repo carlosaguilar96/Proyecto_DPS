@@ -402,7 +402,7 @@ const styles = StyleSheet.create({
     marginRight: 20,
   },
   title: {
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 10,
   },

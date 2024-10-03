@@ -128,3 +128,110 @@ export const Funcion = [
   },
 
 ];
+
+export const Salas = [
+  {
+    codSala: 1,
+    capacidad: 40, 
+    codsucursal: 25,
+    tipo: 'Estandar',
+    estadoE: 'Activo',
+   
+  },
+  {
+    codSala: 2,
+    capacidad: 40, 
+    codsucursal: 25,
+    tipo: 'Estandar',
+    estadoE: 'Activo',
+  },
+  {
+    codSala: 3,
+    capacidad: 40, 
+    codsucursal: 25,
+    tipo: 'Estandar',
+    estadoE: 'Inactivo',
+  },
+]
+
+export const movieData = [
+  {
+    CodPelicula: 1,
+    Nombre: 'Pelicula 1',
+    Duracion: 120,
+    Clasificacion:'A',
+    Director: 'Patroclo',
+    Genero: 'Accion',
+    estadoE: 'Activo',
+    Sinopsis:'Tras un naufragio, un robot inteligente llamado Roz queda varado en una isla deshabitada. Para sobrevivir al duro entorno, Roz establece vinculos con los animales de la isla y cuida de una cria de ganso huerfana.',
+  },
+  {
+    CodPelicula: 2,
+    Nombre: 'Pelicula 2',
+    Duracion: 120,
+    Clasificacion:'B',
+    Director: 'Patroclo',
+    Genero: 'Accion',
+    estadoE: 'Inactivo',
+    Sinopsis:'Concebida como un salvaje ejercicio de terror gore, The Substance construye una energica satira sobre la presion estetica a la que se ven sometidas las mujeres por parte de la industria del entretenimiento, y por la sociedad en su conjunto.',
+  },
+  {
+    CodPelicula: 3,
+    Nombre: 'Pelicula 3',
+    Duracion: 120,
+    Clasificacion:'A',
+    Director: 'Patroclo',
+    Genero: 'Accion',
+    estadoE: 'Activo',
+    Sinopsis:'Tras un naufragio, un robot inteligente llamado Roz queda varado en una isla deshabitada. Para sobrevivir al duro entorno, Roz establece vinculos con los animales de la isla y cuida de una cria de ganso huerfana.',
+  },
+  {
+    CodPelicula: 4,
+    Nombre: 'Pelicula 4',
+    Duracion: 120,
+    Clasificacion:'A',
+    Director: 'Patroclo',
+    estadoE: 'Inactivo',
+    Genero: 'Accion',
+    Sinopsis:'Esto es sinopsis'
+  },
+  {
+    CodPelicula: 5,
+    Nombre: 'Pelicula 5',
+    Duracion: 120,
+    Clasificacion:'C',
+    Director: 'Patroclo',
+    Genero: 'Accion',
+    estadoE: 'Activo',
+    Sinopsis:'Esto es sinopsis'
+  },
+  {
+    CodPelicula: 6,
+    Nombre: 'Pelicula 6',
+    Duracion: 120,
+    Clasificacion:'A',
+    Director: 'Patroclo',
+    Genero: 'Accion',
+    estadoE: 'Activo',
+    Sinopsis:'Esto es sinopsis'
+  },
+];
+
+export const administrador = [{
+  nombreAdmin: 'Admin1',
+  nombre: 'Juan',
+  apellido: 'Pérez',
+  dui: '12345678-9',
+  email: 'juan.perez@example.com',
+  estadoE: 'Inactivo'
+},
+{
+  nombreAdmin: 'Admin2',
+  nombre: 'Carlos',
+  apellido: 'Aguilar',
+  dui: '12345678-9',
+  email: 'juan.perez@example.com',
+  estadoE: 'Activo',
+},
+
+];

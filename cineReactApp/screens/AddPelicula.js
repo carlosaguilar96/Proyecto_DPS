@@ -30,9 +30,7 @@ const AñadirPelicula = () => {
 
   return (
     <ScrollView style={estilos.contenedor}>
-      <View style={estilos.cabecera}>
-        <Text style={estilos.textoCabecera}>Añadir Película</Text>
-      </View>
+      
 
       <View style={estilos.formulario}>
         <Text>Nombre:</Text>
