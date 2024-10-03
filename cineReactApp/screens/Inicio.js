@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useContext } from 'react';
-import { ScrollView, View, Text, Image, Dimensions, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
+import { ScrollView, View, Text, Image, Dimensions, TouchableOpacity, FlatList, StyleSheet, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import MainContainer from '../assets/components/MainContainer';
 import { Picker } from '@react-native-picker/picker';
@@ -28,6 +28,10 @@ const Inicio = () => {
   const [mensajeCargando, setMensaje] = useState("Cargando...");
   const [mensajeCargando2, setMensaje2] = useState("Cargando...");
 
+  const [mision, setMision] = useState("Cargando ...");
+  const [vision, setVision] = useState("Cargando ... ");
+
+  const [telefonos, setTelefonos] = useState("Cargando ... ");
 
   const HandleEffect = (item) => {
     setMiVariable(2); // Cambia el valor de miVariable al hacer clic en la card
@@ -73,6 +77,17 @@ const Inicio = () => {
     }
   }
 
+  const obtenerMisionVision = async () =>{
+    try {
+      const response = await axios.get(`${API_URL}/api/cines/index`);
+
+      setMision(response.data.cine.mision);
+      setVision(response.data.cine.vision);
+
+    } catch (error) {
+      console.log("Error al traer el logo del cine: " + error);
+    }
+  }
   // Renderiza cada item en la lista
   const renderItem = ({ item, isEstreno }) => {
 
@@ -121,14 +136,25 @@ const Inicio = () => {
 
   const obtenerSucursales = async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/sucursales/index/1`);
+      const response = await axios.get(`${API_URL}/api/sucursales/index`);
 
-      if (response.data.sucursales.length != 0)
+      if (response.data.sucursales.length != 0){
+
+        let arregloT = response.data.sucursales;
         setSucursales(response.data.sucursales);
+
+        let telefonos = "Teléfonos:\n\n";
+        arregloT.forEach(element => {
+          telefonos += `${element.sucursal} : ${element.telefono}\n`;
+        });
+
+        setTelefonos(telefonos);
+      }
 
     } catch (error) {
       if (error.request) {
-        Alert.alert('Error', 'No hubo respuesta del servidor');
+        Alert.alert('Error', 'No hubo respuesta del servidor ');
+        console.log(error);
         return;
       } else {
         Alert.alert('Error', 'Error al hacer la solicitud');
@@ -145,6 +171,7 @@ const Inicio = () => {
 
   useEffect(() => {
     obtenerCartelera();
+    obtenerMisionVision();
     obtenerSucursales();
     obtenerEstrenos();
   }, []);
@@ -220,17 +247,16 @@ const Inicio = () => {
         </View>
         <View style={styles.footerContainer}>
           <View style={styles.textContainer}>
-            <View style={styles.column}>
+            <TouchableOpacity style={styles.column} onPress={() => Alert.alert("Quiénes somos", `Misión\n${mision}\n\nVisión:\n${vision}`)}>
               <Text style={styles.header}>Quienes Somos</Text>
               <Text style={styles.text}>Misión</Text>
               <Text style={styles.text}>Visión</Text>
-              <Text style={styles.text}>Políticas y Condiciones</Text>
-            </View>
-            <View style={styles.column}>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.column} onPress={() => Alert.alert("Contáctanos", telefonos)}>
               <Text style={styles.header}>Contáctanos</Text>
               <Text style={styles.text}>Escríbenos</Text>
               <Text style={styles.text}>Trabaja con nosotros</Text>
-            </View>
+            </TouchableOpacity>
           </View>
           <View style={styles.iconsContainer}>
             <Icon name="facebook" size={30} color="#000" style={styles.icon} />

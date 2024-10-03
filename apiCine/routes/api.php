@@ -48,7 +48,7 @@ Route::put('/cines/update/{id}', [CineController::class, 'update']);
 // Ruta para crear la sucursal
 Route::post('/sucursales/crearSucursal', [SucursalController::class, 'store']);
 // Ruta para mostrar todas las sucursales por cine
-Route::get('/sucursales/index/{id}', [SucursalController::class, 'index']);
+Route::get('/sucursales/index', [SucursalController::class, 'index']);
 // Ruta para mostrar una sucursal
 Route::get('/sucursales/show/{id}', [SucursalController::class, 'show']);
 // Ruta para modificar una sucursal
