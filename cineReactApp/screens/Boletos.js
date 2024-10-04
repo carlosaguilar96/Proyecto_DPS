@@ -71,7 +71,7 @@ export default function Boletos() {
   const obtenerAsientosOcupados = async () => {
     try {
       const response = await axios.get(`${API_URL}/api/funciones/devolverAsientos/${item.codFuncion}`);
-      console.log(item.codFuncion);
+      console.log(item);
       if (response.data.asientos.length != 0)
         setAsientosOcupados(response.data.asientos);
 

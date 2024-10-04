@@ -256,7 +256,7 @@ export default function Login() {
   const validarCierre = () => {
 
     Alert.alert("Mensaje", "¿Está seguro de querer cerrar sesión?", [
-      { "text": "Sí", onPress: cerrarSesion},
+      { "text": "Sí", onPress: cerrarSesion },
       { "text": "No" }
     ]);
   };
@@ -426,8 +426,8 @@ export default function Login() {
               drawerIcon: ({ color }) => (<Icon name="logout" size={20} color={color} />),
             }}>
               {() => (
-                <TouchableOpacity>
-                  <Button title="Cerrar Sesión" onPress={validarCierre} />
+                <TouchableOpacity style={styles.button} onPress={validarCierre}>
+                  <Text style={styles.buttonText} >Cerrar Sesión</Text>
                 </TouchableOpacity>
               )}
 
@@ -493,8 +493,8 @@ export default function Login() {
 
             }}>
               {() => (
-                <TouchableOpacity>
-                  <Button title="Cerrar Sesión" onPress={validarCierre} />
+                <TouchableOpacity style={styles.button} onPress={validarCierre}>
+                  <Text style={styles.buttonText} >Cerrar Sesión</Text>
                 </TouchableOpacity>
               )}
             </Drawer.Screen>
@@ -678,7 +678,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 10,
     width: 360,
-
+    alignSelf: 'center'
   },
   buttonText: {
     color: '#fff',
