@@ -46,10 +46,15 @@ const PantallaSeleccionAsientos = ({ navigation, route }) => {
       const {title, sucursal, fecha, hora, idioma, total, cantidad, image, childP, childB, adultoP, adultoB, abueP, abueB, funcion} = params;
       navigation.navigate("VistaPago", {title, sucursal, fecha, hora, idioma, total, cantidad, image, childP, childB, adultoP, adultoB, abueP, abueB, asientosSeleccionados, funcion} );
 
+      limpiar();
     }
     else
       Alert.alert("Mensaje", `Faltan ${params.cantidad - asientosSeleccionados.length} asientos por seleccionar`);
   };
+
+  const limpiar = () =>{
+    setAsientosSeleccionados([]);
+  }
 
   const obtenerAsientosOcupados = async () => {
     try {

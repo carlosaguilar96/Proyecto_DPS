@@ -22,9 +22,15 @@ import React, { useState, useContext, useEffect} from 'react';
         return;
       }
       navigation.navigate('PantallaSeleccionAsientos',{title, idioma, hora,sucursal, fecha,image, childB, adultoB,abueB, total, sala, cantidad, funcion, childP, adultoP, abueP});
-
+      limpiar();
     };
 
+    const limpiar = () =>{
+      setchildB(0);
+      setadultoB(0);
+      setabueB(0);
+    }
+    
     const handleBack = () => {
       navigation.goBack();
     };
