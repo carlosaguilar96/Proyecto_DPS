@@ -6,11 +6,9 @@ import InfoPelicula from '../assets/components/InfoPelicula';
 import SeleccionAsientos from '../assets/components/SeleccionAsientos';
 import TotalYContinuar from '../assets/components/TotalContinuar';
 import { API_URL } from '@env';
-import axios from 'axios';
 
 const PantallaSeleccionAsientos = ({ navigation, route }) => {
   const [asientosSeleccionados, setAsientosSeleccionados] = useState([]);
-  const [asientosOcupados, setAsientosOcupados] = useState([]);
   const { params } = route;
 
   const filas = [
@@ -56,28 +54,7 @@ const PantallaSeleccionAsientos = ({ navigation, route }) => {
     setAsientosSeleccionados([]);
   }
 
-  const obtenerAsientosOcupados = async () => {
-    try {
-      const response = await axios.get(`${API_URL}/api/funciones/devolverAsientos/${params.funcion}`);
-
-      if (response.data.asientos.length != 0)
-        setAsientosOcupados(response.data.asientos);
-
-
-    } catch (error) {
-      if (error.request) {
-        Alert.alert('Error', 'No hubo respuesta del servidor');
-        return;
-      } else {
-        Alert.alert('Error', 'Error al hacer la solicitud');
-        return;
-      }
-    }
-  }
-
-  useEffect(() => {
-    obtenerAsientosOcupados();
-  }, []);
+  
 
   return (
     <View style={styles.container}>
@@ -95,7 +72,7 @@ const PantallaSeleccionAsientos = ({ navigation, route }) => {
         filas={filas}
         columnas={columnas}
         asientosSeleccionados={asientosSeleccionados}
-        asientosOcupados={asientosOcupados}
+        asientosOcupados={params.asientosOcupados}
         onSeleccionarAsiento={seleccionarAsiento}
       />
       <TotalYContinuar total={params.total.toFixed(2)} onContinuar={handleContinuar} />

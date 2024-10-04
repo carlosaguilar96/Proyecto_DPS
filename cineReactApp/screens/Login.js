@@ -219,6 +219,7 @@ export default function Login() {
           setMiVariable2(2);
         }
 
+        Alert.alert("Mensaje", "Inicio de sesión exitoso");
         setIngreso(true);
         setMssgError('');
 
@@ -252,7 +253,15 @@ export default function Login() {
 
   };
 
-  const validarCierre = async () => {
+  const validarCierre = () => {
+
+    Alert.alert("Mensaje", "¿Está seguro de querer cerrar sesión?", [
+      { "text": "Sí", onPress: cerrarSesion},
+      { "text": "No" }
+    ]);
+  };
+
+  const cerrarSesion = async () => {
     setIngreso(false);
     setLogin(true);
     setUsername('');
@@ -270,8 +279,7 @@ export default function Login() {
     } catch (error) {
       console.log('Error al cerrar sesión:', error);
     }
-  };
-
+  }
 
   const cambioPantalla = () => {
     setLogin(!login);
@@ -402,7 +410,7 @@ export default function Login() {
               name="PantallaSeleccionAsientos"
               component={PantallaSeleccionAsientos}
               options={{
-                drawerItemStyle: { display: 'none' }, 
+                drawerItemStyle: { display: 'none' },
                 headerShown: false,
               }}
             />
@@ -410,7 +418,7 @@ export default function Login() {
               name="VistaPago"
               component={VistaPago}
               options={{
-                drawerItemStyle: { display: 'none' }, 
+                drawerItemStyle: { display: 'none' },
                 headerShown: false,
               }}
             />
@@ -419,7 +427,6 @@ export default function Login() {
             }}>
               {() => (
                 <TouchableOpacity>
-                  <Text style={styles.textcaja}>¿Seguro que deseas cerrar sesión?</Text>
                   <Button title="Cerrar Sesión" onPress={validarCierre} />
                 </TouchableOpacity>
               )}
@@ -437,7 +444,7 @@ export default function Login() {
               headerTintColor: '#fff',
             }}
           >
-            <Drawer.Screen name="Menu Admin" component={MenuAdmin} initialParams={{setIndicadorCine}}
+            <Drawer.Screen name="Menu Admin" component={MenuAdmin} initialParams={{ setIndicadorCine }}
               options={{
                 drawerIcon: ({ color }) => (<Icon name="home" size={20} color={color} />)
               }}
@@ -487,7 +494,6 @@ export default function Login() {
             }}>
               {() => (
                 <TouchableOpacity>
-                  <Text>¿Seguro que deseas cerrar sesión?</Text>
                   <Button title="Cerrar Sesión" onPress={validarCierre} />
                 </TouchableOpacity>
               )}
