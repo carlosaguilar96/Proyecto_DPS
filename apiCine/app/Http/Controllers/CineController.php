@@ -76,9 +76,11 @@ class CineController extends Controller
     }
 
     //función para modificar cine
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
-        $cine = Cine::find($id);
+        $cines = Cine::all();
+
+        $cine = $cines[0];
         if(!$cine){
             $data = [
                 'message' => 'Cine no encontrado',

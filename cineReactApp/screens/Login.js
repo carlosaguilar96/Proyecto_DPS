@@ -23,7 +23,7 @@ import ModificarAdministrador from './EditAdmin';
 import AñadirFuncion from './AddFuncion';
 import AñadirSala from './AddSala';
 import AñadirAdministrador from './AddAdmin';
-
+import EditarCine from './EditarCine';
 
 LogBox.ignoreLogs([
   'Found screens with the same name nested inside one another',
@@ -47,6 +47,8 @@ export default function Login() {
   const [restContra, setRestContra] = useState(false);
 
   const [logo, setLogo] = useState("");
+
+  const [indicarCine, setIndicadorCine] = useState(false);
 
   const obtenerLogoCine = async () => {
 
@@ -132,7 +134,7 @@ export default function Login() {
         nombreUsuario: username,
         sesion: 2,
       };
-  
+
       // Almacenar la información del usuario en AsyncStorage
       try {
         await AsyncStorage.setItem('Nombreuser', JSON.stringify(Nombreuser));
@@ -164,7 +166,7 @@ export default function Login() {
     }
   };
 
-  const EntrarInvitado = async() => {
+  const EntrarInvitado = async () => {
     const Nombreuser = {
       sesion: 1,
     };
@@ -192,9 +194,9 @@ export default function Login() {
     }
 
     const Nombreuser = {
-          nombreUsuario: username,
-          sesion: 2,
-        };
+      nombreUsuario: username,
+      sesion: 2,
+    };
 
     try {
       await AsyncStorage.setItem('Nombreuser', JSON.stringify(Nombreuser));
@@ -224,7 +226,7 @@ export default function Login() {
       }
     } catch (error) {
       if (error.response) {
-        if(error.response.data.status === 404){
+        if (error.response.data.status === 404) {
           setMssgError('Usuario no existe');
           return;
         }
@@ -281,7 +283,7 @@ export default function Login() {
     setMssgError('');
   };
 
-  const cambioARestContra = () =>{
+  const cambioARestContra = () => {
     setRestContra(true);
     setMssgError("Restablecer contraseña");
     setUsername('');
@@ -295,7 +297,7 @@ export default function Login() {
   };
 
   const restablecerContra = async () => {
-    if(username == ""){
+    if (username == "") {
       setMssgError("Ingresar un nombre de usuario.");
       return;
     }
@@ -303,18 +305,18 @@ export default function Login() {
       const response = await axios.put(`${API_URL}/api/restablecerContra`, {
         user: username,
       });
-      if(response.data.usuario){
+      if (response.data.usuario) {
         Alert.alert('Restablecimiento de contraseña', 'Tu nueva contraseña ha sido enviada al correo. Recuerda cambiarla al ingresar.')
         cambioPantalla2();
       }
     } catch (error) {
       if (error.response) {
-        if(error.response.data.status === 404){
+        if (error.response.data.status === 404) {
           setMssgError('Usuario no existe');
           return;
         }
         const errores = error.response.data.errors;
-        let mensaje ="";
+        let mensaje = "";
         for (const campo in errores) {
           mensaje += `Error en ${campo}: ${errores[campo].join(', ')}`;
         }
@@ -399,7 +401,7 @@ export default function Login() {
             }}>
               {() => (
                 <TouchableOpacity>
-                  <Text>¿Seguro que deseas cerrar sesión?</Text>
+                  <Text style={styles.textcaja}>¿Seguro que deseas cerrar sesión?</Text>
                   <Button title="Cerrar Sesión" onPress={validarCierre} />
                 </TouchableOpacity>
               )}
@@ -417,7 +419,7 @@ export default function Login() {
               headerTintColor: '#fff',
             }}
           >
-            <Drawer.Screen name="Menu Admin" component={MenuAdmin}
+            <Drawer.Screen name="Menu Admin" component={MenuAdmin} initialParams={{setIndicadorCine}}
               options={{
                 drawerIcon: ({ color }) => (<Icon name="home" size={20} color={color} />)
               }}
@@ -454,6 +456,13 @@ export default function Login() {
               options={{
                 drawerIcon: ({ color }) => (<Icon name="edit" size={20} color={color} />)
               }} />
+
+            {indicarCine == true ? (
+              <Drawer.Screen name="Editar Cine" component={EditarCine}
+                options={{
+                  drawerIcon: ({ color }) => (<Icon name="edit" size={20} color={color} />)
+                }} />
+            ) : <></>}
             <Drawer.Screen name="Cerrar Sesión" options={{
               drawerIcon: ({ color }) => (<Icon name="logout" size={20} color={color} />),
 
@@ -483,110 +492,110 @@ export default function Login() {
           {/* Contenedor para el contenido principal */}
           <View style={styles.mainContent}>
             {logo != "" ? (
-                <Image source={{ uri: `${API_URL}/img/${logo}` }} style={styles.img}/>
+              <Image source={{ uri: `${API_URL}/img/${logo}` }} style={styles.img} />
             ) : <View />}
             <View style={styles.caja}>
               <Text style={styles.textcaja}>{mssgError ? mssgError : login ? 'LOG IN' : 'Registrarse'}</Text>
               <View style={styles.separator} />
-              {restContra ? ( 
+              {restContra ? (
                 <>
-                <TextInput
-                  placeholder="Usuario"
-                  value={username}
-                  onChangeText={setUsername}
-                  style={styles.input}
-                  autoCapitalize="none"
-                />
-                <TouchableOpacity style={styles.button} onPress={restablecerContra}>
-                  <Text style={styles.buttonText}>Restablecer</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.button} onPress={cambioPantalla2}>
-                  <Text style={styles.buttonText}>Volver al Inicio de Sesión</Text>
-                </TouchableOpacity>
-              </>
-              ) : (
-                <>
-              {!login && (
-                <View>
                   <TextInput
-                    placeholder="Correo electrónico"
-                    value={email}
-                    onChangeText={setEmail}
+                    placeholder="Usuario"
+                    value={username}
+                    onChangeText={setUsername}
                     style={styles.input}
+                    autoCapitalize="none"
                   />
-                  <TextInput
-                    placeholder="Nombre"
-                    value={nombre}
-                    onChangeText={setNombre}
-                    style={styles.input}
-                  />
-                  <TextInput
-                    placeholder="Apellido"
-                    value={apellido}
-                    onChangeText={setApellido}
-                    style={styles.input}
-                  />
-                  <TextInputMask
-                    type={'custom'}
-                    options={{
-                      mask: '99999999-9',
-                    }}
-                    value={dui}
-                    onChangeText={text => setDui(text)}
-                    style={styles.input}
-                    placeholder="DUI"
-                    keyboardType="numeric"
-                  />
-                </View>
-              )}
-              <TextInput
-                placeholder="Usuario"
-                value={username}
-                onChangeText={setUsername}
-                style={styles.input}
-                autoCapitalize="none"
-              />
-              <TextInput
-                placeholder="Contraseña"
-                value={contra}
-                onChangeText={setContra}
-                style={styles.input}
-                secureTextEntry
-              />
-              {!login && (
-                <TextInput
-                  placeholder="Confirmar Contraseña"
-                  value={confirmContra}
-                  onChangeText={setConfirmContra}
-                  style={styles.input}
-                  secureTextEntry
-                />
-              )}
-              {login ? (
-                <>
-                  <TouchableOpacity style={styles.button} onPress={iniciarSesion}>
-                    <Text style={styles.buttonText}>Iniciar Sesión</Text>
+                  <TouchableOpacity style={styles.button} onPress={restablecerContra}>
+                    <Text style={styles.buttonText}>Restablecer</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity style={styles.button} onPress={cambioPantalla}>
-                    <Text style={styles.buttonText}>Registrate</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.button} onPress={() => EntrarInvitado()}>
-                    <Text style={styles.buttonText}>Entrar como invitado</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.button}>
-                    <Text style={styles.buttonText}>Acceder con Google</Text>
-                  </TouchableOpacity>
-                </>
-              ) : (
-                <>
-                  <TouchableOpacity style={styles.button} onPress={registrarCliente}>
-                    <Text style={styles.buttonText}>Registrate</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.button} onPress={cambioPantalla}>
+                  <TouchableOpacity style={styles.button} onPress={cambioPantalla2}>
                     <Text style={styles.buttonText}>Volver al Inicio de Sesión</Text>
                   </TouchableOpacity>
                 </>
-              )}</>)}
+              ) : (
+                <>
+                  {!login && (
+                    <View>
+                      <TextInput
+                        placeholder="Correo electrónico"
+                        value={email}
+                        onChangeText={setEmail}
+                        style={styles.input}
+                      />
+                      <TextInput
+                        placeholder="Nombre"
+                        value={nombre}
+                        onChangeText={setNombre}
+                        style={styles.input}
+                      />
+                      <TextInput
+                        placeholder="Apellido"
+                        value={apellido}
+                        onChangeText={setApellido}
+                        style={styles.input}
+                      />
+                      <TextInputMask
+                        type={'custom'}
+                        options={{
+                          mask: '99999999-9',
+                        }}
+                        value={dui}
+                        onChangeText={text => setDui(text)}
+                        style={styles.input}
+                        placeholder="DUI"
+                        keyboardType="numeric"
+                      />
+                    </View>
+                  )}
+                  <TextInput
+                    placeholder="Usuario"
+                    value={username}
+                    onChangeText={setUsername}
+                    style={styles.input}
+                    autoCapitalize="none"
+                  />
+                  <TextInput
+                    placeholder="Contraseña"
+                    value={contra}
+                    onChangeText={setContra}
+                    style={styles.input}
+                    secureTextEntry
+                  />
+                  {!login && (
+                    <TextInput
+                      placeholder="Confirmar Contraseña"
+                      value={confirmContra}
+                      onChangeText={setConfirmContra}
+                      style={styles.input}
+                      secureTextEntry
+                    />
+                  )}
+                  {login ? (
+                    <>
+                      <TouchableOpacity style={styles.button} onPress={iniciarSesion}>
+                        <Text style={styles.buttonText}>Iniciar Sesión</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity style={styles.button} onPress={cambioPantalla}>
+                        <Text style={styles.buttonText}>Registrate</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity style={styles.button} onPress={() => EntrarInvitado()}>
+                        <Text style={styles.buttonText}>Entrar como invitado</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity style={styles.button}>
+                        <Text style={styles.buttonText}>Acceder con Google</Text>
+                      </TouchableOpacity>
+                    </>
+                  ) : (
+                    <>
+                      <TouchableOpacity style={styles.button} onPress={registrarCliente}>
+                        <Text style={styles.buttonText}>Registrate</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity style={styles.button} onPress={cambioPantalla}>
+                        <Text style={styles.buttonText}>Volver al Inicio de Sesión</Text>
+                      </TouchableOpacity>
+                    </>
+                  )}</>)}
             </View>
           </View>
         </ScrollView>
@@ -595,9 +604,9 @@ export default function Login() {
       {/* Footer fijo en la parte inferior */}
       <View style={styles.footerContainer}>
         <View style={styles.textContainer}>
-        <TouchableOpacity onPress={cambioARestContra}>
-        <Text style={styles.invitado}>    ¿Olvidaste tu Contraseña?</Text>
-        </TouchableOpacity> 
+          <TouchableOpacity onPress={cambioARestContra}>
+            <Text style={styles.invitado}>    ¿Olvidaste tu Contraseña?</Text>
+          </TouchableOpacity>
           <Text style={styles.footerText}>© 2024 FilmApp - Todos los derechos reservados</Text>
         </View>
       </View>
@@ -660,7 +669,7 @@ const styles = StyleSheet.create({
   img: {
     alignItems: 'center',
     justifyContent: 'center',
-    margin:20,
+    margin: 20,
     width: '80%',
     height: 200,
   },

@@ -40,7 +40,7 @@ Route::post('/cines/crearCine', [CineController::class, 'store']);
 //Ruta para mostrar cine
 Route::get('/cines/index', [CineController::class, 'index']);
 //Ruta para modificar cine
-Route::put('/cines/update/{id}', [CineController::class, 'update']);
+Route::put('/cines/update', [CineController::class, 'update']);
 // Solo hay un cine por base de datos
 // El cine nunca se borrará
 

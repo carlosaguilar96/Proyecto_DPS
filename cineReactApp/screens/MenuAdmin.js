@@ -1,9 +1,11 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import { API_URL } from '@env';
 
 const menuOptions = [
   { name: 'Añadir Sala', icon: 'add' },
@@ -19,6 +21,12 @@ const menuOptions = [
 export default function MenuAdmin() {
 
   const navigation = useNavigation();
+  const route = useRoute();
+  const [admin, setAdmin] = useState("");
+  const [firstAdmin, setFirstAdmin] = useState("");
+  
+  const {setIndicadorCine} = route.params;
+
   const MenuButton = ({ item }) => {
     return (
       <TouchableOpacity style={styles.button} onPress={() => handleOnPress(item.name)}>
@@ -41,10 +49,51 @@ export default function MenuAdmin() {
     if(name == "Añadir Administrador"){
       navigation.navigate('Añadir Administrador');
     }
+    if(name == "Editar Cine"){
+      navigation.navigate("Editar Cine");
+    }
   }
 
+  const extraerAdmin = async () =>{
+    const infouser = await AsyncStorage.getItem('Nombreuser');
 
+    const parsedUsuarioInfo = JSON.parse(infouser);
+    setAdmin(parsedUsuarioInfo.nombreUsuario.toLowerCase());
+  }
+
+  const revisarAdmin = async () =>{
+    try {
+      const response = await axios.get(`${API_URL}/api/cines/index`);
+
+      let firstAdmin = response.data.cine.firstAdmin;
+      firstAdmin = firstAdmin.toLowerCase();
+
+      setFirstAdmin(firstAdmin);
+
+    } catch (error) {
+      console.log("Error al traer el logo del cine: " + error);
+    }
+  }
   const MainScreen = () => {
+
+    useEffect(() =>{
+      extraerAdmin();
+      revisarAdmin();
+
+      if(firstAdmin != "" && admin != ""){
+
+        if(firstAdmin === admin){
+
+          if(menuOptions.length == 4){
+            menuOptions.push({name: "Editar Cine", icon: "edit"});
+
+            // Se añade la opción para editar cine en el drawer
+            setIndicadorCine(true);
+          }
+        }
+      }
+    }, []);
+
     return (
       <View style={styles.container}>
         <FlatList
