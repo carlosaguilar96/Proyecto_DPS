@@ -14,7 +14,6 @@ class SalaController extends Controller
     {
 
         $validator = Validator::make($request->all(), [
-            "capacidad" => ['required','numeric', 'min:0'],
             "sucursal" => 'required'
         ]);
 
@@ -30,7 +29,7 @@ class SalaController extends Controller
 
         try {
             $sala = Sala::create([
-                "capacidad" => $request->capacidad,
+                "capacidad" => 40,
                 "codSucursal" => $request->sucursal
             ]);
         } catch (Exception $error) {
