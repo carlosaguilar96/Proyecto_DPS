@@ -52,7 +52,8 @@ class SalaController extends Controller
     //Función para mostrar salas
     public function index()
     {
-        $salas = Sala::all();
+        $salas = Sala::join('sucursales', 'salas.codSucursal', '=', 'sucursales.codSucursal')
+                    ->select('salas.*','sucursales.sucursal')->get();
         $data = [
             'salas' => $salas,
             'status' => 200
