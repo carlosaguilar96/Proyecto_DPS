@@ -1,13 +1,13 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 
-const InfoPelicula = ({ titulo, sucursal, horario, idioma, posterUri }) => {
+const InfoPelicula = ({ titulo, sucursal, horario, dia, idioma, posterUri }) => {
   return (
     <View style={styles.container}>
       <Image source={{ uri: posterUri }} style={styles.poster} />
       <View style={styles.detalles}>
         <Text style={styles.titulo}>{titulo}</Text>
-        <Text style={styles.subtitulo}>{sucursal} | {horario} | {idioma}</Text>
+        <Text style={styles.subtitulo}>{sucursal} | {horario} | {dia} | {idioma}</Text>
       </View>
     </View>
   );

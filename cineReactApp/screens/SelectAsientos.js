@@ -1,14 +1,18 @@
-import React, { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, StyleSheet, Alert } from 'react-native';
 import Cabecera from '../assets/components/Cabecera';
 import BarraProgreso from '../assets/components/BarraProgreso';
 import InfoPelicula from '../assets/components/InfoPelicula';
 import SeleccionAsientos from '../assets/components/SeleccionAsientos';
 import TotalYContinuar from '../assets/components/TotalContinuar';
+import { API_URL } from '@env';
+import axios from 'axios';
 
-const PantallaSeleccionAsientos = ({ navigation }) => {
+const PantallaSeleccionAsientos = ({ navigation, route }) => {
   const [asientosSeleccionados, setAsientosSeleccionados] = useState([]);
-  
+  const [asientosOcupados, setAsientosOcupados] = useState([]);
+  const { params } = route;
+
   const filas = [
     ['A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8'],
     ['B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'B8'],
@@ -16,19 +20,22 @@ const PantallaSeleccionAsientos = ({ navigation }) => {
     ['D1', 'D2', 'D3', 'D4', 'D5', 'D6', 'D7', 'D8'],
     ['E1', 'E2', 'E3', 'E4', 'E5', 'E6', 'E7', 'E8'],
   ];
-  
+
   const columnas = ['1', '2', '3', '4', '5', '6', '7', '8'];
-  const asientosOcupados = ['A2', 'C3', 'D4']; // PRUEBA XD
+  
+  const imagenURI = `${API_URL}/img/peliculas/${params.image}`;
 
   const seleccionarAsiento = (asiento) => {
     if (asientosSeleccionados.includes(asiento)) {
       setAsientosSeleccionados(asientosSeleccionados.filter(s => s !== asiento));
     } else {
-      setAsientosSeleccionados([...asientosSeleccionados, asiento]);
+      if (asientosSeleccionados.length < params.cantidad)
+        setAsientosSeleccionados([...asientosSeleccionados, asiento]);
+      else {
+        Alert.alert("Mensaje", "Ya seleccionó todos los asientos para su función");
+      }
     }
   };
-
-  const total = asientosSeleccionados.length * 10;
 
   const handleBack = () => {
     navigation.goBack();
@@ -37,16 +44,40 @@ const PantallaSeleccionAsientos = ({ navigation }) => {
   const handleContinuar = () => {
   };
 
+  const obtenerAsientosOcupados = async () =>{
+    try {
+      const response = await axios.get(`${API_URL}/api/funciones/devolverAsientos/${params.funcion}`);
+
+      if (response.data.asientos.length != 0)
+        setAsientosOcupados(response.data.asientos);
+
+
+    } catch (error) {
+      if (error.request) {
+        Alert.alert('Error', 'No hubo respuesta del servidor');
+        return;
+      } else {
+        Alert.alert('Error', 'Error al hacer la solicitud');
+        return;
+      }
+    }
+  }
+
+  useEffect(() => {
+    obtenerAsientosOcupados();
+  }, []);
+
   return (
     <View style={styles.container}>
       <Cabecera titulo="Entradas" onBack={handleBack} />
       <BarraProgreso />
       <InfoPelicula
-        titulo="Nombre de la película"
-        sucursal="Sucursal Cine"
-        horario="20:00"
-        idioma="Español"
-        posterUri="https://via.placeholder.com/150"
+        titulo={params.title}
+        sucursal={params.sucursal}
+        horario={params.hora}
+        dia={params.fecha}
+        idioma={params.idioma}
+        posterUri={imagenURI}
       />
       <SeleccionAsientos
         filas={filas}
@@ -55,7 +86,7 @@ const PantallaSeleccionAsientos = ({ navigation }) => {
         asientosOcupados={asientosOcupados}
         onSeleccionarAsiento={seleccionarAsiento}
       />
-      <TotalYContinuar total={total} onContinuar={handleContinuar} />
+      <TotalYContinuar total={params.total.toFixed(2)} onContinuar={handleContinuar} />
     </View>
   );
 };
@@ -64,7 +95,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f5f5f5',
-    paddingBottom: 64, 
+    paddingBottom: 64,
   },
 });
 
