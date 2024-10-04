@@ -13,7 +13,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const agruparTitle = (data) => {
   const groupedData = data.reduce((acc, item) => {
     if (!acc[item.titulo]) {
-      acc[item.titulo] = { ...item, horarios: [] };
+      acc[item.titulo] = { ...item, horarios: [] }; 
     }
 
     // Comprobar si ya existe un horario para la sucursal actual
@@ -23,7 +23,7 @@ const agruparTitle = (data) => {
       // Añadir un nuevo objeto para la sucursal si no existe
       acc[item.titulo].horarios.push({
         sucursal: item.sucursal,
-        idiomas: [{ idioma: item.idioma, detalles: [{ fecha: item.fecha, hora: item.hora }] }],
+        idiomas: [{ idioma: item.idioma, detalles: [{ fecha: item.fecha, hora: item.hora, precioNino: item.precioNino, precioAdulto: item.precioAdulto, precioTE: item.precioTE, codSala: item.codSala, codFuncion: item.codFuncion }] }],
       });
     } else {
       // Comprobar si el idioma ya existe para la sucursal
@@ -33,11 +33,11 @@ const agruparTitle = (data) => {
         // Añadir un nuevo idioma si no existe
         existingSucursal.idiomas.push({
           idioma: item.idioma,
-          detalles: [{ fecha: item.fecha, hora: item.hora }],
+          detalles: [{ fecha: item.fecha, hora: item.hora, precioNino: item.precioNino, precioAdulto: item.precioAdulto, precioTE: item.precioTE,codSala: item.codSala, codFuncion: item.codFuncion }],
         });
       } else {
         // Si el idioma ya existe, agregar el horario a los detalles
-        existingIdioma.detalles.push({ fecha: item.fecha, hora: item.hora });
+        existingIdioma.detalles.push({ fecha: item.fecha, hora: item.hora, precioNino: item.precioNino, precioAdulto: item.precioAdulto, precioTE: item.precioTE, codSala: item.codSala, codFuncion: item.codFuncion });
       }
     }
 
@@ -48,7 +48,7 @@ const agruparTitle = (data) => {
 };
 
 
-//Esta agrupa las peliculas que viene desde INICIO por titulo
+// Función para agrupar las películas por título e idioma y combinar los horarios
 const agruparPeliculas = (peliculas) => {
   const groupedData = peliculas.reduce((acc, item) => {
     // Si no existe una entrada con el título de la película, se crea una nueva
@@ -63,7 +63,7 @@ const agruparPeliculas = (peliculas) => {
       // Añadir un nuevo objeto para la sucursal si no existe
       acc[item.titulo].horarios.push({
         sucursal: item.sucursal,
-        idiomas: [{ idioma: item.idioma, detalles: [{ fecha: item.fecha, hora: item.hora }] }],
+        idiomas: [{ idioma: item.idioma, detalles: [{ fecha: item.fecha, hora: item.hora, precioNino: item.precioNino, precioAdulto: item.precioAdulto, precioTE: item.precioTE, codSala: item.codSala, codFuncion: item.codFuncion }] }],
       });
     } else {
       // Comprobar si el idioma ya existe para la sucursal
@@ -73,11 +73,11 @@ const agruparPeliculas = (peliculas) => {
         // Añadir un nuevo idioma si no existe
         existingSucursal.idiomas.push({
           idioma: item.idioma,
-          detalles: [{ fecha: item.fecha, hora: item.hora }],
+          detalles: [{ fecha: item.fecha, hora: item.hora, precioNino: item.precioNino, precioAdulto: item.precioAdulto, precioTE: item.precioTE, codSala: item.codSala, codFuncion: item.codFuncion }],
         });
       } else {
         // Si el idioma ya existe, agregar el horario a los detalles
-        existingIdioma.detalles.push({ fecha: item.fecha, hora: item.hora });
+        existingIdioma.detalles.push({ fecha: item.fecha, hora: item.hora, precioNino: item.precioNino, precioAdulto: item.precioAdulto, precioTE: item.precioTE, codSala: item.codSala, codFuncion: item.codFuncion });
       }
     }
 
@@ -130,7 +130,7 @@ export default function Cartelera() {
     }, [])
   );
 
-  const handleNavigation = async (title, hora, idioma,sucursal,fecha, image,item) =>{
+  const handleNavigation = async(title, hora, idioma,sucursal,fecha, image,precioNino, precioAdulto, precioTE, codSala, codFuncion) =>{
     const infouser = await AsyncStorage.getItem('Nombreuser');
 
     const parsedUsuarioInfo = JSON.parse(infouser);
@@ -138,7 +138,7 @@ export default function Cartelera() {
       setModalVisible(true);
     }
     else{
-      navigation.navigate('Boletos', {title, hora, idioma,sucursal,fecha,image,item});
+      navigation.navigate('Boletos', {title, hora, idioma,sucursal,fecha,image,precioNino, precioAdulto, precioTE, codSala, codFuncion});
     }
     
   }
@@ -209,8 +209,7 @@ export default function Cartelera() {
                   <View key={indexIdioma} style={styles.idiomaContainer}>
                     <Text style={styles.horarioTitle}>{`${idioma.idioma} `}</Text>
                     {idioma.detalles.map((detalle, indexDetalle) => (
-                      <TouchableOpacity key={indexDetalle} style={styles.horarioButton} onPress={() => handleNavigation(item.titulo, detalle.hora, idioma.idioma, horario.sucursal, detalle.fecha, item.image, item)}>
-                        <Text style={styles.horarioText}>{`${detalle.hora} `}</Text>
+                      <TouchableOpacity key={indexDetalle} style={styles.horarioButton} onPress={() => handleNavigation(item.title,detalle.hora, idioma.idioma, horario.sucursal, detalle.fecha, item.image, detalle.precioNino, detalle.precioAdulto, detalle.precioTE, detalle.codSala, detalle.codFuncion)}>
                       </TouchableOpacity>
                     ))}
                   </View>
@@ -246,7 +245,7 @@ export default function Cartelera() {
                       <View key={indexIdioma} style={styles.idiomaContainer}>
                         <Text style={styles.horarioTitle}>{`${idioma.idioma} `}</Text>
                         {idioma.detalles.map((detalle, indexDetalle) => (
-                          <TouchableOpacity key={indexDetalle} style={styles.horarioButton} onPress={() => handleNavigation(item.titulo, detalle.hora, idioma.idioma, horario.sucursal, detalle.fecha, item.image, item)}>
+                         <TouchableOpacity key={indexDetalle} style={styles.horarioButton} onPress={() => handleNavigation(item.title,detalle.hora, idioma.idioma, horario.sucursal, detalle.fecha, item.image, detalle.precioNino, detalle.precioAdulto, detalle.precioTE, detalle.codSala, detalle.codFuncion)}>
                             <Text style={styles.horarioText}>{`${detalle.hora} `}</Text>
                           </TouchableOpacity>
                         ))}
