@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect} from 'react';
-  import { View, Text, StyleSheet, Image, TouchableOpacity, FlatList, ScrollView, Button } from 'react-native';
+  import { View, Text, StyleSheet, Image, TouchableOpacity, Alert } from 'react-native';
   import { useRoute } from '@react-navigation/native';
   import { useNavigation } from '@react-navigation/native';
   import Cabecera from '../assets/components/Cabecera';
@@ -15,6 +15,11 @@ import React, { useState, useContext, useEffect} from 'react';
     const [total, setTotal] = useState(0);
   
     const handleNavigation =(title, idioma, hora,sucursal, fecha,image, childB, adultoB,abueB, total, sala)=>{
+      
+      if(total == 0){
+        Alert.alert("Mensaje", "Debe seleccionar al menos 1 asiento");
+        return;
+      }
       navigation.navigate('PantallaSeleccionAsientos',{title, idioma, hora,sucursal, fecha,image, childB, adultoB,abueB, total, sala});
 
     };
@@ -24,7 +29,8 @@ import React, { useState, useContext, useEffect} from 'react';
     };
   
     const getTotal = () => {
-      return (childB * item.precioNino) + (adultoB * item.precioAdulto) + (abueB * item.precioTE);
+      let valor = (childB * item.precioNino) + (adultoB * item.precioAdulto) + (abueB * item.precioTE);
+      return Math.round(valor * 100) / 100;
     };
 
     useEffect(() => {
@@ -68,7 +74,7 @@ import React, { useState, useContext, useEffect} from 'react';
                     <Text style={styles.buttonText}>+</Text>
                   </TouchableOpacity>
                 </View>
-                <Text style={styles.subtituloT}>${item.precioNino}.00</Text>
+                <Text style={styles.subtituloT}>${item.precioNino}</Text>
               </View>
     
               <View style={styles.ticketRow}>
@@ -86,7 +92,7 @@ import React, { useState, useContext, useEffect} from 'react';
                     <Text style={styles.buttonText}>+</Text>
                   </TouchableOpacity>
                 </View>
-                <Text style={styles.subtituloT}>${item.precioAdulto}.00</Text>
+                <Text style={styles.subtituloT}>${item.precioAdulto}</Text>
               </View>
     
               <View style={styles.ticketRow}>
@@ -104,7 +110,7 @@ import React, { useState, useContext, useEffect} from 'react';
                     <Text style={styles.buttonText}>+</Text>
                   </TouchableOpacity>
                 </View>
-                <Text style={styles.subtituloT}>${item.precioTE}.00</Text>
+                <Text style={styles.subtituloT}>${item.precioTE}</Text>
               </View>
             </View>
     

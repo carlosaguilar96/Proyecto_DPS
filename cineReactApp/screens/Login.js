@@ -24,6 +24,7 @@ import AñadirFuncion from './AddFuncion';
 import AñadirSala from './AddSala';
 import AñadirAdministrador from './AddAdmin';
 import EditarCine from './EditarCine';
+import PantallaSeleccionAsientos from './SelectAsientos';
 
 LogBox.ignoreLogs([
   'Found screens with the same name nested inside one another',
@@ -393,6 +394,14 @@ export default function Login() {
               component={Boletos}
               options={{
                 drawerItemStyle: { display: 'none' }, // Oculta la opción de Boletos en el drawer
+                headerShown: false,
+              }}
+            />
+            <Drawer.Screen
+              name="PantallaSeleccionAsientos"
+              component={PantallaSeleccionAsientos}
+              options={{
+                drawerItemStyle: { display: 'none' }, 
                 headerShown: false,
               }}
             />
