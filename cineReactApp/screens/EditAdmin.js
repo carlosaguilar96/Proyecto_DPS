@@ -1,22 +1,82 @@
-import React, {useState} from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView,FlatList, Modal,Button} from 'react-native';
+import React, {useState, useEffect} from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView,FlatList, Modal,Button, Alert} from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { administrador } from '../config/movieData';
+import axios from 'axios';
+import { API_URL } from '@env';
+import { useIsFocused } from '@react-navigation/native';
 
 const ModificarAdministrador = () => {
   // Información de prueba
 const [modalVisible,setModalVisible] = useState('');
 const [id, setid] = useState(0);
+const [estado, setEstado] = useState(0);
+const [administradores, setAdministradores] = useState('');
+const isFocused = useIsFocused();
 
-const handleModalOpen = (id) =>{
-  setModalVisible(true);
-  setid(id);
+const obtenerAdmins = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/api/usuarios/indexAdmins`);
+
+    if (response.data.usuarios.length != 0)
+      setAdministradores(response.data.usuarios);
+
+  } catch (error) {
+    if (error.request) {
+      Alert.alert('Error', 'No hubo respuesta del servidor');
+      return;
+    } else {
+      Alert.alert('Error', 'Error al hacer la solicitud');
+      return;
+    }
+  }
 }
 
-const CambiarEstado = () => {
-  //AQUI DEBERIA CAMBIARSE EL ESTADO, en id esta el id de admin
-setModalVisible(false);
-console.log(id);
+useEffect(() => {
+  if (isFocused) {
+    obtenerAdmins();
+  }
+}, [isFocused]);
+
+const handleModalOpen = (id, estado) =>{
+  setModalVisible(true);
+  setid(id);
+  setEstado(estado);
+}
+
+const CambiarEstado = async () => {
+  if(estado==1){
+    try {
+      const response = await axios.put(`${API_URL}/api/usuarios/eliminarUsuario/${id}`);
+      Alert.alert('Administrador eliminado', 'El administrador ha sido eliminado con éxito');
+      setModalVisible(false);
+      obtenerAdmins();
+    } catch (error) {
+      if (error.request) {
+        Alert.alert('Error', 'No hubo respuesta del servidor');
+        return;
+      } else {
+        Alert.alert('Error', 'Error al hacer la solicitud');
+        return;
+      }
+    }
+  }
+  if(estado==0){
+    try {
+      const response = await axios.put(`${API_URL}/api/usuarios/reactivarUsuario/${id}`);
+      Alert.alert('Administrador reactivado', 'El administrador ha sido reactivado con éxito');
+      setModalVisible(false);
+      obtenerAdmins();
+    } catch (error) {
+      if (error.request) {
+        Alert.alert('Error', 'No hubo respuesta del servidor');
+        return;
+      } else {
+        Alert.alert('Error', 'Error al hacer la solicitud');
+        return;
+      }
+    }
+  }
 };
   
   const renderItem = ({ item }) => {
@@ -26,20 +86,19 @@ console.log(id);
       <View style={estilos.tarjeta}>
         
         <View style={estilos.detallesAdministrador}>
-        <Text style={estilos.textoTarjetaCabecera}>Admin {item.id}</Text>
-          <Text style={estilos.textoGrande}>Nombre: {item.nombre}</Text>
-          <Text style={estilos.textoGrande}>Apellido: {item.apellido}</Text>
-          <Text style={estilos.textoGrande}>DUI: {item.dui}</Text>
-          <Text style={estilos.textoGrande}>Email: {item.email}</Text>
+        <Text style={estilos.textoTarjetaCabecera}>Admin {item.nombreUsuario}</Text>
+          <Text style={estilos.textoGrande}>Nombre: {item.nombres} {item.apellidos}</Text>
+          <Text style={estilos.textoGrande}>DUI: {item.DUI}</Text>
+          <Text style={estilos.textoGrande}>Email: {item.correoE}</Text>
           
         </View>
         <View style={estilos.contenedorBotones}>
-        {item.estadoE === 0  ? (
-              <TouchableOpacity style={estilos.botonIcono} onPress={() => handleModalOpen(item.id)}>
+        {item.estadoEliminacion === 0  ? (
+              <TouchableOpacity style={estilos.botonIcono} onPress={() => handleModalOpen(item.nombreUsuario, item.estadoEliminacion)}>
               <FontAwesome name="ban" size={30} color="white" />
             </TouchableOpacity>
             ):(
-              <TouchableOpacity style={estilos.botonIcono} onPress={() => handleModalOpen(item.id)}>
+              <TouchableOpacity style={estilos.botonIcono} onPress={() => handleModalOpen(item.nombreUsuario, item.estadoEliminacion)}>
               <FontAwesome name="check" size={30} color="white" />
             </TouchableOpacity>
             )}
@@ -54,7 +113,7 @@ console.log(id);
       <FlatList
         data={Movie}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id} 
+        keyExtractor={(item) => item.nombreUsuario} 
         scrollEnabled={false} 
       />
     );
@@ -63,7 +122,7 @@ console.log(id);
  
   return (
     <ScrollView>
-    <FlatListAdmin Movie={administrador} />
+    <FlatListAdmin Movie={administradores} />
             <Modal
           animationType="slide"
           transparent={true}
@@ -73,7 +132,7 @@ console.log(id);
           <View style={estilos.modalContainer}>
             <View style={estilos.modalContent}>
               <Text style={estilos.modalText}>
-                Seguro que deseas cambiar el estado de la película?
+                ¿Seguro que desea {estado === 0  ? ('reactivar'):('eliminar')} el administrador?
               </Text>
               <View style={estilos.buttonContainer}>
                 <TouchableOpacity
@@ -133,6 +192,7 @@ const estilos = StyleSheet.create({
   },
   detallesAdministrador: {
     justifyContent: 'center',
+    width:'80%',
   },
   textoGrande: {
     fontSize: 18,
