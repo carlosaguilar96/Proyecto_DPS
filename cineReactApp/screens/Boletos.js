@@ -8,7 +8,7 @@ import axios from 'axios';
 
 export default function Boletos() {
   const route = useRoute();
-  const { title, idioma, hora, sucursal, fecha, image, item } = route?.params || {};
+  const { title, idioma, hora, sucursal, fecha, image, precioNino, precioAdulto, precioTE, codSala, codFuncion } = route?.params || {};
   const navigation = useNavigation();
   const [childB, setchildB] = useState(0);
   const [adultoB, setadultoB] = useState(0);
@@ -51,7 +51,7 @@ export default function Boletos() {
   };
 
   const getTotal = () => {
-    let valor = (childB * item.precioNino) + (adultoB * item.precioAdulto) + (abueB * item.precioTE);
+    let valor = (childB * precioNino) + (adultoB * precioAdulto) + (abueB * precioTE);
     return Math.round(valor * 100) / 100;
   };
 
@@ -66,12 +66,12 @@ export default function Boletos() {
 
     const Cantidad = getCantidad();
     setCantidad(Cantidad);
-  }, [childB, adultoB, abueB, item.precioNino, item.precioAdulto, item.precioTE]);
+  }, [childB, adultoB, abueB, precioNino, precioAdulto, precioTE]);
 
   const obtenerAsientosOcupados = async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/funciones/devolverAsientos/${item.codFuncion}`);
-      console.log(item);
+      const response = await axios.get(`${API_URL}/api/funciones/devolverAsientos/${codFuncion}`);
+      console.log(item.codFuncion);
       if (response.data.asientos.length != 0)
         setAsientosOcupados(response.data.asientos);
 
@@ -129,7 +129,7 @@ export default function Boletos() {
               <Text style={styles.buttonText}>+</Text>
             </TouchableOpacity>
           </View>
-          <Text style={styles.subtituloT}>${item.precioNino}</Text>
+          <Text style={styles.subtituloT}>${precioNino}</Text>
         </View>
 
         <View style={styles.ticketRow}>
@@ -147,7 +147,7 @@ export default function Boletos() {
               <Text style={styles.buttonText}>+</Text>
             </TouchableOpacity>
           </View>
-          <Text style={styles.subtituloT}>${item.precioAdulto}</Text>
+          <Text style={styles.subtituloT}>${precioAdulto}</Text>
         </View>
 
         <View style={styles.ticketRow}>
@@ -165,7 +165,7 @@ export default function Boletos() {
               <Text style={styles.buttonText}>+</Text>
             </TouchableOpacity>
           </View>
-          <Text style={styles.subtituloT}>${item.precioTE}</Text>
+          <Text style={styles.subtituloT}>${precioTE}</Text>
         </View>
       </View>
 
@@ -173,7 +173,7 @@ export default function Boletos() {
       <View style={styles.footer}>
         <Text style={styles.textoTotal}>Total US ${total.toFixed(2)}</Text>
         <TouchableOpacity style={styles.continueButton} onPress={() => handleNavigation(title, idioma, hora, sucursal, fecha, image, childB, adultoB, abueB, total,
-          item.codSala, cantidad, item.codFuncion, item.precioNino, item.precioAdulto, item.precioTE)}>
+          codSala, cantidad, codFuncion, precioNino, precioAdulto, precioTE)}>
           <Text style={styles.continueButtonText}>Continuar</Text>
         </TouchableOpacity>
       </View>
