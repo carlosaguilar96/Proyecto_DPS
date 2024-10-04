@@ -1,7 +1,10 @@
-import React, {useState} from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, FlatList,Button,Modal } from 'react-native';
+import React, {useState, useEffect} from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, FlatList,Button,Modal,Alert } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
-import { Salas } from '../config/movieData';
+import { Salas as Salass } from '../config/movieData';
+import axios from 'axios';
+import { API_URL } from '@env';
+import { useIsFocused } from '@react-navigation/native';
 
 
 const agruparPorSucursal = (salas) => { 
@@ -14,21 +17,19 @@ const agruparPorSucursal = (salas) => {
       acc.push({
         sucursal: item.sucursal,
         salas: [{
-          id: item.id,
+          id: item.codSala,
           capacidad: item.capacidad, 
-          codsucursal: item.codsucursal,
-          tipo: item.tipo,
-          estadoE: item.estadoE,
+          codsucursal: item.codSucursal,
+          estadoE: item.estadoEliminacion,
         }]
       });
     } else {
       // Si ya existe la sucursal, añadir los detalles de la película
       existingSucursal.salas.push({
-          id: item.id,
+          id: item.codSala,
           capacidad: item.capacidad, 
           codsucursal: item.codsucursal,
-          tipo: item.tipo,
-          estadoE: item.estadoE,
+          estadoE: item.estadoEliminacion,
       });
     }
 
@@ -40,22 +41,75 @@ const agruparPorSucursal = (salas) => {
 
 
 const ModificarSala = () => {
+  const [Salas, setSalas] = useState([]);
+  const isFocused = useIsFocused();
+  const obtenerSalas = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/api/salas/index`);
+  
+      if (response.data.salas.length != 0)
+        setSalas(response.data.salas);
+    } catch (error) {
+      if (error.request) {
+        Alert.alert('Error', 'No hubo respuesta del servidor');
+        return;
+      } else {
+        Alert.alert('Error', 'Error al hacer la solicitud');
+        return;
+      }
+    }
+  }
+  useEffect(() => {
+    if (isFocused) {
+      obtenerSalas();
+    }
+  }, [isFocused]);
   const salas = agruparPorSucursal(Salas);
   const [modalVisible,setModalVisible] = useState('');
   const [id, setid] = useState(0);
+  const [estado, setEstado] = useState(0);
 
-  const handleModalOpen = (id) =>{
+  const handleModalOpen = (id, estado) =>{
     setModalVisible(true);
     setid(id);
+    setEstado(estado);
   }
 
   
   
-  const CambiarEstado = () => {
-    //AQUI DEBERIA CAMBIARSE EL ESTADO, en id esta el id de sala
-
-  setModalVisible(false);
-  console.log(id);
+  const CambiarEstado = async () => {
+    if(estado==1){
+      try {
+        const response = await axios.put(`${API_URL}/api/salas/eliminarSala/${id}`);
+        Alert.alert('Sala eliminada', 'La sala ha sido eliminada con éxito');
+        setModalVisible(false);
+        obtenerSalas();
+      } catch (error) {
+        if (error.request) {
+          Alert.alert('Error', 'No hubo respuesta del servidor');
+          return;
+        } else {
+          Alert.alert('Error', 'Error al hacer la solicitud');
+          return;
+        }
+      }
+    }
+    if(estado==0){
+      try {
+        const response = await axios.put(`${API_URL}/api/salas/reactivarSala/${id}`);
+        Alert.alert('Sala reactivada', 'La sala ha sido reactivada con éxito');
+        setModalVisible(false);
+        obtenerSalas();
+      } catch (error) {
+        if (error.request) {
+          Alert.alert('Error', 'No hubo respuesta del servidor');
+          return;
+        } else {
+          Alert.alert('Error', 'Error al hacer la solicitud');
+          return;
+        }
+      }
+    }
   };
 
   const renderItem = ({ item }) => {
@@ -64,19 +118,18 @@ const ModificarSala = () => {
         <Text style={estilos.tituloSucursal}>Sucursal {item.sucursal}</Text>
         
             {item.salas.map((sala, index) => (
-              <View style={estilos.tarjeta}>
+              <View key={sala.id} style={estilos.tarjeta}>
             <View key={index}>
             <Text style={estilos.textoGrande}>{`Sala: ${sala.id}`}</Text>
             <Text style={estilos.textoGrande}>{`Número de Asientos: ${sala.capacidad}`}</Text>
-            <Text style={estilos.textoGrande}>{`Tipo de Sala: ${sala.tipo}`}</Text>
             </View>
             <View style={estilos.contenedorBotones}>
             {sala.estadoE === 0 ? (
-              <TouchableOpacity style={estilos.botonIcono} onPress={() => handleModalOpen(sala.id)}>
+              <TouchableOpacity style={estilos.botonIcono} onPress={() => handleModalOpen(sala.id, sala.estadoE)}>
               <FontAwesome name="ban" size={30} color="white" />
             </TouchableOpacity>
             ):(
-              <TouchableOpacity style={estilos.botonIcono} onPress={() => handleModalOpen(sala.id)}>
+              <TouchableOpacity style={estilos.botonIcono} onPress={() => handleModalOpen(sala.id, sala.estadoE)}>
               <FontAwesome name="check" size={30} color="white" />
             </TouchableOpacity>
             )}
@@ -119,7 +172,7 @@ const ModificarSala = () => {
         <View style={estilos.modalContainer}>
           <View style={estilos.modalContent}>
             <Text style={estilos.modalText}>
-              Seguro que deseas cambiar el estado de la película?
+              ¿Seguro que desea {estado === 0  ? ('reactivar'):('eliminar')} la sala?
             </Text>
             <View style={estilos.buttonContainer}>
               <TouchableOpacity
