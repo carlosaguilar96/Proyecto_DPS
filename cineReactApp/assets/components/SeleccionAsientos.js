@@ -46,7 +46,11 @@ const SeleccionAsientos = ({ filas, columnas, asientosSeleccionados, onSeleccion
                 disabled={asientosOcupados.includes(asiento)}
 
               >
-                <Text style={styles.textoAsiento}>{asiento}</Text>
+                <Text style={
+                  asientosOcupados.includes(asiento) ? styles.textoAsientoOcupado : (
+                    asientosSeleccionados.includes(asiento) ? styles.textoAsientoSeleccionado : styles.textoAsiento
+                  )
+                }>{asiento}</Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -125,6 +129,12 @@ const styles = StyleSheet.create({
   },
   textoAsiento: {
     color: '#333',
+  },
+  textoAsientoOcupado: {
+    color: 'white',
+  },
+  textoAsientoSeleccionado: {
+    color: 'white',
   },
   seleccionadosContainer: {
     paddingHorizontal: 16,

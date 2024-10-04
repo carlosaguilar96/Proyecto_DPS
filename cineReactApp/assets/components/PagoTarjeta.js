@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, Picker, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, StyleSheet, Alert, TouchableOpacity } from 'react-native';
+import { TextInputMask } from 'react-native-masked-text';
 
 const PagoTarjeta = ({ onRealizarPago }) => {
   const [metodoPago, setMetodoPago] = useState('tarjeta');
@@ -10,6 +11,19 @@ const PagoTarjeta = ({ onRealizarPago }) => {
 
   const realizarPago = () => {
     if (nombreTitular && numeroTarjeta && fechaVencimiento && cvv) {
+
+      if(numeroTarjeta.length != 19){
+        Alert.alert("Mensaje", "Ingrese un número de tarjeta válido");
+        return;
+      }
+      if(fechaVencimiento.length != 7){
+        Alert.alert("Mensaje", "Ingrese una fecha de vencimiento válida");
+        return;
+      }
+      if(cvv.length != 3){
+        Alert.alert("Mensaje", "Ingrese un CVV válido");
+        return;
+      }
       onRealizarPago({
         metodoPago,
         nombreTitular,
@@ -18,7 +32,7 @@ const PagoTarjeta = ({ onRealizarPago }) => {
         cvv,
       });
     } else {
-      alert('Por favor, complete todos los campos.');
+      Alert.alert("Mensaje",'Por favor, complete todos los campos.');
     }
   };
 
@@ -37,35 +51,47 @@ const PagoTarjeta = ({ onRealizarPago }) => {
           />
 
           <Text style={styles.label}>Número de tarjeta</Text>
-          <TextInput
+          <TextInputMask
             style={styles.input}
-            placeholder="1234 5678 9012 3456"
+            placeholder="0000-0000-0000-0000"
             value={numeroTarjeta}
             keyboardType="numeric"
             onChangeText={setNumeroTarjeta}
+            type={'custom'}
+            options={{
+              mask: '9999-9999-9999-9999',
+            }}
           />
 
           <View style={styles.row}>
             <View style={styles.column}>
               <Text style={styles.label}>Fecha de vencimiento</Text>
-              <TextInput
+              <TextInputMask
                 style={styles.input}
-                placeholder="MM/AA"
+                placeholder="MM/AAAA"
                 value={fechaVencimiento}
                 keyboardType="numeric"
                 onChangeText={setFechaVencimiento}
+                type={'custom'}
+                options={{
+                  mask: '99/9999',
+                }}
               />
             </View>
 
             <View style={styles.column}>
               <Text style={styles.label}>CVV</Text>
-              <TextInput
+              <TextInputMask
                 style={styles.input}
                 placeholder="CVV"
                 value={cvv}
                 keyboardType="numeric"
                 secureTextEntry
                 onChangeText={setCvv}
+                type={'custom'}
+                options={{
+                  mask: '999',
+                }}
               />
             </View>
           </View>

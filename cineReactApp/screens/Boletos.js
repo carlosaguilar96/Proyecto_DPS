@@ -15,13 +15,13 @@ import React, { useState, useContext, useEffect} from 'react';
     const [total, setTotal] = useState(0);
     const [cantidad, setCantidad] = useState(0);
   
-    const handleNavigation =(title, idioma, hora,sucursal, fecha,image, childB, adultoB,abueB, total, sala, cantidad, funcion)=>{
+    const handleNavigation =(title, idioma, hora,sucursal, fecha,image, childB, adultoB,abueB, total, sala, cantidad, funcion, childP, adultoP, abueP)=>{
       
       if(total == 0){
         Alert.alert("Mensaje", "Debe seleccionar al menos 1 asiento");
         return;
       }
-      navigation.navigate('PantallaSeleccionAsientos',{title, idioma, hora,sucursal, fecha,image, childB, adultoB,abueB, total, sala, cantidad, funcion});
+      navigation.navigate('PantallaSeleccionAsientos',{title, idioma, hora,sucursal, fecha,image, childB, adultoB,abueB, total, sala, cantidad, funcion, childP, adultoP, abueP});
 
     };
 
@@ -126,7 +126,8 @@ import React, { useState, useContext, useEffect} from 'react';
             {/* Total Price and Continue Button */}
             <View style={styles.footer}>
               <Text style={styles.textoTotal}>Total US ${total.toFixed(2)}</Text>
-              <TouchableOpacity style={styles.continueButton} onPress={() => handleNavigation(title, idioma, hora,sucursal, fecha,image, childB, adultoB,abueB, total, item.codSala, cantidad, item.codFuncion)}>
+              <TouchableOpacity style={styles.continueButton} onPress={() => handleNavigation(title, idioma, hora,sucursal, fecha,image, childB, adultoB,abueB, total, 
+                item.codSala, cantidad, item.codFuncion, item.precioNino,item.precioAdulto, item.precioTE)}>
                 <Text style={styles.continueButtonText}>Continuar</Text>
               </TouchableOpacity>
             </View>

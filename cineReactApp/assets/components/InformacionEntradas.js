@@ -1,8 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-const InformacionEntradas = ({ cantidad, precioIndividual }) => {
-  const total = cantidad * precioIndividual;
+const InformacionEntradas = ({ cantidad, childB, childP, adultoB, adultoP, abueB, abueP, total }) => {
 
   return (
     <View style={styles.container}>
@@ -13,13 +12,56 @@ const InformacionEntradas = ({ cantidad, precioIndividual }) => {
         <Text style={styles.value}>{cantidad}</Text>
       </View>
 
+      <Text style={styles.subTitle}>Niños:</Text>
       <View style={styles.row}>
-        <Text style={styles.label}>Precio Individual:</Text>
-        <Text style={styles.value}>${precioIndividual.toFixed(2)}</Text>
+        <View style={styles.row}>
+          <Text style={styles.label}>Cantidad: </Text>
+          <Text style={styles.value}>{childB}</Text>
+        </View>
+        <View style={styles.row}>
+          <Text style={styles.label}>Precio: </Text>
+          <Text style={styles.value}>${childP}</Text>
+        </View>
+        <View style={styles.row}>
+          <Text style={styles.label}>SubTotal: </Text>
+          <Text style={styles.value}>${(childP * childB).toFixed(2)}</Text>
+        </View>
+      </View>
+
+      <Text style={styles.subTitle}>Adultos:</Text>
+      <View style={styles.row}>
+        <View style={styles.row}>
+          <Text style={styles.label}>Cantidad: </Text>
+          <Text style={styles.value}>{adultoB}</Text>
+        </View>
+        <View style={styles.row}>
+          <Text style={styles.label}>Precio: </Text>
+          <Text style={styles.value}>${adultoP}</Text>
+        </View>
+        <View style={styles.row}>
+          <Text style={styles.label}>SubTotal: </Text>
+          <Text style={styles.value}>${(adultoP * adultoB).toFixed(2)}</Text>
+        </View>
+      </View>
+
+      <Text style={styles.subTitle}>3ra Edad:</Text>
+      <View style={styles.row}>
+        <View style={styles.row}>
+          <Text style={styles.label}>Cantidad: </Text>
+          <Text style={styles.value}>{abueB}</Text>
+        </View>
+        <View style={styles.row}>
+          <Text style={styles.label}>Precio: </Text>
+          <Text style={styles.value}>${abueP}</Text>
+        </View>
+        <View style={styles.row}>
+          <Text style={styles.label}>SubTotal: </Text>
+          <Text style={styles.value}>${(abueP * abueB).toFixed(2)}</Text>
+        </View>
       </View>
 
       <View style={styles.row}>
-        <Text style={styles.label}>Total:</Text>
+        <Text style={styles.value}>TOTAL:</Text>
         <Text style={styles.value}>${total.toFixed(2)}</Text>
       </View>
     </View>
@@ -36,7 +78,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 8,
+    marginBottom: 8
+  },
+  subTitle: {
+    fontSize: 16,
+    textDecorationLine: 'underline',
+    marginBottom: 4,
   },
   row: {
     flexDirection: 'row',

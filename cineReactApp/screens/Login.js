@@ -25,6 +25,7 @@ import AñadirSala from './AddSala';
 import AñadirAdministrador from './AddAdmin';
 import EditarCine from './EditarCine';
 import PantallaSeleccionAsientos from './SelectAsientos';
+import VistaPago from './VistaPago';
 
 LogBox.ignoreLogs([
   'Found screens with the same name nested inside one another',
@@ -400,6 +401,14 @@ export default function Login() {
             <Drawer.Screen
               name="PantallaSeleccionAsientos"
               component={PantallaSeleccionAsientos}
+              options={{
+                drawerItemStyle: { display: 'none' }, 
+                headerShown: false,
+              }}
+            />
+            <Drawer.Screen
+              name="VistaPago"
+              component={VistaPago}
               options={{
                 drawerItemStyle: { display: 'none' }, 
                 headerShown: false,

@@ -22,7 +22,7 @@ class CompraController extends Controller
             "cantidadAdultos" => ["required",'numeric', 'min:0'],
             "cantidadNinos" => ["required",'numeric', 'min:0'],
             "cantidadTE" => ["required",'numeric', 'min:0'],
-            "cardID" => ['required','digits:16'],
+            "cardID" => ['required','regex:/^\d{4}-\d{4}-\d{4}-\d{4}$/'],
             "asientos" => ['required','array']
         ]);
 
@@ -60,7 +60,7 @@ class CompraController extends Controller
             $precioTotal = $funcion->precioAdulto * $compra->cantidadAdultos + 
                            $funcion->precioNino * $compra->cantidadNinos + 
                            $funcion->precioTE * $compra->cantidadTE;
-            $lastDigits = substr($request->cardID, -6);
+            $lastDigits = substr($request->cardID, -4);
             $transaccion = Transaccion::create([
                 "precioTotal" => $precioTotal,
                 "fecha" => Carbon::now('America/El_Salvador'),

@@ -1,19 +1,68 @@
-import React, { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import AsientosSeleccionados from '../assets/components/AsientoSeleccionados';
 import InformacionEntradas from '../assets/components/InformacionEntradas';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import PagoTarjeta from '../assets/components/PagoTarjeta';
+import { API_URL } from '@env';
+import axios from 'axios';
 
-const VistaPagos = ({ navigation }) => {
-  const [asientos, setAsientos] = useState(['A1', 'B4', 'D3']);
-  const cantidadEntradas = asientos.length;
-  const precioPorEntrada = 12.50; 
+const VistaPago = ({ navigation, route }) => {
+  const { params } = route;
+  const imagenURI = `${API_URL}/img/peliculas/${params.image}`;
+  const [cardID, setCardID] = useState("");
+  const [usuario, setUsuario] = useState("");
 
   const handleRealizarPago = (datosPago) => {
-    console.log('Pago realizado:', datosPago);
+    setCardID(datosPago.numeroTarjeta);
+    realizarCompra();
   };
 
+  const realizarCompra = async () =>{
+    try {
+      const response = await axios.post(`${API_URL}/api/compras/crearCompra`, {
+        nombreUsuario: usuario,
+        codFuncion: params.funcion,
+        cantidadAdultos: params.adultoB,
+        cantidadNinos: params.childB,
+        cantidadTE: params.abueB,
+        cardID: cardID,
+        asientos: params.asientosSeleccionados
+      });
+      Alert.alert('Compra exitosa', 'Compra realizada correctamente');
+      navigation.navigate("Inicio");
+    } catch (error) {
+      if (error.response) {
+        const errores = error.response.data.errors;
+        let mensaje = "";
+        for (const campo in errores) {
+          mensaje += `Error en ${campo}: ${errores[campo].join(', ')}`;
+        }
+        Alert.alert("Error",mensaje);
+        return;
+      } else if (error.request) {
+        Alert.alert('Error', 'No hubo respuesta del servidor');
+        return;
+      } else {
+        Alert.alert('Error', 'Error al hacer la solicitud' + error);
+        return;
+      }
+    }
+  }
+
+  const obtenerUsuario = async () =>{
+    const infouser = await AsyncStorage.getItem('Nombreuser');
+
+    const parsedUsuarioInfo = JSON.parse(infouser);
+    setUsuario(parsedUsuarioInfo.nombreUsuario);
+
+  }
+
+  useEffect(() => {
+    obtenerUsuario();
+    
+  }, []);
   return (
     <ScrollView style={styles.container}>
       {/* Cabecera */}
@@ -39,19 +88,21 @@ const VistaPagos = ({ navigation }) => {
 
       {/* Información de la Película */}
       <View style={styles.movieInfo}>
-        <View style={styles.poster} />
+        <Image source={{ uri: imagenURI }} style={styles.poster} />
         <View style={styles.movieDetails}>
-          <Text style={styles.movieTitle}>Nombre de la Película</Text>
-          <Text style={styles.movieDetailsText}>Cine ABC - 5:00 PM</Text>
-          <Text style={styles.movieDetailsText}>Español</Text>
+          <Text style={styles.movieTitle}>{params.title}</Text>
+          <Text style={styles.movieDetailsText}>Sucursal: {params.sucursal}</Text>
+          <Text style={styles.movieDetailsText}>{params.hora} | {params.fecha}</Text>
+          <Text style={styles.movieDetailsText}>{params.idioma}</Text>
         </View>
       </View>
 
       {/* Asientos Seleccionados */}
-      <AsientosSeleccionados asientos={asientos} />
+      <AsientosSeleccionados asientos={params.asientosSeleccionados} />
 
       {/* Información de Entradas */}
-      <InformacionEntradas cantidad={cantidadEntradas} precioIndividual={precioPorEntrada} />
+      <InformacionEntradas cantidad={params.cantidad} childB={params.childB} childP={params.childP} adultoB={params.adultoB} 
+      adultoP={params.adultoP} abueB={params.abueB} abueP={params.abueP} total={params.total} />
 
       {/* Pago con Tarjeta */}
       <PagoTarjeta onRealizarPago={handleRealizarPago} />
@@ -118,4 +169,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default VistaPagos;
+export default VistaPago;

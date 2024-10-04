@@ -22,7 +22,7 @@ const PantallaSeleccionAsientos = ({ navigation, route }) => {
   ];
 
   const columnas = ['1', '2', '3', '4', '5', '6', '7', '8'];
-  
+
   const imagenURI = `${API_URL}/img/peliculas/${params.image}`;
 
   const seleccionarAsiento = (asiento) => {
@@ -42,9 +42,16 @@ const PantallaSeleccionAsientos = ({ navigation, route }) => {
   };
 
   const handleContinuar = () => {
+    if (asientosSeleccionados.length == params.cantidad) {
+      const {title, sucursal, fecha, hora, idioma, total, cantidad, image, childP, childB, adultoP, adultoB, abueP, abueB, funcion} = params;
+      navigation.navigate("VistaPago", {title, sucursal, fecha, hora, idioma, total, cantidad, image, childP, childB, adultoP, adultoB, abueP, abueB, asientosSeleccionados, funcion} );
+
+    }
+    else
+      Alert.alert("Mensaje", `Faltan ${params.cantidad - asientosSeleccionados.length} asientos por seleccionar`);
   };
 
-  const obtenerAsientosOcupados = async () =>{
+  const obtenerAsientosOcupados = async () => {
     try {
       const response = await axios.get(`${API_URL}/api/funciones/devolverAsientos/${params.funcion}`);
 
