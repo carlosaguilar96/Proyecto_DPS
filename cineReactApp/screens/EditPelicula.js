@@ -1,36 +1,67 @@
-import React, {useState} from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, FlatList, Modal, Button} from 'react-native';
+import React, {useState, useEffect} from 'react';
+import { View, Text, StyleSheet, Image, TouchableOpacity, FlatList, Modal, Button, Alert} from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { movieData } from '../config/movieData';
 import { ScrollView } from 'react-native-gesture-handler';
+import axios from 'axios';
+import { API_URL } from '@env';
+import { useIsFocused } from '@react-navigation/native';
 
 const ModificarPelicula = () => {
 const [modalVisible,setModalVisible] = useState('');
 const [id, setid] = useState(0);
+const [estado, setEstado] = useState(0);
+const [peliculas, setPeliculas] = useState('');
+const isFocused = useIsFocused();
+
+const obtenerPeliculas = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/api/peliculas/index`);
+
+    if (response.data.peliculas.length != 0)
+      setPeliculas(response.data.peliculas);
+
+    } catch (error) {
+      if (error.request) {
+        Alert.alert('Error', 'No hubo respuesta del servidor');
+        return;
+      } else {
+        Alert.alert('Error', 'Error al hacer la solicitud');
+        return;
+      }
+    } 
+}
+
+useEffect(() => {
+  if (isFocused) {
+    obtenerPeliculas();
+  }
+}, [isFocused]);
+
     // Componente renderItem para el FlatList
     const renderItem = ({ item }) => {
       return (
-        <View style={estilos.contenedor}>
-          <View style={estilos.tarjeta}>
+        <View key={item.codPelicula} style={estilos.contenedor}>
+          <View  style={estilos.tarjeta}>
             <Image
-              source={{ uri: 'https://via.placeholder.com/100' }} 
+              source={{ uri: `${API_URL}/img/peliculas/${item.imagen}` }} 
               style={estilos.imagenPelicula}
             />
             <View style={estilos.detallesPelicula}>
-              <Text style={estilos.tituloPelicula}>{item.Nombre}</Text>
-              <Text>Duración: {item.Duracion}</Text>
-              <Text>Clasificación: {item.Clasificacion}</Text>
-              <Text>Género: {item.Genero}</Text>
-              <Text style={estilos.sinopsis}>Sinopsis: {item.Sinopsis}</Text>
+              <Text style={estilos.tituloPelicula}>{item.nombre}</Text>
+              <Text>Duración: {item.duracion} minutos</Text>
+              <Text>Clasificación: {item.clasificacion}</Text>
+              <Text>Género: {item.genero}</Text>
+              <Text style={estilos.sinopsis}>Sinopsis: {item.sinopsis}</Text>
               
             </View>
             <View style={estilos.contenedorBotones}>
-            {item.estadoE === 0 ? (
-              <TouchableOpacity style={estilos.botonIcono} onPress={() => handleModalOpen(item.id)}>
+            {item.estadoEliminacion === 0 ? (
+              <TouchableOpacity style={estilos.botonIcono} onPress={() => handleModalOpen(item.codPelicula, item.estadoEliminacion)}>
               <FontAwesome name="ban" size={30} color="white" />
             </TouchableOpacity>
             ):(
-              <TouchableOpacity style={estilos.botonIcono} onPress={() => handleModalOpen(item.id)}>
+              <TouchableOpacity style={estilos.botonIcono} onPress={() => handleModalOpen(item.codPelicula, item.estadoEliminacion)}>
               <FontAwesome name="check" size={30} color="white" />
             </TouchableOpacity>
             )}
@@ -41,16 +72,46 @@ const [id, setid] = useState(0);
       );
     };
   
-    const handleModalOpen = (id) =>{
+    const handleModalOpen = (id, estado) =>{
       setModalVisible(true);
       setid(id);
+      setEstado(estado);
     }
 
-  const CambiarEstado = () => {
-      //AQUI DEBERIA CAMBIARSE EL ESTADO, en id esta el id de pelicula
-    setModalVisible(false);
-    console.log(id);
-  };
+    const CambiarEstado = async () => {
+      if(estado==1){
+        try {
+          const response = await axios.put(`${API_URL}/api/peliculas/eliminarPelicula/${id}`);
+          Alert.alert('Pelicula eliminada', 'La pelicula ha sido eliminada con éxito');
+          setModalVisible(false);
+          obtenerPeliculas();
+        } catch (error) {
+          if (error.request) {
+            Alert.alert('Error', 'No hubo respuesta del servidor');
+            return;
+          } else {
+            Alert.alert('Error', 'Error al hacer la solicitud');
+            return;
+          }
+        }
+      }
+      if(estado==0){
+        try {
+          const response = await axios.put(`${API_URL}/api/peliculas/reactivarPelicula/${id}`);
+          Alert.alert('Pelicula reactivada', 'La pelicula ha sido reactivada con éxito');
+          setModalVisible(false);
+          obtenerPeliculas();
+        } catch (error) {
+          if (error.request) {
+            Alert.alert('Error', 'No hubo respuesta del servidor');
+            return;
+          } else {
+            Alert.alert('Error', 'Error al hacer la solicitud');
+            return;
+          }
+        }
+      }
+    };
 
     // Componente FlatList para mostrar la lista de películas
     const FlatListMovie = ({ Movie }) => {
@@ -58,7 +119,7 @@ const [id, setid] = useState(0);
         <FlatList
           data={Movie}
           renderItem={renderItem}
-          keyExtractor={(item) => item.id} 
+          keyExtractor={(item) => item.codPelicula} 
           scrollEnabled={false} 
         />
       );
@@ -67,7 +128,7 @@ const [id, setid] = useState(0);
    
     return (
       <ScrollView>
-      <FlatListMovie Movie={movieData} />
+      <FlatListMovie Movie={peliculas} />
               {/* Modal */}
               <Modal
       animationType="slide"
@@ -77,7 +138,7 @@ const [id, setid] = useState(0);
     >
       <View style={estilos.modalContainer}>
         <View style={estilos.modalContent}>
-          <Text style={estilos.modalText}>¿Seguro que deseas cambiar el estado de la película?</Text>
+          <Text style={estilos.modalText}>¿Seguro que desea {estado === 0  ? ('reactivar'):('eliminar')} la película?</Text>
           
           <View style={estilos.buttonContainer}>
             <TouchableOpacity style={estilos.botonCancelar} onPress={() => setModalVisible(false)}>
