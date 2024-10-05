@@ -213,10 +213,6 @@ export default function Cartelera() {
                       <Text style={styles.horarioText}>{`${detalle.hora} `}</Text>
                       </TouchableOpacity>
                     ))}
-                        <TouchableOpacity key={indexDetalle} style={styles.horarioButton} onPress={() => handleNavigation(item.titulo, detalle.hora, idioma.idioma, horario.sucursal, detalle.fecha, item.image, detalle.precioNino, detalle.precioAdulto, detalle.precioTE, detalle.codSala, detalle.codFuncion)}>
-                        </TouchableOpacity>
-                      )
-                    )}
                   </View>
                 ))}
               </View>
