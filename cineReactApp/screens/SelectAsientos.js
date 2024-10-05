@@ -6,11 +6,13 @@ import InfoPelicula from '../assets/components/InfoPelicula';
 import SeleccionAsientos from '../assets/components/SeleccionAsientos';
 import TotalYContinuar from '../assets/components/TotalContinuar';
 import { API_URL } from '@env';
+import axios from 'axios';
 
 const PantallaSeleccionAsientos = ({ navigation, route }) => {
   const [asientosSeleccionados, setAsientosSeleccionados] = useState([]);
   const [asientosOcupados, setAsientosOcupados] = useState([]);
   const { params } = route;
+  const {codFuncion} = params;
 
   const filas = [
     ['A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8'],
@@ -42,8 +44,8 @@ const PantallaSeleccionAsientos = ({ navigation, route }) => {
 
   const handleContinuar = () => {
     if (asientosSeleccionados.length == params.cantidad) {
-      const {title, sucursal, fecha, hora, idioma, total, cantidad, image, childP, childB, adultoP, adultoB, abueP, abueB, funcion} = params;
-      navigation.navigate("VistaPago", {title, sucursal, fecha, hora, idioma, total, cantidad, image, childP, childB, adultoP, adultoB, abueP, abueB, asientosSeleccionados, funcion} );
+      const {title, sucursal, fecha, hora, idioma, total, cantidad, image, childP, childB, adultoP, adultoB, abueP, abueB, codFuncion} = params;
+      navigation.navigate("VistaPago", {title, sucursal, fecha, hora, idioma, total, cantidad, image, childP, childB, adultoP, adultoB, abueP, abueB, asientosSeleccionados, codFuncion} );
 
       limpiar();
     }
@@ -55,9 +57,34 @@ const PantallaSeleccionAsientos = ({ navigation, route }) => {
     setAsientosSeleccionados([]);
   }
 
-  useEffect(() =>{
-    setAsientosOcupados(params.asientosOcupados);
+  const obtenerAsientosOcupados = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/api/funciones/devolverAsientos/${codFuncion}`);
+
+      if (response.data.asientos.length != 0) {
+        setAsientosOcupados(response.data.asientos);
+      }
+      else
+        setAsientosOcupados([]);
+
+    } catch (error) {
+      if (error.request) {
+        Alert.alert('Error', 'No hubo respuesta del servidor');
+        return;
+      } else {
+        Alert.alert('Error', 'Error al hacer la solicitud');
+        return;
+      }
+    }
+  }
+
+  useEffect(() => {
+    obtenerAsientosOcupados();
   }, []);
+
+  useEffect(() => {
+    obtenerAsientosOcupados();
+  }, [params]);
 
   return (
     <View style={styles.container}>

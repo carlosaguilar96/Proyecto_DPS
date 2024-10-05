@@ -21,7 +21,7 @@ const VistaPago = ({ navigation, route }) => {
     try {
       const response = await axios.post(`${API_URL}/api/compras/crearCompra`, {
         nombreUsuario: usuario,
-        codFuncion: params.funcion,
+        codFuncion: params.codFuncion,
         cantidadAdultos: params.adultoB,
         cantidadNinos: params.childB,
         cantidadTE: params.abueB,

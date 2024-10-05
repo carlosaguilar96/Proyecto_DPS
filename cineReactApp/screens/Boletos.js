@@ -36,7 +36,7 @@ export default function Boletos() {
       Alert.alert("Mensaje", `Actualmente solo hay ${cantidadDisponible} asientos disponibles para esta función`);
       return;
     }
-    navigation.navigate('PantallaSeleccionAsientos', { title, idioma, hora, sucursal, fecha, image, childB, adultoB, abueB, total, sala, cantidad, funcion, childP, adultoP, abueP, asientosOcupados });
+    navigation.navigate('PantallaSeleccionAsientos', { title, idioma, hora, sucursal, fecha, image, childB, adultoB, abueB, total, sala, cantidad, codFuncion, childP, adultoP, abueP});
     limpiar();
   };
 
@@ -78,7 +78,6 @@ export default function Boletos() {
       else
         setAsientosOcupados([]);
 
-
     } catch (error) {
       if (error.request) {
         Alert.alert('Error', 'No hubo respuesta del servidor');
@@ -92,11 +91,11 @@ export default function Boletos() {
 
   useEffect(() => {
     obtenerAsientosOcupados();
-  }, [codFuncion])
+  }, []);
 
   useEffect(() => {
     obtenerAsientosOcupados();
-  }, []);
+  }, [route.params]);
 
   return (
     <View style={styles.fullContainer}>
