@@ -4,19 +4,19 @@ import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
 import { API_URL } from '@env';
 
-const AñadirSala = ({navigation}) => {
+const AñadirSala = ({ navigation }) => {
   const [sucursal, setSucursal] = useState(-1);
   const [tipoSala, setTipoSala] = useState(-1);
   const [sucursales, setSucursales] = useState([]);
 
   const validar = () => {
 
-    if(sucursal == -1){
-      Alert.alert("Mensaje","Debe seleccionar una sucursal");
+    if (sucursal == -1) {
+      Alert.alert("Mensaje", "Debe seleccionar una sucursal");
       return;
     }
-    if(tipoSala == -1){
-      Alert.alert("Mensaje","Debe seleccionar un tipo de sala");
+    if (tipoSala == -1) {
+      Alert.alert("Mensaje", "Debe seleccionar un tipo de sala");
       return;
     }
 
@@ -24,34 +24,34 @@ const AñadirSala = ({navigation}) => {
 
   };
 
-  
-  const guardarSala = async () =>{
+
+  const guardarSala = async () => {
     try {
       const response = await axios.post(`${API_URL}/api/salas/crearSala`, {
-          sucursal: sucursal
+        sucursal: sucursal
       });
       Alert.alert('Registro exitoso', 'Sala creada correctamente');
       setSucursal(-1);
       setTipoSala(-1);
       navigation.navigate("Menu Admin");
 
-  } catch (error) {
+    } catch (error) {
       if (error.response) {
-          const errores = error.response.data.errors;
-          let mensaje = "";
-          for (const campo in errores) {
-              mensaje += `Error en ${campo}: ${errores[campo].join(', ')}`;
-          }
-          setMssgError(mensaje);
-          return;
+        const errores = error.response.data.errors;
+        let mensaje = "";
+        for (const campo in errores) {
+          mensaje += `Error en ${campo}: ${errores[campo].join(', ')}`;
+        }
+        setMssgError(mensaje);
+        return;
       } else if (error.request) {
-          Alert.alert('Error', 'No hubo respuesta del servidor');
-          return;
+        Alert.alert('Error', 'No hubo respuesta del servidor');
+        return;
       } else {
-          Alert.alert('Error', 'Error al hacer la solicitud ' + error);
-          return;
+        Alert.alert('Error', 'Error al hacer la solicitud ' + error);
+        return;
       }
-  }
+    }
   }
 
   const obtenerSucursales = async () => {

@@ -52,10 +52,11 @@ class FuncionController extends Controller
                 "precioTE" => $request->precioTE
             ]);
 
+            
             $pelicula = Pelicula::find($request->codPelicula);
 
             $pelicula->enCartelera = 1;
-            $pelicula->save();
+            $pelicula->save(); 
             
         } catch (Exception $error) {
             $data = [

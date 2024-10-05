@@ -1,35 +1,182 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { format, addDays, parseISO } from 'date-fns';
+import { format, addDays, parseISO, parse } from 'date-fns';
+import axios from 'axios';
+import { API_URL } from '@env';
 
-const AñadirFuncion = () => {
-  const [sucursal, setSucursal] = useState('');
-  const [pelicula, setPelicula] = useState('');
-  const [sala, setSala] = useState('');
+const AñadirFuncion = ({ navigation }) => {
+  const [sucursal, setSucursal] = useState(-1);
+  const [pelicula, setPelicula] = useState(-1);
+  const [sala, setSala] = useState(-1);
   const [fecha, setFecha] = useState(new Date());
+  const [idioma, setIdioma] = useState("");
   const [mostrarFechaPicker, setMostrarFechaPicker] = useState(false);
   const [horario, setHorario] = useState(new Date());
   const [mostrarHorarioPicker, setMostrarHorarioPicker] = useState(false);
   const [precios, setPrecios] = useState({ ninos: '', adultos: '', terceraEdad: '' });
+  const [sucursales, setSucursales] = useState([]);
+  const [peliculas, setPeliculas] = useState([]);
+  const [salas, setSalas] = useState([]);
+  const [salasEspecificas, setSalasEspecificas] = useState([]);
 
   const manejarAñadirFuncion = () => {
-    if (!sucursal || !pelicula || !sala || !horario) {
+    if (sucursal == -1 || pelicula == -1 || sala == -1 || !horario || !precios.ninos || !precios.adultos || !precios.terceraEdad || idioma == "") {
       Alert.alert('Error', 'Por favor, complete todos los campos.');
       return;
     }
-    else{
-      const parseFecha = format(fecha, 'yyyy-MM-dd');
-      setFecha(parseFecha);
-      console.log({ sucursal, pelicula, sala, parseFecha, horario, precios });
+    else {
+      console.log("Hol");
+      guardarFuncion();
     }
-    
+
   };
+
+  const guardarFuncion = async () => {
+    try {
+      const parseFecha = format(fecha, 'yyyy-MM-dd');
+      const parseHora = horario.toLocaleTimeString();
+
+      const response = await axios.post(`${API_URL}/api/funciones/crearFuncion`, {
+        codPelicula: pelicula,
+        codSala: sala,
+        idioma: idioma,
+        fecha: parseFecha,
+        hora: parseHora,
+        precioAdulto: precios.adultos,
+        precioNino: precios.ninos,
+        precioTE: precios.terceraEdad
+      });
+
+      Alert.alert('Registro exitoso', 'Función agregada correctamente');
+
+      limpiar();
+      navigation.navigate("Menu Admin");
+
+    } catch (error) {
+      console.log(error);
+      if (error.response) {
+        const errores = error.response.data.errors;
+        let mensaje = "";
+        for (const campo in errores) {
+          mensaje += `Error en ${campo}: ${errores[campo].join(', ')}`;
+        }
+        console.log(mensaje);
+        Alert.alert("Error", mensaje);
+        return;
+      } else if (error.request) {
+        Alert.alert('Error', 'No hubo respuesta del servidor');
+        return;
+      } else {
+        Alert.alert('Error', 'Error al hacer la solicitud ' + error);
+        return;
+      }
+    }
+  }
+
+  const limpiar = () => {
+    setSucursal(-1);
+    setPelicula(-1);
+    setSala(-1);
+    setIdioma("");
+    setFecha(new Date());
+    setHorario(new Date());
+    setPrecios({ ninos: '', adultos: '', terceraEdad: '' })
+  }
+
+  const obtenerSucursales = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/api/sucursales/index`);
+
+      if (response.data.sucursales.length != 0) {
+
+        setSucursales(response.data.sucursales);
+
+      }
+
+    } catch (error) {
+      if (error.request) {
+        Alert.alert('Error', 'No hubo respuesta del servidor ');
+        console.log(error);
+        return;
+      } else {
+        Alert.alert('Error', 'Error al hacer la solicitud');
+        return;
+      }
+    }
+  }
+
+  const obtenerPeliculas = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/api/peliculas/index`);
+
+      if (response.data.peliculas.length != 0) {
+        setPeliculas(response.data.peliculas);
+      }
+
+    } catch (error) {
+      if (error.request) {
+        Alert.alert('Error', 'No hubo respuesta del servidor ');
+        console.log(error);
+        return;
+      } else {
+        Alert.alert('Error', 'Error al hacer la solicitud');
+        return;
+      }
+    }
+  }
+
+
+  const obtenerSalas = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/api/salas/index`);
+
+      if (response.data.salas.length != 0) {
+        setSalas(response.data.salas);
+      }
+
+    } catch (error) {
+      if (error.request) {
+        Alert.alert('Error', 'No hubo respuesta del servidor ');
+        console.log(error);
+        return;
+      } else {
+        Alert.alert('Error', 'Error al hacer la solicitud');
+        return;
+      }
+    }
+  }
+
+  const obtenerSalasDetallado = () => {
+
+    if (sucursal == -1) {
+      setSalasEspecificas([]);
+    } else {
+
+      if (salas.length != 0) {
+
+        let valor = salas.filter((item) => item.codSucursal == sucursal);
+        setSalasEspecificas(valor);
+      }
+    }
+
+  }
+
+  useEffect(() => {
+    obtenerSucursales();
+    obtenerPeliculas();
+    obtenerSalas();
+  });
+
+  useEffect(() => {
+    obtenerSalasDetallado();
+    console.log("E")
+  }, [sucursal]);
 
   return (
     <ScrollView style={estilos.contenedor}>
-      
+
       <View style={estilos.formulario}>
         <Text>Sucursal:</Text>
         <Picker
@@ -37,9 +184,10 @@ const AñadirFuncion = () => {
           style={estilos.entrada}
           onValueChange={(itemValue) => setSucursal(itemValue)}
         >
-          <Picker.Item label="Seleccione una sucursal" value="" />
-          <Picker.Item label="Sucursal 1" value="sucursal1" />
-          <Picker.Item label="Sucursal 2" value="sucursal2" />
+          <Picker.Item label="Seleccione una sucursal" value={-1} />
+          {sucursales.map((item) => (
+            <Picker.Item label={item.sucursal} value={item.codSucursal} key={() => item.codSucursal} />
+          ))}
         </Picker>
 
         <Text>Película:</Text>
@@ -48,9 +196,10 @@ const AñadirFuncion = () => {
           style={estilos.entrada}
           onValueChange={(itemValue) => setPelicula(itemValue)}
         >
-          <Picker.Item label="Seleccione una película" value="" />
-          <Picker.Item label="Película 1" value="pelicula1" />
-          <Picker.Item label="Película 2" value="pelicula2" />
+          <Picker.Item label="Seleccione una película" value={-1} />
+          {peliculas.map((item) => (
+            <Picker.Item label={item.nombre} value={item.codPelicula} key={() => item.codPelicula} />
+          ))}
         </Picker>
 
         <Text>Sala:</Text>
@@ -59,14 +208,27 @@ const AñadirFuncion = () => {
           style={estilos.entrada}
           onValueChange={(itemValue) => setSala(itemValue)}
         >
-          <Picker.Item label="Seleccione una sala" value="" />
-          <Picker.Item label="Sala 1" value="sala1" />
-          <Picker.Item label="Sala 2" value="sala2" />
+          <Picker.Item label="Seleccione una sucursal primero" value={-1} />
+          {salasEspecificas.map((item) => (
+            <Picker.Item label={item.codSala} value={item.codSala} key={() => item.codSala} />
+          ))}
+        </Picker>
+
+        <Text>Idioma:</Text>
+        <Picker
+          selectedValue={idioma}
+          style={estilos.entrada}
+          onValueChange={(itemValue) => setIdioma(itemValue)}
+        >
+          <Picker.Item label="Seleccione un idioma" value={""} />
+          <Picker.Item label="Original Subtitulado" value={"Original Subtitulado"} />
+          <Picker.Item label="Doblado al Español" value={"Doblado al Español"} />
+
         </Picker>
 
         <Text>Fecha:</Text>
         <TouchableOpacity onPress={() => setMostrarFechaPicker(true)}>
-          <Text style={estilos.entrada}>{fecha.toDateString()}</Text>
+          <Text style={estilos.entrada}>{format(fecha, 'yyyy-MM-dd')}</Text>
         </TouchableOpacity>
         {mostrarFechaPicker && (
           <DateTimePicker
