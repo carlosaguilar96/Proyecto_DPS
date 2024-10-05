@@ -152,12 +152,15 @@ export default function Cartelera() {
   const now = new Date();
   const elSalvadorOffset = -6 * 60; // El Salvador está en UTC-6
   const localTimeInElSalvador = new Date(now.getTime() + elSalvadorOffset * 60000);
-  const selectedDate = format(localTimeInElSalvador, 'yyyy-MM-dd');
+  const localTimeString = localTimeInElSalvador.toISOString(); 
+  const trimmedLocalTime = localTimeString.slice(0, 19); // Recortar la hora local
+  const dateTimeToCompare = parseISO(trimmedLocalTime);
+  const selectedDate = format(dateTimeToCompare, 'yyyy-MM-dd');
   //se añade un dia
-  const tomorrow = addDays(localTimeInElSalvador, 1);
+  const tomorrow = addDays(dateTimeToCompare, 1);
   const selectedT = format(tomorrow, 'yyyy-MM-dd');
   //se añaden dos dias
-  const tomorrowP = addDays(localTimeInElSalvador, 2);
+  const tomorrowP = addDays(dateTimeToCompare, 2);
   const selectedP = format(tomorrowP, 'yyyy-MM-dd');
 
 
@@ -166,12 +169,12 @@ export default function Cartelera() {
 
 
   //Todos estos son del INICIO
-  const MovieToday = agruparPeliculas(Funcion.filter(item => item.titulo === title && format(parseISO(item.fecha), 'yyyy-MM-dd') === selectedDate && isAfter(parseISO(`${item.fecha}T${item.hora}`), localTimeInElSalvador)));
+  const MovieToday = agruparPeliculas(Funcion.filter(item => item.titulo === title && format(parseISO(item.fecha), 'yyyy-MM-dd') === selectedDate && isAfter(parseISO(`${item.fecha}T${item.hora}`), dateTimeToCompare)));
   const MovieTomorrow = agruparPeliculas(Funcion.filter(item => item.titulo === title && format(parseISO(item.fecha), 'yyyy-MM-dd') === selectedT));
   const MovieTomorrowP = agruparPeliculas(Funcion.filter(item => item.titulo === title && format(parseISO(item.fecha), 'yyyy-MM-dd') === selectedP));
 
   //Todos estos son del DRAWER
-  const DataToday = agruparTitle(Funcion.filter(item => format(parseISO(item.fecha), 'yyyy-MM-dd') === selectedDate && isAfter(parseISO(`${item.fecha}T${item.hora}`), localTimeInElSalvador)));
+  const DataToday = agruparTitle(Funcion.filter(item => format(parseISO(item.fecha), 'yyyy-MM-dd') === selectedDate && isAfter(parseISO(`${item.fecha}T${item.hora}`), dateTimeToCompare)));
   const DataTomorrow = agruparTitle(Funcion.filter(item => format(parseISO(item.fecha), 'yyyy-MM-dd') === selectedT));
   const DataTomorrowP = agruparTitle(Funcion.filter(item => format(parseISO(item.fecha), 'yyyy-MM-dd') === selectedP));
 
