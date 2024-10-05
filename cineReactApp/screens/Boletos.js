@@ -46,6 +46,14 @@ export default function Boletos() {
     setabueB(0);
   }
 
+  useFocusEffect(
+    React.useCallback(() => {
+      setchildB(0);
+      setabueB(0);
+      setadultoB(0);
+    }, [])
+  );
+
   const handleBack = () => {
     navigation.goBack();
   };
