@@ -9,6 +9,7 @@ import { API_URL } from '@env';
 
 const PantallaSeleccionAsientos = ({ navigation, route }) => {
   const [asientosSeleccionados, setAsientosSeleccionados] = useState([]);
+  const [asientosOcupados, setAsientosOcupados] = useState([]);
   const { params } = route;
 
   const filas = [
@@ -54,7 +55,9 @@ const PantallaSeleccionAsientos = ({ navigation, route }) => {
     setAsientosSeleccionados([]);
   }
 
-  
+  useEffect(() =>{
+    setAsientosOcupados(params.asientosOcupados);
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -72,7 +75,7 @@ const PantallaSeleccionAsientos = ({ navigation, route }) => {
         filas={filas}
         columnas={columnas}
         asientosSeleccionados={asientosSeleccionados}
-        asientosOcupados={params.asientosOcupados}
+        asientosOcupados={asientosOcupados}
         onSeleccionarAsiento={seleccionarAsiento}
       />
       <TotalYContinuar total={params.total.toFixed(2)} onContinuar={handleContinuar} />

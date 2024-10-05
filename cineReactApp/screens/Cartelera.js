@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, FlatList, ScrollView,Modal, Button} from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, FlatList, ScrollView, Modal, Button } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import { useFocusEffect } from '@react-navigation/native';
 import { format, addDays, parseISO } from 'date-fns';
@@ -13,7 +13,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const agruparTitle = (data) => {
   const groupedData = data.reduce((acc, item) => {
     if (!acc[item.titulo]) {
-      acc[item.titulo] = { ...item, horarios: [] }; 
+      acc[item.titulo] = { ...item, horarios: [] };
     }
 
     // Comprobar si ya existe un horario para la sucursal actual
@@ -33,7 +33,7 @@ const agruparTitle = (data) => {
         // Añadir un nuevo idioma si no existe
         existingSucursal.idiomas.push({
           idioma: item.idioma,
-          detalles: [{ fecha: item.fecha, hora: item.hora, precioNino: item.precioNino, precioAdulto: item.precioAdulto, precioTE: item.precioTE,codSala: item.codSala, codFuncion: item.codFuncion }],
+          detalles: [{ fecha: item.fecha, hora: item.hora, precioNino: item.precioNino, precioAdulto: item.precioAdulto, precioTE: item.precioTE, codSala: item.codSala, codFuncion: item.codFuncion }],
         });
       } else {
         // Si el idioma ya existe, agregar el horario a los detalles
@@ -94,7 +94,7 @@ export default function Cartelera() {
   const route = useRoute();
   const { title } = route?.params || {};
   const { miVariable, setMiVariable } = useContext(AppContext); // Obtén la variable del contexto
-  const { miVariable2, setMiVariable2 } = useContext(AppContext); 
+  const { miVariable2, setMiVariable2 } = useContext(AppContext);
   const [Funcion, setFunciones] = useState([]);
   const [mensajeDra, setMensajeDra] = useState("Cargando ...");
   const [modalVisible, setModalVisible] = useState(false);
@@ -130,17 +130,17 @@ export default function Cartelera() {
     }, [])
   );
 
-  const handleNavigation = async(title, hora, idioma,sucursal,fecha, image,precioNino, precioAdulto, precioTE, codSala, codFuncion) =>{
+  const handleNavigation = async (title, hora, idioma, sucursal, fecha, image, precioNino, precioAdulto, precioTE, codSala, codFuncion) => {
     const infouser = await AsyncStorage.getItem('Nombreuser');
 
     const parsedUsuarioInfo = JSON.parse(infouser);
-    if(parsedUsuarioInfo.sesion === 1){
+    if (parsedUsuarioInfo.sesion === 1) {
       setModalVisible(true);
     }
-    else{
-      navigation.navigate('Boletos', {title, hora, idioma,sucursal,fecha,image,precioNino, precioAdulto, precioTE, codSala, codFuncion});
+    else {
+      navigation.navigate('Boletos', { title, hora, idioma, sucursal, fecha, image, precioNino, precioAdulto, precioTE, codSala, codFuncion });
     }
-    
+
   }
 
   const handleModalClose = () => {
@@ -183,9 +183,9 @@ export default function Cartelera() {
     setSelectedButton(day); // Actualiza el botón seleccionado
     setSelectedData(data); // Actualiza los datos seleccionados desde DRAWER
 
-    if(Funcion.length == 0){
+    if (Funcion.length == 0) {
       setMensajeDra("No hay funciones disponibles");
-    }else if (Funcion.length > 0 && data.length == 0) {
+    } else if (Funcion.length > 0 && data.length == 0) {
       setMensajeDra("No hay funciones disponibles " + day);
     }
   };
@@ -209,9 +209,10 @@ export default function Cartelera() {
                   <View key={indexIdioma} style={styles.idiomaContainer}>
                     <Text style={styles.horarioTitle}>{`${idioma.idioma} `}</Text>
                     {idioma.detalles.map((detalle, indexDetalle) => (
-                      <TouchableOpacity key={indexDetalle} style={styles.horarioButton} onPress={() => handleNavigation(item.title,detalle.hora, idioma.idioma, horario.sucursal, detalle.fecha, item.image, detalle.precioNino, detalle.precioAdulto, detalle.precioTE, detalle.codSala, detalle.codFuncion)}>
-                      </TouchableOpacity>
-                    ))}
+                        <TouchableOpacity key={indexDetalle} style={styles.horarioButton} onPress={() => handleNavigation(item.titulo, detalle.hora, idioma.idioma, horario.sucursal, detalle.fecha, item.image, detalle.precioNino, detalle.precioAdulto, detalle.precioTE, detalle.codSala, detalle.codFuncion)}>
+                        </TouchableOpacity>
+                      )
+                    )}
                   </View>
                 ))}
               </View>
@@ -245,7 +246,7 @@ export default function Cartelera() {
                       <View key={indexIdioma} style={styles.idiomaContainer}>
                         <Text style={styles.horarioTitle}>{`${idioma.idioma} `}</Text>
                         {idioma.detalles.map((detalle, indexDetalle) => (
-                         <TouchableOpacity key={indexDetalle} style={styles.horarioButton} onPress={() => handleNavigation(item.title,detalle.hora, idioma.idioma, horario.sucursal, detalle.fecha, item.image, detalle.precioNino, detalle.precioAdulto, detalle.precioTE, detalle.codSala, detalle.codFuncion)}>
+                          <TouchableOpacity key={indexDetalle} style={styles.horarioButton} onPress={() => handleNavigation(item.titulo, detalle.hora, idioma.idioma, horario.sucursal, detalle.fecha, item.image, detalle.precioNino, detalle.precioAdulto, detalle.precioTE, detalle.codSala, detalle.codFuncion)}>
                             <Text style={styles.horarioText}>{`${detalle.hora} `}</Text>
                           </TouchableOpacity>
                         ))}
@@ -279,7 +280,7 @@ export default function Cartelera() {
   return (
     //si miVariable es diferente de 2, se ingresa a la vista desde el drawer, caso contrario se ha seleccionado una peli en especifico desde el inicio
 
-    <View style={{ flex: 1}}>
+    <View style={{ flex: 1 }}>
       {miVariable !== 2 ? (
         <View style={styles.container}>
           {/*Vista desde DRAWER*/}
@@ -317,18 +318,18 @@ export default function Cartelera() {
           <ScrollView>
             <Text style={styles.sucursalTitle}>Hoy</Text>
             <View style={styles.cardMovie}>
-              <FlatListInicio Movie={MovieToday} Dia="Hoy"/>
+              <FlatListInicio Movie={MovieToday} Dia="Hoy" />
             </View>
             <Text style={styles.sucursalTitle}>Mañana</Text>
             <View style={styles.cardMovie}>
-              <FlatListInicio Movie={MovieTomorrow} Dia="Mañana"/>
+              <FlatListInicio Movie={MovieTomorrow} Dia="Mañana" />
             </View>
             <Text style={styles.daytitle}>Pasado</Text>
-            <FlatListInicio Movie={MovieTomorrowP} Dia="Pasado"/>
+            <FlatListInicio Movie={MovieTomorrowP} Dia="Pasado" />
           </ScrollView>
 
         )}
- {/* Modal */}
+      {/* Modal */}
       <Modal
         animationType="slide"
         transparent={true}
@@ -461,7 +462,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row', // Alinea el texto en fila
     justifyContent: 'space-around', // Espaciado entre los botones
     alignItems: 'center', // Centra verticalmente
-  },modalContainer: {
+  }, modalContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',

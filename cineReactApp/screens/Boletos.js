@@ -71,9 +71,12 @@ export default function Boletos() {
   const obtenerAsientosOcupados = async () => {
     try {
       const response = await axios.get(`${API_URL}/api/funciones/devolverAsientos/${codFuncion}`);
-      console.log(item.codFuncion);
-      if (response.data.asientos.length != 0)
+
+      if (response.data.asientos.length != 0) {
         setAsientosOcupados(response.data.asientos);
+      }
+      else
+        setAsientosOcupados([]);
 
 
     } catch (error) {
@@ -87,11 +90,13 @@ export default function Boletos() {
     }
   }
 
-  useFocusEffect(
-    React.useCallback(() => {
-      obtenerAsientosOcupados();
-    }, [])
-  );
+  useEffect(() => {
+    obtenerAsientosOcupados();
+  }, [codFuncion])
+
+  useEffect(() => {
+    obtenerAsientosOcupados();
+  }, []);
 
   return (
     <View style={styles.fullContainer}>
@@ -104,7 +109,7 @@ export default function Boletos() {
           style={styles.moviePoster}
         />
         <View style={styles.movieInfo}>
-          <Text style={styles.titulo}>{title}</Text>
+          <Text style={styles.titulo}>{title} {codFuncion}</Text>
           <Text style={styles.subtitulo}>Fecha: {fecha}</Text>
           <Text style={styles.subtitulo}>Sucursal {sucursal} | {hora} | {idioma}</Text>
         </View>
