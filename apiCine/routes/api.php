@@ -117,6 +117,8 @@ Route::put('/funciones/eliminarFuncion/{id}', [FuncionController::class, 'destro
 Route::put('/funciones/reactivarFuncion/{id}', [FuncionController::class, 'reactivate']);
 //Ruta para modificar función
 Route::put('/funciones/update/{id}', [FuncionController::class, 'update']);
+//Ruta para mostrar todas las funciones para editar
+Route::get('/funciones/indexEditar', [FuncionController::class, 'indexEdit']);
 
 //RUTAS PARA COMPRAS
 //Ruta para crear compra

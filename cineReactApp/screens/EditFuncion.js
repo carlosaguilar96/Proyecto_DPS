@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, FlatList, Modal, Button } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, FlatList, Modal, Button, Alert } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { Funcion } from '../config/movieData';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import axios from 'axios';
+import { API_URL } from '@env';
+import { useIsFocused } from '@react-navigation/native';
 
 const ModificarFuncion = () => {
   const [showModal, setShowModal] = useState(false);
@@ -13,6 +16,34 @@ const ModificarFuncion = () => {
   const [formattedTime, setFormattedTime] = useState('');
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
+  const [estado, setEstado] = useState(0);
+  const [funciones, setFunciones] = useState('');
+  const isFocused = useIsFocused();
+
+  const obtenerFunciones = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/api/funciones/indexEditar`);
+  
+      if (response.data.funciones.length != 0)
+        setFunciones(response.data.funciones);
+  
+    } catch (error) {
+      if (error.request) {
+        Alert.alert('Error', 'No hubo respuesta del servidor');
+        return;
+      } else {
+        Alert.alert('Error', 'Error al hacer la solicitud');
+        return;
+      }
+    }
+  }
+  
+  useEffect(() => {
+    if (isFocused) {
+      obtenerFunciones();
+      console.log(funciones);
+    }
+  }, [isFocused]);
 
   const onDateChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
@@ -56,15 +87,45 @@ const ModificarFuncion = () => {
     setShowModal(true); // Mostrar el modal
   };
 
-  const handleEstado = (CodFuncion) => {
-    setid(CodFuncion); // Establecer el item seleccionado
+  const handleEstado = (CodFuncion, estado) => {
     setShowModalEstado(true); // Mostrar el modal
+    setid(CodFuncion); // Establecer el item seleccionado
+    setEstado(estado);
   };
 
-  const CambiarEstado = () => {
-    setShowModalEstado(false); // Mostrar el modal
-    //AQUI DEBERIA CAMBIARSE EL ESTADO, en id esta el id de funcion
-    console.log(id);
+  const CambiarEstado = async () => {
+    if(estado==1){
+      try {
+        const response = await axios.put(`${API_URL}/api/funciones/eliminarFuncion/${id}`);
+        Alert.alert('Función eliminada', 'La función ha sido eliminada con éxito');
+        setShowModalEstado(false);
+        obtenerFunciones();
+      } catch (error) {
+        if (error.request) {
+          Alert.alert('Error', 'No hubo respuesta del servidor');
+          return;
+        } else {
+          Alert.alert('Error', 'Error al hacer la solicitud');
+          return;
+        }
+      }
+    }
+    if(estado==0){
+      try {
+        const response = await axios.put(`${API_URL}/api/funciones/reactivarFuncion/${id}`);
+        Alert.alert('Función reactivada', 'La función ha sido reactivada con éxito');
+        setShowModalEstado(false);
+        obtenerFunciones();
+      } catch (error) {
+        if (error.request) {
+          Alert.alert('Error', 'No hubo respuesta del servidor');
+          return;
+        } else {
+          Alert.alert('Error', 'Error al hacer la solicitud');
+          return;
+        }
+      }
+    }
   };
 
   const renderItem = ({ item }) => {
@@ -72,27 +133,24 @@ const ModificarFuncion = () => {
       <View style={estilos.contenedor}>
         <View style={estilos.tarjeta}>
           <View style={estilos.detallesFuncion}>
-            <Text style={estilos.tituloSucursal}>Funcion {item.id}</Text>
+            <Text style={estilos.tituloSucursal}>Función {item.codFuncion}</Text>
             <Text style={estilos.textoGrande}>Sucursal: {item.sucursal}</Text>
-            <Text style={estilos.textoGrande}>Película: {item.title}</Text>
-            <Text style={estilos.textoGrande}>Sala: {item.sala}</Text>
+            <Text style={estilos.textoGrande}>Película: {item.nombre}</Text>
+            <Text style={estilos.textoGrande}>Sala: {item.codSala}</Text>
             <Text style={estilos.textoGrande}>Fecha: {item.fecha}</Text>
-            <Text style={estilos.textoGrande}>Horario: {item.hora}</Text>
-            <Text style={estilos.textoGrande}>Precio Niños: ${item.precioNino}</Text>
-            <Text style={estilos.textoGrande}>Precio Adultos: ${item.precioAdulto}</Text>
-            <Text style={estilos.textoGrande}>Precio 3ra Edad: ${item.precioTE}</Text>
+            <Text style={estilos.textoGrande}>Hora: {item.hora}</Text>
             
           </View>
           <View style={estilos.contenedorBotones}>
-              <TouchableOpacity style={estilos.botonIcono} onPress={() => handleEditPress(item.id)}>
+              <TouchableOpacity style={estilos.botonIcono} onPress={() => handleEditPress(item.codFuncion)}>
                 <FontAwesome name="edit" size={30} color="white" />
               </TouchableOpacity>
-              {item.estadoE === 0 ? (
-              <TouchableOpacity style={estilos.botonIcono} onPress={() => handleEstado(item.id)}>
+              {item.estadoEliminacion === 0 ? (
+              <TouchableOpacity style={estilos.botonIcono} onPress={() => handleEstado(item.codFuncion, item.estadoEliminacion)}>
               <FontAwesome name="ban" size={30} color="white" />
             </TouchableOpacity>
             ):(
-              <TouchableOpacity style={estilos.botonIcono} onPress={() => handleEstado(item.id)}>
+              <TouchableOpacity style={estilos.botonIcono} onPress={() => handleEstado(item.codFuncion, item.estadoEliminacion)}>
               <FontAwesome name="check" size={30} color="white" />
             </TouchableOpacity>
             )}
@@ -114,7 +172,7 @@ const ModificarFuncion = () => {
       <FlatList
         data={Movie}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.codFuncion}
         scrollEnabled={false}
       />
     );
@@ -122,7 +180,7 @@ const ModificarFuncion = () => {
 
   return (
     <ScrollView>
-      <FlatListMovie Movie={Funcion} />
+      <FlatListMovie Movie={funciones} />
 
       {/* Modal para seleccionar fecha y hora */}
       <Modal
@@ -182,7 +240,7 @@ const ModificarFuncion = () => {
     >
       <View style={estilos.modalContainer}>
         <View style={estilos.modalContent}>
-          <Text style={estilos.modalText}>¿Seguro que deseas cambiar el estado de la película?</Text>
+          <Text style={estilos.modalText}>¿Seguro que desea {estado === 0  ? ('reactivar'):('eliminar')} la función?</Text>
           <View style={estilos.modalButtons}>
             <TouchableOpacity style={estilos.botonCancelar} onPress={() => setShowModalEstado(false)}>
               <Text style={estilos.botonTexto}>Cancelar</Text>
@@ -219,6 +277,7 @@ const estilos = StyleSheet.create({
   },
   detallesFuncion: {
     justifyContent: 'center',
+    width:'65%',
   },
   tituloSucursal: {
     fontSize: 22,
@@ -233,8 +292,8 @@ const estilos = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    margin: 90,
-    gap: 50,
+    margin: 50,
+    gap: 20,
   },
   botonIcono: {
     backgroundColor: '#8B0000',

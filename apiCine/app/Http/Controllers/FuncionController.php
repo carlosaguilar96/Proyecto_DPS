@@ -11,6 +11,7 @@ use App\Models\Sala;
 use App\Models\Compra;
 use App\Models\Asiento;
 use Exception;
+use Carbon\Carbon;
 
 class FuncionController extends Controller
 {
@@ -100,6 +101,21 @@ class FuncionController extends Controller
             $funciones[] = $funcion;
         }
 
+        $data = [
+            'funciones' => $funciones,
+            'status' => 200
+        ];
+        return response()->json($data, 200);
+    }
+
+    //Función para editar funciones
+    public function indexEdit(){
+        $funciones = Funcion::join('peliculas', 'funciones.codPelicula', '=', 'peliculas.codPelicula')
+                    ->join('salas','funciones.codSala','=','salas.codSala')
+                    ->join('sucursales','salas.codSucursal','=','sucursales.codSucursal')
+                    ->select('funciones.*','peliculas.nombre','sucursales.sucursal')
+                    ->whereRaw("STR_TO_DATE(CONCAT(funciones.fecha, ' ', funciones.hora), '%Y-%m-%d %H:%i:%s') > ?", [Carbon::now('America/El_Salvador')])
+                    ->get();
         $data = [
             'funciones' => $funciones,
             'status' => 200
