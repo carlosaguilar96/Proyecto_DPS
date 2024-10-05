@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity, Alert, Image } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity, Alert, Image, Keyboard } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
@@ -16,6 +16,7 @@ const AñadirPelicula = ({navigation}) => {
 
   const manejarAñadirPelicula = () => {
 
+    Keyboard.dismiss();
     if (nombre == "") {
       Alert.alert("Mensaje", "Debes ingresar un nombre para la película");
       return;

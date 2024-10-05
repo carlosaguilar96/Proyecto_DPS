@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
@@ -12,10 +12,14 @@ const menuOptions = [
   { name: 'Añadir Pelicula', icon: 'add' },
   { name: 'Añadir Funcion', icon: 'add' },
   { name: 'Añadir Administrador', icon: 'add' },
-  /*{ name: 'Modificar Sala', icon: 'edit' },
-  { name: 'Modificar Película', icon: 'edit' },
-  { name: 'Modificar Función', icon: 'edit' },
-  { name: 'Modificar Administrador', icon: 'edit' },*/
+];
+
+const menuOptionsMAX = [
+  { name: 'Añadir Sala', icon: 'add' },
+  { name: 'Añadir Pelicula', icon: 'add' },
+  { name: 'Añadir Funcion', icon: 'add' },
+  { name: 'Añadir Administrador', icon: 'add' },
+  { name: "Editar Cine", icon: "edit" }
 ];
 
 export default function MenuAdmin() {
@@ -24,8 +28,9 @@ export default function MenuAdmin() {
   const route = useRoute();
   const [admin, setAdmin] = useState("");
   const [firstAdmin, setFirstAdmin] = useState("");
-  
-  const {setIndicadorCine} = route.params;
+
+  const { setIndicadorCine } = route.params;
+  const [menuUsado, setMenuUsado] = useState(menuOptions);
 
   const MenuButton = ({ item }) => {
     return (
@@ -35,33 +40,33 @@ export default function MenuAdmin() {
       </TouchableOpacity>
     );
   };
-  
-  const handleOnPress = (name) =>{
-    if(name == "Añadir Sala"){
+
+  const handleOnPress = (name) => {
+    if (name == "Añadir Sala") {
       navigation.navigate('Añadir Sala');
     }
-    if(name == "Añadir Pelicula"){
+    if (name == "Añadir Pelicula") {
       navigation.navigate('Añadir Pelicula');
     }
-    if(name == "Añadir Funcion"){
+    if (name == "Añadir Funcion") {
       navigation.navigate('Añadir Funcion');
     }
-    if(name == "Añadir Administrador"){
+    if (name == "Añadir Administrador") {
       navigation.navigate('Añadir Administrador');
     }
-    if(name == "Editar Cine"){
+    if (name == "Editar Cine") {
       navigation.navigate("Editar Cine");
     }
   }
 
-  const extraerAdmin = async () =>{
+  const extraerAdmin = async () => {
     const infouser = await AsyncStorage.getItem('Nombreuser');
 
     const parsedUsuarioInfo = JSON.parse(infouser);
     setAdmin(parsedUsuarioInfo.nombreUsuario.toLowerCase());
   }
 
-  const revisarAdmin = async () =>{
+  const revisarAdmin = async () => {
     try {
       const response = await axios.get(`${API_URL}/api/cines/index`);
 
@@ -74,30 +79,40 @@ export default function MenuAdmin() {
       console.log("Error al traer el logo del cine: " + error);
     }
   }
-  const MainScreen = () => {
 
-    useEffect(() =>{
-      extraerAdmin();
-      revisarAdmin();
+  const comparar = () => {
+    extraerAdmin();
+    revisarAdmin();
 
-      if(firstAdmin != "" && admin != ""){
+    if (firstAdmin != "" && admin != "") {
 
-        if(firstAdmin === admin){
+      if (firstAdmin === admin) {
 
-          if(menuOptions.length == 4){
-            menuOptions.push({name: "Editar Cine", icon: "edit"});
+        if (menuOptions.length == 4) {
+          menuOptions.push();
 
-            // Se añade la opción para editar cine en el drawer
-            setIndicadorCine(true);
-          }
+          // Se añade la opción para editar cine en el drawer
+          setMenuUsado(menuOptionsMAX);
+          setIndicadorCine(true);
         }
       }
+      else {
+        setMenuUsado(menuOptions);
+        setIndicadorCine(false);
+      }
+    }
+  }
+  const MainScreen = () => {
+
+    useEffect(() => {
+      comparar();
     }, []);
+
 
     return (
       <View style={styles.container}>
         <FlatList
-          data={menuOptions}
+          data={menuUsado}
           renderItem={({ item }) => <MenuButton item={item} />}
           keyExtractor={(item) => item.name}
           numColumns={2}
@@ -109,85 +124,85 @@ export default function MenuAdmin() {
   }
 
   return (
-     /* <Drawer.Navigator
-        initialRouteName="Home"
-        drawerContentOptions={{
-          activeTintColor: '#fff',
-          inactiveTintColor: '#bbb',
-          itemStyle: { marginVertical: 5 },
-          labelStyle: { fontSize: 18 },
-          style: { backgroundColor: '#8B0000' },
-        }}
-      >
-        <Drawer.Screen 
-          name="Home" 
-          component={MainScreen} 
-          options={{
-            title: 'Menú Principal',
-            drawerIcon: ({ color }) => (<Icon name="home" size={20} color={color} />),
-          }} 
-        />
-       
-        <Drawer.Screen 
-          name="Añadir Sala" 
-          component={AddSalaScreen} 
-          options={{
-            drawerIcon: ({ color }) => (<Icon name="add" size={20} color={color} />)
-          }} 
-        />
-        <Drawer.Screen 
-          name="Añadir Película" 
-          component={AddPeliculaScreen} 
-          options={{
-            drawerIcon: ({ color }) => (<Icon name="add" size={20} color={color} />)
-          }} 
-        />
-        <Drawer.Screen 
-          name="Añadir Función" 
-          component={AddFuncionScreen} 
-          options={{
-            drawerIcon: ({ color }) => (<Icon name="add" size={20} color={color} />)
-          }} 
-        />
-        <Drawer.Screen 
-          name="Añadir Administrador" 
-          component={AddAdministradorScreen} 
-          options={{
-            drawerIcon: ({ color }) => (<Icon name="add" size={20} color={color} />)
-          }} 
-        />
+    /* <Drawer.Navigator
+       initialRouteName="Home"
+       drawerContentOptions={{
+         activeTintColor: '#fff',
+         inactiveTintColor: '#bbb',
+         itemStyle: { marginVertical: 5 },
+         labelStyle: { fontSize: 18 },
+         style: { backgroundColor: '#8B0000' },
+       }}
+     >
+       <Drawer.Screen 
+         name="Home" 
+         component={MainScreen} 
+         options={{
+           title: 'Menú Principal',
+           drawerIcon: ({ color }) => (<Icon name="home" size={20} color={color} />),
+         }} 
+       />
+      
+       <Drawer.Screen 
+         name="Añadir Sala" 
+         component={AddSalaScreen} 
+         options={{
+           drawerIcon: ({ color }) => (<Icon name="add" size={20} color={color} />)
+         }} 
+       />
+       <Drawer.Screen 
+         name="Añadir Película" 
+         component={AddPeliculaScreen} 
+         options={{
+           drawerIcon: ({ color }) => (<Icon name="add" size={20} color={color} />)
+         }} 
+       />
+       <Drawer.Screen 
+         name="Añadir Función" 
+         component={AddFuncionScreen} 
+         options={{
+           drawerIcon: ({ color }) => (<Icon name="add" size={20} color={color} />)
+         }} 
+       />
+       <Drawer.Screen 
+         name="Añadir Administrador" 
+         component={AddAdministradorScreen} 
+         options={{
+           drawerIcon: ({ color }) => (<Icon name="add" size={20} color={color} />)
+         }} 
+       />
 
-    
-        <Drawer.Screen 
-          name="Modificar Sala" 
-          component={ModifySalaScreen} 
-          options={{
-            drawerIcon: ({ color }) => (<Icon name="edit" size={20} color={color} />)
-          }} 
-        />
-        <Drawer.Screen 
-          name="Modificar Película" 
-          component={ModifyPeliculaScreen} 
-          options={{
-            drawerIcon: ({ color }) => (<Icon name="edit" size={20} color={color} />)
-          }} 
-        />
-        <Drawer.Screen 
-          name="Modificar Función" 
-          component={ModifyFuncionScreen} 
-          options={{
-            drawerIcon: ({ color }) => (<Icon name="edit" size={20} color={color} />)
-          }} 
-        />
-        <Drawer.Screen 
-          name="Modificar Administrador" 
-          component={ModifyAdministradorScreen} 
-          options={{
-            drawerIcon: ({ color }) => (<Icon name="edit" size={20} color={color} />)
-          }} 
-        />
-      </Drawer.Navigator>*/
-      <MainScreen/>
+   
+       <Drawer.Screen 
+         name="Modificar Sala" 
+         component={ModifySalaScreen} 
+         options={{
+           drawerIcon: ({ color }) => (<Icon name="edit" size={20} color={color} />)
+         }} 
+       />
+       <Drawer.Screen 
+         name="Modificar Película" 
+         component={ModifyPeliculaScreen} 
+         options={{
+           drawerIcon: ({ color }) => (<Icon name="edit" size={20} color={color} />)
+         }} 
+       />
+       <Drawer.Screen 
+         name="Modificar Función" 
+         component={ModifyFuncionScreen} 
+         options={{
+           drawerIcon: ({ color }) => (<Icon name="edit" size={20} color={color} />)
+         }} 
+       />
+       <Drawer.Screen 
+         name="Modificar Administrador" 
+         component={ModifyAdministradorScreen} 
+         options={{
+           drawerIcon: ({ color }) => (<Icon name="edit" size={20} color={color} />)
+         }} 
+       />
+     </Drawer.Navigator>*/
+    <MainScreen />
   );
 }
 
