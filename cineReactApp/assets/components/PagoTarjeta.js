@@ -6,21 +6,40 @@ const PagoTarjeta = ({ onRealizarPago }) => {
   const [metodoPago, setMetodoPago] = useState('tarjeta');
   const [nombreTitular, setNombreTitular] = useState('');
   const [numeroTarjeta, setNumeroTarjeta] = useState('');
-  const [fechaVencimiento, setFechaVencimiento] = useState('');
+  const [fechaVencimiento, setFechaVencimiento] = useState('MM/');
   const [cvv, setCvv] = useState('');
+
+  const manejarCambioFecha = (texto) => {
+    let nuevoTexto = texto;
+
+    // Validar el mes
+    if (texto.length === 1 && texto !== '0' && texto !== '1') {
+      nuevoTexto = '0' + texto + '/';
+    } else if (texto.length === 2 && texto[1] !== '/') {
+      nuevoTexto = texto + '/';
+    } else if (texto.length === 5) {
+      const mes = parseInt(texto.slice(0, 2), 10);
+      const año = parseInt(texto.slice(3, 5), 10);
+      if (año < 24 || año > 34) {
+        Alert.alert("Mensaje", "Ingrese un año válido (entre 24 y 34)");
+        return; // No permitir años menores que 24 o mayores que 34
+      }
+    }
+
+    setFechaVencimiento(nuevoTexto);
+  };
 
   const realizarPago = () => {
     if (nombreTitular && numeroTarjeta && fechaVencimiento && cvv) {
-
-      if(numeroTarjeta.length != 19){
+      if (numeroTarjeta.length !== 19) {
         Alert.alert("Mensaje", "Ingrese un número de tarjeta válido");
         return;
       }
-      if(fechaVencimiento.length != 7){
+      if (fechaVencimiento.length !== 5) {
         Alert.alert("Mensaje", "Ingrese una fecha de vencimiento válida");
         return;
       }
-      if(cvv.length != 3){
+      if (cvv.length !== 3) {
         Alert.alert("Mensaje", "Ingrese un CVV válido");
         return;
       }
@@ -34,30 +53,30 @@ const PagoTarjeta = ({ onRealizarPago }) => {
 
       setNombreTitular("");
       setNumeroTarjeta("");
-      setFechaVencimiento("");
+      setFechaVencimiento("MM/");
       setCvv("");
     } else {
-      Alert.alert("Mensaje",'Por favor, complete todos los campos.');
+      Alert.alert("Mensaje", 'Por favor, complete todos los campos.');
     }
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.titulo}>Realizar Pago</Text>
+    <View style={estilos.container}>
+      <Text style={estilos.titulo}>Realizar Pago</Text>
 
       {metodoPago === 'tarjeta' && (
-        <View style={styles.formulario}>
-          <Text style={styles.label}>Nombre del titular</Text>
+        <View style={estilos.formulario}>
+          <Text style={estilos.label}>Nombre del titular</Text>
           <TextInput
-            style={styles.input}
+            style={estilos.input}
             placeholder="Nombre como aparece en la tarjeta"
             value={nombreTitular}
             onChangeText={setNombreTitular}
           />
 
-          <Text style={styles.label}>Número de tarjeta</Text>
+          <Text style={estilos.label}>Número de tarjeta</Text>
           <TextInputMask
-            style={styles.input}
+            style={estilos.input}
             placeholder="0000-0000-0000-0000"
             value={numeroTarjeta}
             keyboardType="numeric"
@@ -68,26 +87,26 @@ const PagoTarjeta = ({ onRealizarPago }) => {
             }}
           />
 
-          <View style={styles.row}>
-            <View style={styles.column}>
-              <Text style={styles.label}>Fecha de vencimiento</Text>
+          <View style={estilos.row}>
+            <View style={estilos.column}>
+              <Text style={estilos.label}>Fecha de vencimiento</Text>
               <TextInputMask
-                style={styles.input}
-                placeholder="MM/AAAA"
+                style={estilos.input}
+                placeholder="MM/AA"
                 value={fechaVencimiento}
                 keyboardType="numeric"
-                onChangeText={setFechaVencimiento}
+                onChangeText={manejarCambioFecha}
                 type={'custom'}
                 options={{
-                  mask: '99/9999',
+                  mask: '99/99',
                 }}
               />
             </View>
 
-            <View style={styles.column}>
-              <Text style={styles.label}>CVV</Text>
+            <View style={estilos.column}>
+              <Text style={estilos.label}>CVV</Text>
               <TextInputMask
-                style={styles.input}
+                style={estilos.input}
                 placeholder="CVV"
                 value={cvv}
                 keyboardType="numeric"
@@ -101,8 +120,8 @@ const PagoTarjeta = ({ onRealizarPago }) => {
             </View>
           </View>
 
-          <TouchableOpacity style={styles.botonPagar} onPress={realizarPago}>
-            <Text style={styles.textoBotonPagar}>Pagar</Text>
+          <TouchableOpacity style={estilos.botonPagar} onPress={realizarPago}>
+            <Text style={estilos.textoBotonPagar}>Pagar</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -110,7 +129,7 @@ const PagoTarjeta = ({ onRealizarPago }) => {
   );
 };
 
-const styles = StyleSheet.create({
+const estilos = StyleSheet.create({
   container: {
     padding: 16,
     backgroundColor: '#f5f5f5',
@@ -121,16 +140,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 16,
-  },
-  selectContainer: {
-    marginBottom: 16,
-  },
-  select: {
-    height: 50,
-    backgroundColor: '#fff',
-    borderColor: '#ddd',
-    borderWidth: 1,
-    borderRadius: 4,
   },
   formulario: {
     marginBottom: 16,

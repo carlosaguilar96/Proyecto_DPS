@@ -101,6 +101,19 @@ export default function Boletos() {
     <View style={styles.fullContainer}>
       {/* Header */}
       <Cabecera titulo="Entradas" onBack={handleBack} />
+
+      <View style={styles.progressBar}>
+        <View style={[styles.progressItem, styles.progressItemActive]}>
+          <Icon name="confirmation-number" size={28} color="#fff" />
+        </View>
+        <View style={styles.progressItem}>
+          <Icon name="event-seat" size={28} color="#fff" />
+        </View>
+        <View style={styles.progressItem}>
+          <Icon name="payment" size={28} color="#fff" />
+        </View>
+      </View>
+
       {/* Movie Details */}
       <View style={styles.movieDetails}>
         <Image
@@ -324,5 +337,19 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     marginBottom: 15,
+  },
+  progressBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 16,
+    backgroundColor: '#848180',
+  },
+  progressItem: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  progressItemActive: {
+    borderBottomWidth: 4,
+    borderBottomColor: '#fff',
   },
 });

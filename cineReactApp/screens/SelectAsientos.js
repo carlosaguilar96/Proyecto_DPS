@@ -88,8 +88,19 @@ const PantallaSeleccionAsientos = ({ navigation, route }) => {
 
   return (
     <View style={styles.container}>
-      <Cabecera titulo="Entradas" onBack={handleBack} />
-      <BarraProgreso />
+
+      <View style={styles.progressBar}>
+        <View style={styles.progressItem}>
+          <Icon name="confirmation-number" size={28} color="#fff" />
+        </View>
+        <View style={[styles.progressItem, styles.progressItemActive]}>
+          <Icon name="event-seat" size={28} color="#fff" />
+        </View>
+        <View style={styles.progressItem}>
+          <Icon name="payment" size={28} color="#fff" />
+        </View>
+      </View>
+      
       <InfoPelicula
         titulo={params.title}
         sucursal={params.sucursal}
@@ -115,6 +126,20 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f5f5f5',
     paddingBottom: 64,
+  },
+  progressBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 16,
+    backgroundColor: '#848180',
+  },
+  progressItem: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  progressItemActive: {
+    borderBottomWidth: 4,
+    borderBottomColor: '#fff',
   },
 });
 

@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     padding: 16,
-    backgroundColor: '#d32f2f',
+    backgroundColor: '#848180',
   },
   progressItem: {
     flex: 1,
