@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, FlatList, ScrollView, Modal, Button } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import { useFocusEffect } from '@react-navigation/native';
-import { format, addDays, parseISO } from 'date-fns';
+import { format, addDays, parseISO, isAfter } from 'date-fns';
 import { AppContext } from '../assets/components/Context';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
@@ -149,14 +149,15 @@ export default function Cartelera() {
     navigation.navigate('Inicio sesion');
   };
   //Esto toma la fecha del dia actual, el dia de mañana y pasado y lo pone en formato yyyy-MM-dd
-  const today = new Date();
-  const localMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-  const selectedDate = format(localMidnight, 'yyyy-MM-dd');
+  const now = new Date();
+  const elSalvadorOffset = -6 * 60; // El Salvador está en UTC-6
+  const localTimeInElSalvador = new Date(now.getTime() + elSalvadorOffset * 60000);
+  const selectedDate = format(localTimeInElSalvador, 'yyyy-MM-dd');
   //se añade un dia
-  const tomorrow = addDays(new Date(), 1);
+  const tomorrow = addDays(localTimeInElSalvador, 1);
   const selectedT = format(tomorrow, 'yyyy-MM-dd');
   //se añaden dos dias
-  const tomorrowP = addDays(new Date(), 2);
+  const tomorrowP = addDays(localTimeInElSalvador, 2);
   const selectedP = format(tomorrowP, 'yyyy-MM-dd');
 
 
@@ -165,12 +166,12 @@ export default function Cartelera() {
 
 
   //Todos estos son del INICIO
-  const MovieToday = agruparPeliculas(Funcion.filter(item => item.titulo === title && format(parseISO(item.fecha), 'yyyy-MM-dd') === selectedDate));
+  const MovieToday = agruparPeliculas(Funcion.filter(item => item.titulo === title && format(parseISO(item.fecha), 'yyyy-MM-dd') === selectedDate && isAfter(parseISO(`${item.fecha}T${item.hora}`), localTimeInElSalvador)));
   const MovieTomorrow = agruparPeliculas(Funcion.filter(item => item.titulo === title && format(parseISO(item.fecha), 'yyyy-MM-dd') === selectedT));
   const MovieTomorrowP = agruparPeliculas(Funcion.filter(item => item.titulo === title && format(parseISO(item.fecha), 'yyyy-MM-dd') === selectedP));
 
   //Todos estos son del DRAWER
-  const DataToday = agruparTitle(Funcion.filter(item => format(parseISO(item.fecha), 'yyyy-MM-dd') === selectedDate));
+  const DataToday = agruparTitle(Funcion.filter(item => format(parseISO(item.fecha), 'yyyy-MM-dd') === selectedDate && isAfter(parseISO(`${item.fecha}T${item.hora}`), localTimeInElSalvador)));
   const DataTomorrow = agruparTitle(Funcion.filter(item => format(parseISO(item.fecha), 'yyyy-MM-dd') === selectedT));
   const DataTomorrowP = agruparTitle(Funcion.filter(item => format(parseISO(item.fecha), 'yyyy-MM-dd') === selectedP));
 
