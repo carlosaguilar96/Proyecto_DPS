@@ -50,6 +50,12 @@ class FuncionController extends Controller
                 "precioNino" => $request->precioNino,
                 "precioTE" => $request->precioTE
             ]);
+
+            $pelicula = Pelicula::find($request->codPelicula);
+
+            $pelicula->enCartelera = 1;
+            $pelicula->save();
+            
         } catch (Exception $error) {
             $data = [
                 'message' => 'Error al crear la función: ' . $error->getMessage(),

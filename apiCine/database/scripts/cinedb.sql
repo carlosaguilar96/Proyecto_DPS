@@ -42,7 +42,7 @@ CREATE TABLE peliculas(
     director varchar(30) NOT NULL,
     genero varchar(15) NOT NULL,
     sinopsis text,
-    enCartelera int DEFAULT "1" NOT NULL, -- 1=en cartelera, 0=no en cartelera
+    enCartelera int DEFAULT "0" NOT NULL, -- 1=en cartelera, 0=no en cartelera
     estadoEliminacion int DEFAULT "1" NOT NULL, -- 1=activa, 0=eliminada
     imagen varchar(100) NOT NULL,
     updated_at datetime,

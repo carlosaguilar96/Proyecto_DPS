@@ -143,7 +143,7 @@ class PeliculaController extends Controller
         $peliculasBase = [];
 
         if($id == -1){
-            $peliculasBase = Pelicula::all();
+            $peliculasBase = Pelicula::all()->where('enCartelera', 1);
         } else{
             $salas = Sala::all()->where('codSucursal', $id);
 
