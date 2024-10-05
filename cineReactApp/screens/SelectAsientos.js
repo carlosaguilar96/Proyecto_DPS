@@ -5,6 +5,7 @@ import BarraProgreso from '../assets/components/BarraProgreso';
 import InfoPelicula from '../assets/components/InfoPelicula';
 import SeleccionAsientos from '../assets/components/SeleccionAsientos';
 import TotalYContinuar from '../assets/components/TotalContinuar';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import { API_URL } from '@env';
 import axios from 'axios';
 

@@ -3,6 +3,7 @@ import { View, Text, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { format, addDays, parseISO, parse } from 'date-fns';
+import { TextInputMask } from "react-native-masked-text";
 import axios from 'axios';
 import { API_URL } from '@env';
 
@@ -263,7 +264,11 @@ const AñadirFuncion = ({ navigation }) => {
         <Text>Precio de las entradas:</Text>
         <View style={estilos.precioContainer}>
           <Text>Niños:</Text>
-          <TextInput
+          <TextInputMask
+            type={'custom'}
+            options={{
+              mask: '$9.99',
+            }}
             style={estilos.precioInput}
             value={precios.ninos}
             onChangeText={(value) => setPrecios({ ...precios, ninos: value })}
@@ -272,7 +277,7 @@ const AñadirFuncion = ({ navigation }) => {
         </View>
         <View style={estilos.precioContainer}>
           <Text>Adultos:</Text>
-          <TextInput
+          <TextInputMask
             style={estilos.precioInput}
             value={precios.adultos}
             onChangeText={(value) => setPrecios({ ...precios, adultos: value })}
@@ -281,7 +286,7 @@ const AñadirFuncion = ({ navigation }) => {
         </View>
         <View style={estilos.precioContainer}>
           <Text>3ra Edad:</Text>
-          <TextInput
+          <TextInputMask
             style={estilos.precioInput}
             value={precios.terceraEdad}
             onChangeText={(value) => setPrecios({ ...precios, terceraEdad: value })}

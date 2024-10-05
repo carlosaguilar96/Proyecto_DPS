@@ -1,6 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, Alert } from 'react-native';
 import { useRoute, useFocusEffect } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
 import Cabecera from '../assets/components/Cabecera';
 import { API_URL } from '@env';
