@@ -11,15 +11,13 @@ import axios from 'axios';
 const VistaPago = ({ navigation, route }) => {
   const { params } = route;
   const imagenURI = `${API_URL}/img/peliculas/${params.image}`;
-  const [cardID, setCardID] = useState("");
   const [usuario, setUsuario] = useState("");
 
   const handleRealizarPago = (datosPago) => {
-    setCardID(datosPago.numeroTarjeta);
-    realizarCompra();
+    realizarCompra(datosPago.numeroTarjeta);
   };
 
-  const realizarCompra = async () =>{
+  const realizarCompra = async (cardID) =>{
     try {
       const response = await axios.post(`${API_URL}/api/compras/crearCompra`, {
         nombreUsuario: usuario,

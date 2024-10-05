@@ -32,6 +32,10 @@ const PagoTarjeta = ({ onRealizarPago }) => {
         cvv,
       });
 
+      setNombreTitular("");
+      setNumeroTarjeta("");
+      setFechaVencimiento("");
+      setCvv("");
     } else {
       Alert.alert("Mensaje",'Por favor, complete todos los campos.');
     }
