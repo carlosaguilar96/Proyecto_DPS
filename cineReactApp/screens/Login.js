@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Image, TouchableOpacity, Alert, ScrollView, Platform, KeyboardAvoidingView } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Image, TouchableOpacity, Alert, ScrollView, Platform, KeyboardAvoidingView, ActivityIndicator, Modal } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createDrawerNavigator } from '@react-navigation/drawer';
@@ -52,6 +52,8 @@ export default function Login() {
   const [logo, setLogo] = useState("");
 
   const [indicarCine, setIndicadorCine] = useState(false);
+
+  const [loading, setLoading] = useState(false);
 
   const obtenerLogoCine = async () => {
 
@@ -207,7 +209,7 @@ export default function Login() {
     } catch (error) {
       console.log('Error al almacenar información del usuario:', error);
     }
-
+    setLoading(true);
     try {
       const response = await axios.post(`${API_URL}/api/iniciarSesion`, {
         user: username,
@@ -251,6 +253,7 @@ export default function Login() {
         return;
       }
     }
+    setLoading(false);
 
   };
 
@@ -342,6 +345,16 @@ export default function Login() {
       }
     }
   };
+
+  /*if (loading) {
+    return (
+      <AppProvider>
+      <View style={{ flex: 1, backgroundColor: '#8B0000', justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="#ffffff" />
+      </View>
+      </AppProvider>
+    );
+  }*/
 
   if (ingreso) {
     return (
@@ -524,6 +537,19 @@ export default function Login() {
               <Image source={{ uri: `${API_URL}/img/${logo}` }} style={styles.img} />
             ) : <View />}
             <View style={styles.caja}>
+            <Modal
+        transparent={true} // Hace que el fondo del modal sea transparente
+        animationType="fade" // Tipo de animación al mostrar el modal
+        visible={loading} // Modal visible mientras `loading` sea true
+        onRequestClose={() => setLoading(false)} // Cierra el modal si se intenta cerrar
+      >
+        <View style={styles.modalBackground}>
+          <View style={styles.modalContainer}>
+            <ActivityIndicator size="large" color="#ffffff" />
+            <Text style={styles.loadingText}>Cargando...</Text>
+          </View>
+        </View>
+      </Modal>
               <Text style={styles.textcaja}>{mssgError ? mssgError : login ? 'LOG IN' : 'Registrarse'}</Text>
               <View style={styles.separator} />
               {restContra ? (
@@ -739,6 +765,25 @@ const styles = StyleSheet.create({
     padding: 5,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  modalBackground: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Fondo oscuro y semi-transparente
+  },
+  modalContainer: {
+    width: 200,
+    height: 150,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#b30000', // Fondo del modal
+    borderRadius: 10,
+  },
+  loadingText: {
+    marginTop: 10,
+    color: '#ffffff', // Color del texto blanco
+    fontSize: 16,
   },
 });
 
