@@ -28,7 +28,6 @@ const AñadirFuncion = ({ navigation }) => {
       return;
     }
     else {
-      console.log("Hol");
       guardarFuncion();
     }
 
@@ -123,6 +122,7 @@ const AñadirFuncion = ({ navigation }) => {
         return;
       } else {
         Alert.alert('Error', 'Error al hacer la solicitud');
+        console.log(error);
         return;
       }
     }
@@ -131,7 +131,7 @@ const AñadirFuncion = ({ navigation }) => {
 
   const obtenerSalas = async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/salas/index`);
+      const response = await axios.get(`${API_URL}/api/salas/indexD`);
 
       if (response.data.salas.length != 0) {
         setSalas(response.data.salas);
@@ -172,7 +172,7 @@ const AñadirFuncion = ({ navigation }) => {
 
   useEffect(() => {
     obtenerSalasDetallado();
-    console.log("E")
+
   }, [sucursal]);
 
   return (
@@ -264,15 +264,7 @@ const AñadirFuncion = ({ navigation }) => {
         <Text>Precio de las entradas:</Text>
         <View style={estilos.precioContainer}>
           <Text>Niños:</Text>
-          <TextInputMask
-            type={'money'}
-            options={{
-              precision: 2,
-              separator: '.',
-              delimiter: ',',
-              unit: '$',
-              suffixUnit: ''
-            }}
+          <TextInput
             style={estilos.precioInput}
             value={precios.ninos}
             onChangeText={(value) => setPrecios({ ...precios, ninos: value })}
@@ -281,15 +273,7 @@ const AñadirFuncion = ({ navigation }) => {
         </View>
         <View style={estilos.precioContainer}>
           <Text>Adultos:</Text>
-          <TextInputMask
-            type={'money'}
-            options={{
-              precision: 2,
-              separator: '.',
-              delimiter: ',',
-              unit: '$',
-              suffixUnit: ''
-            }}
+          <TextInput
             style={estilos.precioInput}
             value={precios.adultos}
             onChangeText={(value) => setPrecios({ ...precios, adultos: value })}
@@ -298,15 +282,7 @@ const AñadirFuncion = ({ navigation }) => {
         </View>
         <View style={estilos.precioContainer}>
           <Text>3ra Edad:</Text>
-          <TextInputMask
-            type={'money'}
-            options={{
-              precision: 2,
-              separator: '.',
-              delimiter: ',',
-              unit: '$',
-              suffixUnit: ''
-            }}
+          <TextInput
             style={estilos.precioInput}
             value={precios.terceraEdad}
             onChangeText={(value) => setPrecios({ ...precios, terceraEdad: value })}

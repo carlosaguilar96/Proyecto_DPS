@@ -95,6 +95,8 @@ Route::put('/peliculas/update/{id}', [PeliculaController::class, 'update']);
 Route::post('/salas/crearSala', [SalaController::class, 'store']);
 //Ruta para mostrar todas las salas
 Route::get('/salas/index', [SalaController::class, 'index']);
+//Ruta para mostrar todas las salas que no están eliminadas
+Route::get('/salas/indexD', [SalaController::class, 'indexD']);
 //Ruta para mostrar una sala
 Route::get('/salas/show/{id}', [SalaController::class, 'show']);
 //Rutas para reactivar y eliminar salas

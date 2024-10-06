@@ -41,7 +41,6 @@ const Inicio = () => {
   const obtenerCartelera = async () => {
     try {
       const response = await axios.get(`${API_URL}/api/peliculas/cartelera/${selectedCinema}`);
-      console.log(selectedCinema);
       if (response.data.peliculas.length != 0)
         setMovieData(response.data.peliculas);
       else
@@ -91,7 +90,7 @@ const Inicio = () => {
   }
   // Renderiza cada item en la lista
   const renderItem = ({ item, isEstreno }) => {
-
+    
     return (
       <MainContainer>
         <TouchableOpacity style={styles.cards} onPress={() => HandleEffect(item)}>
@@ -175,7 +174,7 @@ const Inicio = () => {
     obtenerMisionVision();
     obtenerSucursales();
     obtenerEstrenos();
-  });
+  }, []);
 
   return (
     <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>

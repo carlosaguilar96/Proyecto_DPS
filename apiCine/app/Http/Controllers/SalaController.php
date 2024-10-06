@@ -61,6 +61,33 @@ class SalaController extends Controller
         return response()->json($data, 200);
     }
 
+    // Muestra todas las películas siempre y cuando no estén eliminadas
+    public function indexD()
+    {
+        $salasA = Sala::all();
+
+        $salas = [];
+
+        foreach ($salasA as $sala) {
+            if ($sala->estadoEliminacion == 1)
+                $salas[] = $sala;
+        }
+
+        if (count($salas) == 0) {
+
+            $data = [
+                'message' => 'Todas las salas han sido eliminadas',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        }
+        $data = [
+            'salas' => $salas,
+            'status' => 200
+        ];
+        return response()->json($data, 200);
+    }
+
     //Función para mostrar sala específica
     public function show($id)
     {

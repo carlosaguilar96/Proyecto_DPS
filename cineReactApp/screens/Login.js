@@ -365,7 +365,7 @@ export default function Login() {
                 drawerIcon: ({ color }) => (<Icon name="movie" size={20} color={color} />)
               }} />
             <Drawer.Screen
-              name="Inicio sesión"
+              name="Inicio sesion"
               component={Login}
               options={{
                 headerShown: false,
@@ -449,11 +449,11 @@ export default function Login() {
                 drawerIcon: ({ color }) => (<Icon name="home" size={20} color={color} />)
               }}
             />
-            <Drawer.Screen name="Añadir Película" component={AñadirPelicula}
+            <Drawer.Screen name="Añadir Pelicula" component={AñadirPelicula}
               options={{
                 drawerIcon: ({ color }) => (<Icon name="add" size={20} color={color} />)
               }} />
-            <Drawer.Screen name="Añadir Función" component={AñadirFuncion}
+            <Drawer.Screen name="Añadir Funcion" component={AñadirFuncion}
               options={{
                 drawerIcon: ({ color }) => (<Icon name="add" size={20} color={color} />)
               }} />

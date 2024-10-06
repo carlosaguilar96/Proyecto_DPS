@@ -77,8 +77,26 @@ class PeliculaController extends Controller
         return response()->json($data, 200);
     }
 
-    public function indexD(){
-        $peliculas = Pelicula::all()->where('estadoEliminacion', 1);
+    // Muestra todas las películas siempre y cuando no estén eliminadas
+    public function indexD()
+    {
+        $peliculasA = Pelicula::all();
+
+        $peliculas = [];
+
+        foreach ($peliculasA as $peli) {
+            if ($peli->estadoEliminacion == 1)
+                $peliculas[] = $peli;
+        }
+
+        if (count($peliculas) == 0) {
+
+            $data = [
+                'message' => 'Todas las películas han sido eliminadas',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        }
         $data = [
             'peliculas' => $peliculas,
             'status' => 200
@@ -92,13 +110,18 @@ class PeliculaController extends Controller
 
         $peliculas = [];
 
-        if($id == -1){
-            $peliculas = Pelicula::all()->where('enCartelera', 1)->where('estadoEliminacion',1);
-        } else{
+        if ($id == -1) {
+            $peliculasA = Pelicula::all()->where("enCartelera", 1);
 
-            $salas = Sala::all()->where('codSucursal', $id);
+            foreach ($peliculasA as $pelicula) {
+                if ($pelicula->estadoEliminacion == 1)
+                    $peliculas[] = $pelicula;
+            }
+        } else {
 
-            if(count($salas) == 0){
+            $salas = Sala::all()->where('codSucursal', $id)->where('estadoEliminacion', 1);
+
+            if (count($salas) == 0) {
                 $data = [
                     'message' => 'No hay salas en la sucursal',
                     'status' => 404
@@ -106,13 +129,13 @@ class PeliculaController extends Controller
                 return response()->json($data, 404);
             }
 
-            foreach($salas as $sala){
+            foreach ($salas as $sala) {
                 $codigosSala[] = $sala->codSala;
             }
-            
-            $funciones = Funcion::all()->whereIn('codSala',$codigosSala)->where('estadoEliminacion', 1);
-            
-            if(count($funciones) == 0){
+
+            $funciones = Funcion::all()->whereIn('codSala', $codigosSala)->where('estadoEliminacion', 1);
+
+            if (count($funciones) == 0) {
                 $data = [
                     'message' => 'No hay funciones en la sucursal',
                     'status' => 404
@@ -120,13 +143,12 @@ class PeliculaController extends Controller
                 return response()->json($data, 404);
             }
 
-            foreach($funciones as $funcion){
+            foreach ($funciones as $funcion) {
                 $codigosPeliculas[] = $funcion->codPelicula;
             }
             $codigosPeliculas = array_unique($codigosPeliculas); // Se filtran los repetidos
 
-            $peliculas = Pelicula::all()->where('enCartelera', 1)->where('estadoEliminacion',1)->whereIn('codPelicula',$codigosPeliculas);
-            
+            $peliculas = Pelicula::all()->where('enCartelera', 1)->where('estadoEliminacion', 1)->whereIn('codPelicula', $codigosPeliculas);
         }
 
         if (count($peliculas) == 0) {
@@ -151,12 +173,12 @@ class PeliculaController extends Controller
         $fechaHoy = Carbon::now();
         $peliculasBase = [];
 
-        if($id == -1){
-            $peliculasBase = Pelicula::all()->where('enCartelera', 1)->where('estadoEliminacion',1);
-        } else{
+        if ($id == -1) {
+            $peliculasBase = Pelicula::all()->where('enCartelera', 1)->where('estadoEliminacion', 1);
+        } else {
             $salas = Sala::all()->where('codSucursal', $id)->where('estadoEliminacion', 1);
 
-            if(count($salas) == 0){
+            if (count($salas) == 0) {
                 $data = [
                     'message' => 'No hay salas en la sucursal',
                     'status' => 404
@@ -164,13 +186,13 @@ class PeliculaController extends Controller
                 return response()->json($data, 404);
             }
 
-            foreach($salas as $sala){
+            foreach ($salas as $sala) {
                 $codigosSala[] = $sala->codSala;
             }
-            
-            $funciones = Funcion::all()->whereIn('codSala',$codigosSala)->where('estadoEliminacion', 1);
-            
-            if(count($funciones) == 0){
+
+            $funciones = Funcion::all()->whereIn('codSala', $codigosSala)->where('estadoEliminacion', 1);
+
+            if (count($funciones) == 0) {
                 $data = [
                     'message' => 'No hay funciones en la sucursal',
                     'status' => 404
@@ -178,23 +200,23 @@ class PeliculaController extends Controller
                 return response()->json($data, 404);
             }
 
-            foreach($funciones as $funcion){
+            foreach ($funciones as $funcion) {
                 $codigosPeliculas[] = $funcion->codPelicula;
             }
             $codigosPeliculas = array_unique($codigosPeliculas); // Se filtran los repetidos
 
-            $peliculasBase = Pelicula::all()->where('enCartelera', 1)->where('estadoEliminacion',1)->whereIn('codPelicula',$codigosPeliculas);
+            $peliculasBase = Pelicula::all()->where('enCartelera', 1)->where('estadoEliminacion', 1)->whereIn('codPelicula', $codigosPeliculas);
         }
 
-        
-        if(count($peliculasBase) == 0){
+
+        if (count($peliculasBase) == 0) {
             $data = [
                 'message' => 'No hay películas en cartelera',
                 'status' => 404
             ];
             return response()->json($data, 404);
         }
-        
+
         foreach ($peliculasBase as $pelicula) {
             $fechaPelicula = Carbon::parse($pelicula->created_at);
             $resta = $fechaPelicula->diffInDays($fechaHoy);
@@ -249,6 +271,7 @@ class PeliculaController extends Controller
         }
         try {
             $pelicula->estadoEliminacion = 0;
+            $pelicula->enCartelera = 1;
             $pelicula->save();
         } catch (Exception $error) {
             $data = [
@@ -278,6 +301,7 @@ class PeliculaController extends Controller
         }
         try {
             $pelicula->estadoEliminacion = 1;
+            $pelicula->enCartelera = 1;
             $pelicula->save();
         } catch (Exception $error) {
             $data = [

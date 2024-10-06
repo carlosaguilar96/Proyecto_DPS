@@ -91,7 +91,7 @@ class FuncionController extends Controller
         $funciones = [];
 
         foreach (Funcion::all() as $funcion) {
-            if ($funcion->estadoEliminacion = 1) {
+            if ($funcion->estadoEliminacion == 1) {
                 $pelicula = Pelicula::find($funcion->codPelicula);
 
                 if ($pelicula->estadoEliminacion == 1) {
@@ -190,7 +190,7 @@ class FuncionController extends Controller
             ];
             return response()->json($data, 404);
         }
-        
+
         $data = [
             'funcion' => $funcion,
             'status' => 200
