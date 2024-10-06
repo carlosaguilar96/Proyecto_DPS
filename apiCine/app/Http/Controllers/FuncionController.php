@@ -98,7 +98,7 @@ class FuncionController extends Controller
                 $funcion->image = $pelicula->imagen;
 
                 $sala = Sala::find($funcion->codSala);
-                if($sala->enCartalera == 1){
+                if($sala->estadoEliminacion == 1){
                     $sucursal = Sucursal::find($sala->codSucursal);
                     $funcion->sucursal = $sucursal->sucursal;
     
