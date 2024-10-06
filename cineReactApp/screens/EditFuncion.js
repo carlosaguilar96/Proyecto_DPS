@@ -17,11 +17,13 @@ const ModificarFuncion = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [estado, setEstado] = useState(0);
+  const [fechaHora, setFechaHora] = useState('');
   const [funciones, setFunciones] = useState('');
   const isFocused = useIsFocused();
 
   const obtenerFunciones = async () => {
     try {
+      
       const response = await axios.get(`${API_URL}/api/funciones/indexEditar`);
   
       if (response.data.funciones.length != 0)
@@ -41,7 +43,6 @@ const ModificarFuncion = () => {
   useEffect(() => {
     if (isFocused) {
       obtenerFunciones();
-      console.log(funciones);
     }
   }, [isFocused]);
 
@@ -51,16 +52,36 @@ const ModificarFuncion = () => {
     setDate(currentDate);
 
     const { formattedDate: newFormattedDate } = formatDateTime(currentDate);
-    setFormattedDate(newFormattedDate)
+    setFormattedDate(newFormattedDate);
+    const [anio, mes, dia] = newFormattedDate.split("-").map(Number);
+    const [horas, minutos] = formattedTime.split(":").map(Number);
+    const fechaHora = new Date(anio, mes - 1, dia, horas, minutos);
+    setFechaHora(fechaHora);
   };
 
   const onTimeChange = (event, selectedTime) => {
-    const currentTime = selectedTime || date;
-    setShowTimePicker(false); // Ocultar el picker de hora
-    setDate(currentTime);
+    const chosenTime = selectedTime || date;
+    setShowTimePicker(false);
+    const currentTime = new Date();
+    if (fechaHora.getFullYear() === currentTime.getFullYear() && fechaHora.getMonth() === currentTime.getMonth() && fechaHora.getDay() === currentTime.getDay()){
+      if (
+        chosenTime.getHours() < currentTime.getHours() ||
+        (chosenTime.getHours() === currentTime.getHours() && chosenTime.getMinutes() < currentTime.getMinutes())
+      ) {
+        Alert.alert("Hora no válida", "La hora no puede ser menor que la hora actual");
+      }  else {
+        setDate(chosenTime);
+  
+        const { formattedTime: newFormattedTime } = formatDateTime(chosenTime);
+        setFormattedTime(newFormattedTime);
+      }
+    }
+     else {
+      setDate(chosenTime);
 
-    const { formattedTime: newFormattedTime } = formatDateTime(currentTime);
-    setFormattedTime(newFormattedTime);
+      const { formattedTime: newFormattedTime } = formatDateTime(chosenTime);
+      setFormattedTime(newFormattedTime);
+    }
   };
 
   const formatDateTime = (date) => {
@@ -82,8 +103,14 @@ const ModificarFuncion = () => {
   };
   
 
-  const handleEditPress = (CodFuncion) => {
+  const handleEditPress = (CodFuncion, fecha, hora) => {
     setid(CodFuncion); // Establecer el item seleccionado
+    const [anio, mes, dia] = fecha.split("-").map(Number);
+    const [horas, minutos] = hora.split(":").map(Number);
+    const fechaHora = new Date(anio, mes - 1, dia, horas, minutos);
+    setFechaHora(fechaHora);
+    setFormattedDate(fecha);
+    setFormattedTime(hora);
     setShowModal(true); // Mostrar el modal
   };
 
@@ -142,7 +169,7 @@ const ModificarFuncion = () => {
             
           </View>
           <View style={estilos.contenedorBotones}>
-              <TouchableOpacity style={estilos.botonIcono} onPress={() => handleEditPress(item.codFuncion)}>
+              <TouchableOpacity style={estilos.botonIcono} onPress={() => handleEditPress(item.codFuncion, item.fecha, item.hora)}>
                 <FontAwesome name="edit" size={30} color="white" />
               </TouchableOpacity>
               {item.estadoEliminacion === 0 ? (
@@ -160,11 +187,25 @@ const ModificarFuncion = () => {
     );
   };
 
-  const editFuncion = () => {
-    // Cerrar el modal y cambiar estado
-    setShowModal(false);
-    console.log(formattedDate,formattedTime, id);
+  const editFuncion = async () => {
     //AQUI DEBERIA DE GUARDARSE EL CAMBIO DE EDICION las var son formattedDate y formattedTime
+    try {
+      const response = await axios.put(`${API_URL}/api/funciones/update/${id}`, {
+        fecha: formattedDate,
+        hora: formattedTime,
+      });
+      Alert.alert('Función actualizada', 'La función ha sido actualizada con éxito');
+      setShowModal(false);
+      obtenerFunciones();
+    } catch (error) {
+      if (error.request) {
+        Alert.alert('Error', 'No hubo respuesta del servidor');
+        return;
+      } else {
+        Alert.alert('Error', 'Error al hacer la solicitud');
+        return;
+      }
+    }
   };
 
   const FlatListMovie = ({ Movie }) => {
@@ -199,10 +240,11 @@ const ModificarFuncion = () => {
           </TouchableOpacity>
           {showDatePicker && (
             <DateTimePicker
-              value={date}
+              value={fechaHora}
               mode="date"
               display="default"
               onChange={onDateChange}
+              minimumDate={new Date()}
             />
           )}
 
@@ -212,10 +254,10 @@ const ModificarFuncion = () => {
           </TouchableOpacity>
           {showTimePicker && (
             <DateTimePicker
-              value={date}
+              value={fechaHora}
               mode="time"
-              is24Hour={false}
-              display="default"
+              is24Hour={true}
+              display="spinner"
               onChange={onTimeChange}
             />
           )}

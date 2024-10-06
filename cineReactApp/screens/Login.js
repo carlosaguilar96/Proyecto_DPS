@@ -99,7 +99,7 @@ export default function Login() {
       return;
     }
     if (!validarEmail(email)) {
-      setMssgError('El correo electrónico ingresado no es válido.');
+      setMssgError('Ingresar correo electrónico válido.');
       return;
     }
     if (contra == "") {
@@ -107,7 +107,7 @@ export default function Login() {
       return;
     }
     if (contra.length < 8) {
-      setMssgError('La contraseña debe tener al menos 8 caracteres.');
+      setMssgError('Ingresar contraseña válida.');
       return;
     }
     if (confirmContra == "") {
@@ -115,7 +115,7 @@ export default function Login() {
       return;
     }
     if (contra !== confirmContra) {
-      setMssgError('Las contraseñas no coinciden.');
+      setMssgError('Contraseña no confirmada.');
       return;
     }
 
@@ -365,7 +365,7 @@ export default function Login() {
                 drawerIcon: ({ color }) => (<Icon name="movie" size={20} color={color} />)
               }} />
             <Drawer.Screen
-              name="Inicio sesion"
+              name="Inicio sesión"
               component={Login}
               options={{
                 headerShown: false,
@@ -449,11 +449,11 @@ export default function Login() {
                 drawerIcon: ({ color }) => (<Icon name="home" size={20} color={color} />)
               }}
             />
-            <Drawer.Screen name="Añadir Pelicula" component={AñadirPelicula}
+            <Drawer.Screen name="Añadir Película" component={AñadirPelicula}
               options={{
                 drawerIcon: ({ color }) => (<Icon name="add" size={20} color={color} />)
               }} />
-            <Drawer.Screen name="Añadir Funcion" component={AñadirFuncion}
+            <Drawer.Screen name="Añadir Función" component={AñadirFuncion}
               options={{
                 drawerIcon: ({ color }) => (<Icon name="add" size={20} color={color} />)
               }} />
@@ -465,7 +465,7 @@ export default function Login() {
               options={{
                 drawerIcon: ({ color }) => (<Icon name="add" size={20} color={color} />)
               }} />
-            <Drawer.Screen name="Editar Pelicula" component={ModificarPelicula}
+            <Drawer.Screen name="Editar Película" component={ModificarPelicula}
               options={{
                 drawerIcon: ({ color }) => (<Icon name="edit" size={20} color={color} />)
               }} />
@@ -473,7 +473,7 @@ export default function Login() {
               options={{
                 drawerIcon: ({ color }) => (<Icon name="edit" size={20} color={color} />)
               }} />
-            <Drawer.Screen name="Editar Funcion" component={ModificarFuncion}
+            <Drawer.Screen name="Editar Función" component={ModificarFuncion}
               options={{
                 drawerIcon: ({ color }) => (<Icon name="edit" size={20} color={color} />)
               }} />
@@ -601,7 +601,7 @@ export default function Login() {
                         <Text style={styles.buttonText}>Iniciar Sesión</Text>
                       </TouchableOpacity>
                       <TouchableOpacity style={styles.button} onPress={cambioPantalla}>
-                        <Text style={styles.buttonText}>Registrate</Text>
+                        <Text style={styles.buttonText}>Regístrate</Text>
                       </TouchableOpacity>
                       <TouchableOpacity style={styles.button} onPress={() => EntrarInvitado()}>
                         <Text style={styles.buttonText}>Entrar como invitado</Text>
@@ -613,7 +613,7 @@ export default function Login() {
                   ) : (
                     <>
                       <TouchableOpacity style={styles.button} onPress={registrarCliente}>
-                        <Text style={styles.buttonText}>Registrate</Text>
+                        <Text style={styles.buttonText}>Regístrate</Text>
                       </TouchableOpacity>
                       <TouchableOpacity style={styles.button} onPress={cambioPantalla}>
                         <Text style={styles.buttonText}>Volver al Inicio de Sesión</Text>
