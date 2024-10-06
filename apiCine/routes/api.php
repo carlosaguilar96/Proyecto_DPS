@@ -73,6 +73,8 @@ Route::put('/productos/update/{id}', [ProductoController::class, 'update']);
 Route::post('/peliculas/crearPelicula', [PeliculaController::class, 'store']);
 //Ruta para mostrar todas las películas
 Route::get('/peliculas/index', [PeliculaController::class, 'index']);
+//Ruta para mostrar todas las películas que no están eliminadas
+Route::get('/peliculas/indexD', [PeliculaController::class, 'indexD']);
 // Ruta para mostrar las películas en cartelera
 Route::get('/peliculas/cartelera/{id}', [PeliculaController::class, 'mostrarCartelera']);
 // Ruta para mostrar los estrenos

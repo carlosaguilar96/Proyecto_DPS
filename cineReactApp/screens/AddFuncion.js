@@ -110,7 +110,7 @@ const AñadirFuncion = ({ navigation }) => {
 
   const obtenerPeliculas = async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/peliculas/cartelera/-1`);
+      const response = await axios.get(`${API_URL}/api/peliculas/indexD`);
 
       if (response.data.peliculas.length != 0) {
         setPeliculas(response.data.peliculas);

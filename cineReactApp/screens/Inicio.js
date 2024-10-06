@@ -175,7 +175,7 @@ const Inicio = () => {
     obtenerMisionVision();
     obtenerSucursales();
     obtenerEstrenos();
-  }, []);
+  });
 
   return (
     <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>

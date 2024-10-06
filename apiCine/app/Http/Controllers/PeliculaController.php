@@ -77,6 +77,15 @@ class PeliculaController extends Controller
         return response()->json($data, 200);
     }
 
+    public function indexD(){
+        $peliculas = Pelicula::all()->where('estadoEliminacion', 1);
+        $data = [
+            'peliculas' => $peliculas,
+            'status' => 200
+        ];
+        return response()->json($data, 200);
+    }
+
     // Función para mostrar películas en cartelera
     public function mostrarCartelera($id)
     {

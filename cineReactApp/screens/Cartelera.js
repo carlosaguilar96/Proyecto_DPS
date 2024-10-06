@@ -120,7 +120,7 @@ export default function Cartelera() {
 
   useEffect(() => {
     obtenerFunciones();
-  }, []);
+  });
 
   useFocusEffect(
     React.useCallback(() => {
