@@ -41,7 +41,7 @@ const Inicio = () => {
   const obtenerCartelera = async () => {
     try {
       const response = await axios.get(`${API_URL}/api/peliculas/cartelera/${selectedCinema}`);
-      
+      console.log(selectedCinema);
       if (response.data.peliculas.length != 0)
         setMovieData(response.data.peliculas);
       else
