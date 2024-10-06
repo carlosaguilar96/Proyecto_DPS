@@ -101,7 +101,7 @@ class PeliculaController extends Controller
                 $codigosSala[] = $sala->codSala;
             }
             
-            $funciones = Funcion::all()->whereIn('codSala',$codigosSala);
+            $funciones = Funcion::all()->whereIn('codSala',$codigosSala)->where('estadoEliminacion', 1);
             
             if(count($funciones) == 0){
                 $data = [
@@ -159,7 +159,7 @@ class PeliculaController extends Controller
                 $codigosSala[] = $sala->codSala;
             }
             
-            $funciones = Funcion::all()->whereIn('codSala',$codigosSala);
+            $funciones = Funcion::all()->whereIn('codSala',$codigosSala)->where('estadoEliminacion', 1);
             
             if(count($funciones) == 0){
                 $data = [

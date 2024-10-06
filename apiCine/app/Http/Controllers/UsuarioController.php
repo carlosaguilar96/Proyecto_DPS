@@ -139,6 +139,13 @@ class UsuarioController extends Controller
             ];
             return response()->json($data, 404);
         }
+        if($usuario->estadoEliminacion == 0){
+            $data = [
+                'message' => 'Usuario eliminado',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        }
         $data = [
             'usuario' => $usuario,
             'status' => 200
@@ -336,6 +343,13 @@ class UsuarioController extends Controller
             if(!$usuario){
                 $data = [
                     'message' => 'Usuario no encontrado',
+                    'status' => 404
+                ];
+                return response()->json($data, 404);
+            }
+            if($usuario->estadoEliminacion == 0){
+                $data = [
+                    'message' => 'Usuario está iliminado',
                     'status' => 404
                 ];
                 return response()->json($data, 404);

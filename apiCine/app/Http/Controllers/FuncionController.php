@@ -91,20 +91,21 @@ class FuncionController extends Controller
         $funciones = [];
 
         foreach (Funcion::all() as $funcion) {
-            $pelicula = Pelicula::find($funcion->codPelicula);
+            if ($funcion->estadoEliminacion = 1) {
+                $pelicula = Pelicula::find($funcion->codPelicula);
 
-            if ($pelicula->estadoEliminacion == 1) {
-                $funcion->titulo = $pelicula->nombre;
-                $funcion->image = $pelicula->imagen;
+                if ($pelicula->estadoEliminacion == 1) {
+                    $funcion->titulo = $pelicula->nombre;
+                    $funcion->image = $pelicula->imagen;
 
-                $sala = Sala::find($funcion->codSala);
-                if($sala->estadoEliminacion == 1){
-                    $sucursal = Sucursal::find($sala->codSucursal);
-                    $funcion->sucursal = $sucursal->sucursal;
-    
-                    $funciones[] = $funcion;
+                    $sala = Sala::find($funcion->codSala);
+                    if ($sala->estadoEliminacion == 1) {
+                        $sucursal = Sucursal::find($sala->codSucursal);
+                        $funcion->sucursal = $sucursal->sucursal;
+
+                        $funciones[] = $funcion;
+                    }
                 }
-                
             }
         }
 
@@ -145,6 +146,14 @@ class FuncionController extends Controller
             return response()->json($data, 404);
         }
 
+        if ($funcion->estadoEliminacion == 0) {
+            $data = [
+                'message' => 'Función eliminada',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        }
+
         $asientos = [];
 
         foreach ($compras as $compra) {
@@ -173,6 +182,15 @@ class FuncionController extends Controller
             ];
             return response()->json($data, 404);
         }
+
+        if ($funcion->estadoEliminacion == 0) {
+            $data = [
+                'message' => 'Función eliminada',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        }
+        
         $data = [
             'funcion' => $funcion,
             'status' => 200
