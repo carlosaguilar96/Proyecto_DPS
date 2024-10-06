@@ -109,46 +109,56 @@ class PeliculaController extends Controller
     {
 
         $peliculas = [];
+        $fechaHoy = Carbon::now();
+        $funciones = [];
 
         if ($id == -1) {
-            $peliculasA = Pelicula::all()->where("enCartelera", 1);
-
-            foreach ($peliculasA as $pelicula) {
-                if ($pelicula->estadoEliminacion == 1)
-                    $peliculas[] = $pelicula;
-            }
+            $salas = Sala::all()->where('estadoEliminacion', 1);
         } else {
-
             $salas = Sala::all()->where('codSucursal', $id)->where('estadoEliminacion', 1);
+        }
 
-            if (count($salas) == 0) {
-                $data = [
-                    'message' => 'No hay salas en la sucursal',
-                    'status' => 404
-                ];
-                return response()->json($data, 404);
-            }
+        if (count($salas) == 0) {
+            $data = [
+                'message' => 'No hay salas en la sucursal',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        }
 
-            foreach ($salas as $sala) {
-                $codigosSala[] = $sala->codSala;
-            }
+        foreach ($salas as $sala) {
+            $codigosSala[] = $sala->codSala;
+        }
 
-            $funciones = Funcion::all()->whereIn('codSala', $codigosSala)->where('estadoEliminacion', 1);
+        $funciones = Funcion::all()->whereIn('codSala', $codigosSala)->where('estadoEliminacion', 1);
 
-            if (count($funciones) == 0) {
-                $data = [
-                    'message' => 'No hay funciones en la sucursal',
-                    'status' => 404
-                ];
-                return response()->json($data, 404);
-            }
+        if (count($funciones) == 0) {
+            $data = [
+                'message' => 'No hay funciones en la sucursal',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        }
 
-            foreach ($funciones as $funcion) {
+        foreach ($funciones as $funcion) {
+
+            // Revisa que la función no haya ocurrido ya
+            $fechaPelicula = Carbon::parse($funcion->fecha)->format('Y-m-d');
+            $horaPelicula = Carbon::parse($funcion->hora)->format('H:i:s');
+
+            $fechaCombinada = Carbon::createFromFormat('Y-m-d H:i:s', "$fechaPelicula $horaPelicula");
+            $resta = $fechaHoy->diffInMinutes($fechaCombinada);
+
+            if ($resta > 0)
                 $codigosPeliculas[] = $funcion->codPelicula;
-            }
-            $codigosPeliculas = array_unique($codigosPeliculas); // Se filtran los repetidos
+        }
+        $codigosPeliculas = array_unique($codigosPeliculas); // Se filtran los repetidos
 
-            $peliculas = Pelicula::all()->where('enCartelera', 1)->where('estadoEliminacion', 1)->whereIn('codPelicula', $codigosPeliculas);
+        $peliculasA = Pelicula::all()->where('enCartelera', 1)->whereIn('codPelicula', $codigosPeliculas);
+
+        foreach ($peliculasA as $peli) {
+            if ($peli->estadoEliminacion == 1)
+                $peliculas[] = $peli;
         }
 
         if (count($peliculas) == 0) {
@@ -171,58 +181,64 @@ class PeliculaController extends Controller
     {
         $peliculas = [];
         $fechaHoy = Carbon::now();
-        $peliculasBase = [];
+        $funciones = [];
+        $estrenos = [];
 
         if ($id == -1) {
-            $peliculasBase = Pelicula::all()->where('enCartelera', 1)->where('estadoEliminacion', 1);
+            $salas = Sala::all()->where('estadoEliminacion', 1);
         } else {
             $salas = Sala::all()->where('codSucursal', $id)->where('estadoEliminacion', 1);
-
-            if (count($salas) == 0) {
-                $data = [
-                    'message' => 'No hay salas en la sucursal',
-                    'status' => 404
-                ];
-                return response()->json($data, 404);
-            }
-
-            foreach ($salas as $sala) {
-                $codigosSala[] = $sala->codSala;
-            }
-
-            $funciones = Funcion::all()->whereIn('codSala', $codigosSala)->where('estadoEliminacion', 1);
-
-            if (count($funciones) == 0) {
-                $data = [
-                    'message' => 'No hay funciones en la sucursal',
-                    'status' => 404
-                ];
-                return response()->json($data, 404);
-            }
-
-            foreach ($funciones as $funcion) {
-                $codigosPeliculas[] = $funcion->codPelicula;
-            }
-            $codigosPeliculas = array_unique($codigosPeliculas); // Se filtran los repetidos
-
-            $peliculasBase = Pelicula::all()->where('enCartelera', 1)->where('estadoEliminacion', 1)->whereIn('codPelicula', $codigosPeliculas);
         }
 
-
-        if (count($peliculasBase) == 0) {
+        if (count($salas) == 0) {
             $data = [
-                'message' => 'No hay películas en cartelera',
+                'message' => 'No hay salas en la sucursal',
                 'status' => 404
             ];
             return response()->json($data, 404);
         }
 
-        foreach ($peliculasBase as $pelicula) {
-            $fechaPelicula = Carbon::parse($pelicula->created_at);
-            $resta = $fechaPelicula->diffInDays($fechaHoy);
+        foreach ($salas as $sala) {
+            $codigosSala[] = $sala->codSala;
+        }
 
-            if ($resta <= 2)
-                $peliculas[] = $pelicula;
+        $funciones = Funcion::all()->whereIn('codSala', $codigosSala)->where('estadoEliminacion', 1);
+
+        if (count($funciones) == 0) {
+            $data = [
+                'message' => 'No hay funciones en la sucursal',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        }
+
+        foreach ($funciones as $funcion) {
+
+            // Revisa que la función no haya ocurrido ya
+            $fechaPelicula = Carbon::parse($funcion->fecha)->format('Y-m-d');
+            $horaPelicula = Carbon::parse($funcion->hora)->format('H:i:s');
+
+            $fechaCombinada = Carbon::createFromFormat('Y-m-d H:i:s', "$fechaPelicula $horaPelicula");
+            $resta = $fechaHoy->diffInMinutes($fechaCombinada);
+
+            if ($resta > 0)
+                $codigosPeliculas[] = $funcion->codPelicula;
+        }
+        $codigosPeliculas = array_unique($codigosPeliculas); // Se filtran los repetidos
+
+        $peliculasA = Pelicula::all()->where('enCartelera', 1)->whereIn('codPelicula', $codigosPeliculas);
+
+        foreach ($peliculasA as $peli) {
+            if ($peli->estadoEliminacion == 1)
+                $peliculas[] = $peli;
+        }
+
+        if (count($peliculas) == 0) {
+            $data = [
+                'message' => 'No hay películas en cartelera',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
         }
 
         $data = [
@@ -231,7 +247,23 @@ class PeliculaController extends Controller
         ];
 
         return response()->json($data, 200);
+
+        foreach ($peliculas as $pelicula) {
+            $fechaPelicula = Carbon::parse($pelicula->created_at);
+            $resta = $fechaPelicula->diffInDays($fechaHoy);
+
+            if ($resta <= 2) // Menor a d 2 días
+                $estrenos[] = $pelicula;
+        }
+
+        $data = [
+            'peliculas' => $estrenos,
+            'status' => 200
+        ];
+
+        return response()->json($data, 200);
     }
+
     //Función para mostrar película específica
     public function show($id)
     {

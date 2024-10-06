@@ -107,12 +107,12 @@ CREATE TABLE asientos(
     FOREIGN KEY (codCompra) REFERENCES compras(codCompra)
 )
 
---IGNORAR TABLA PRODUCTOS
- /*CREATE TABLE productos(
+
+ CREATE TABLE productos(
     codProducto int PRIMARY KEY AUTO_INCREMENT,
     nombre varchar(20) NOT NULL,
     descripcion text NOT NULL,
     precioRegular decimal(10,2) NOT NULL,
     miniatura varchar(100) NOT NULL,
     estadoEliminacion int DEFAULT "1" NOT NULL
- )*/
+ )
