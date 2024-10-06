@@ -10,6 +10,12 @@ use Exception;
 use App\Models\Transaccion;
 use Carbon\Carbon;
 use App\Models\Asiento;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ConfirmarCompra;
+use App\Models\Pelicula;
+use App\Models\Sucursal;
+use App\Models\Usuario;
+use App\Models\Sala;
 
 class CompraController extends Controller
 {
@@ -61,12 +67,22 @@ class CompraController extends Controller
                            $funcion->precioNino * $compra->cantidadNinos + 
                            $funcion->precioTE * $compra->cantidadTE;
             $lastDigits = substr($request->cardID, -4);
+            $fecha = Carbon::now('America/El_Salvador');
             $transaccion = Transaccion::create([
                 "precioTotal" => $precioTotal,
-                "fecha" => Carbon::now('America/El_Salvador'),
+                "fecha" => $fecha,
                 "cardID" => $lastDigits,
                 "codCompra" => $compra->codCompra
             ]);
+            //Enviar correo
+            $usuario = Usuario::find($request->nombreUsuario);
+            $nombre = $usuario->nombres. ' ' .$usuario->apellidos;
+            $boletos = $request->cantidadAdultos + $request->cantidadNinos + $request->cantidadTE;
+            $pelicula = Pelicula::find($funcion->codPelicula);
+            $sala = Sala::find($funcion->codSala);
+            $sucursal = Sucursal::find($sala->codSucursal);
+            $salaD = $funcion->fecha.', '.$funcion->hora.', Sala '.$funcion->codSala.', Sucursal '.$sucursal->sucursal;
+            Mail::to($usuario->correoE)->send(new ConfirmarCompra($nombre,$request->codFuncion,$boletos,$asientos,$precioTotal,$fecha,$lastDigits,$pelicula->nombre,$salaD));
         } catch(Exception $error){
             $data = [
                 'message' => 'Error al crear la compra: ' . $error->getMessage(),
