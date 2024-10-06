@@ -72,6 +72,13 @@ class SalaController extends Controller
             ];
             return response()->json($data, 404);
         }
+        if($sala->estadoEliminacion == 0){
+            $data = [
+                'message' => 'Sala eliminada',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        }
         $data = [
             'sala' => $sala,
             'status' => 200

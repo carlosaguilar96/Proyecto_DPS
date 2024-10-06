@@ -110,7 +110,7 @@ const AñadirFuncion = ({ navigation }) => {
 
   const obtenerPeliculas = async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/peliculas/index`);
+      const response = await axios.get(`${API_URL}/api/peliculas/cartelera/-1`);
 
       if (response.data.peliculas.length != 0) {
         setPeliculas(response.data.peliculas);
@@ -265,9 +265,13 @@ const AñadirFuncion = ({ navigation }) => {
         <View style={estilos.precioContainer}>
           <Text>Niños:</Text>
           <TextInputMask
-            type={'custom'}
+            type={'money'}
             options={{
-              mask: '$9.99',
+              precision: 2,
+              separator: '.',
+              delimiter: ',',
+              unit: '$',
+              suffixUnit: ''
             }}
             style={estilos.precioInput}
             value={precios.ninos}
@@ -278,6 +282,14 @@ const AñadirFuncion = ({ navigation }) => {
         <View style={estilos.precioContainer}>
           <Text>Adultos:</Text>
           <TextInputMask
+            type={'money'}
+            options={{
+              precision: 2,
+              separator: '.',
+              delimiter: ',',
+              unit: '$',
+              suffixUnit: ''
+            }}
             style={estilos.precioInput}
             value={precios.adultos}
             onChangeText={(value) => setPrecios({ ...precios, adultos: value })}
@@ -287,6 +299,14 @@ const AñadirFuncion = ({ navigation }) => {
         <View style={estilos.precioContainer}>
           <Text>3ra Edad:</Text>
           <TextInputMask
+            type={'money'}
+            options={{
+              precision: 2,
+              separator: '.',
+              delimiter: ',',
+              unit: '$',
+              suffixUnit: ''
+            }}
             style={estilos.precioInput}
             value={precios.terceraEdad}
             onChangeText={(value) => setPrecios({ ...precios, terceraEdad: value })}

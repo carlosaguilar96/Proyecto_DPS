@@ -84,7 +84,7 @@ class PeliculaController extends Controller
         $peliculas = [];
 
         if($id == -1){
-            $peliculas = Pelicula::all()->where('enCartelera', 1);
+            $peliculas = Pelicula::all()->where('enCartelera', 1)->where('estadoEliminacion',1);
         } else{
 
             $salas = Sala::all()->where('codSucursal', $id);
@@ -116,7 +116,7 @@ class PeliculaController extends Controller
             }
             $codigosPeliculas = array_unique($codigosPeliculas); // Se filtran los repetidos
 
-            $peliculas = Pelicula::all()->where('enCartelera', 1)->whereIn('codPelicula',$codigosPeliculas);
+            $peliculas = Pelicula::all()->where('enCartelera', 1)->where('estadoEliminacion',1)->whereIn('codPelicula',$codigosPeliculas);
             
         }
 
@@ -143,9 +143,9 @@ class PeliculaController extends Controller
         $peliculasBase = [];
 
         if($id == -1){
-            $peliculasBase = Pelicula::all()->where('enCartelera', 1);
+            $peliculasBase = Pelicula::all()->where('enCartelera', 1)->where('estadoEliminacion',1);
         } else{
-            $salas = Sala::all()->where('codSucursal', $id);
+            $salas = Sala::all()->where('codSucursal', $id)->where('estadoEliminacion', 1);
 
             if(count($salas) == 0){
                 $data = [
@@ -174,7 +174,7 @@ class PeliculaController extends Controller
             }
             $codigosPeliculas = array_unique($codigosPeliculas); // Se filtran los repetidos
 
-            $peliculasBase = Pelicula::all()->where('enCartelera', 1)->whereIn('codPelicula',$codigosPeliculas);
+            $peliculasBase = Pelicula::all()->where('enCartelera', 1)->where('estadoEliminacion',1)->whereIn('codPelicula',$codigosPeliculas);
         }
 
         
@@ -208,6 +208,14 @@ class PeliculaController extends Controller
         if (!$pelicula) {
             $data = [
                 'message' => 'Película no encontrada',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        }
+
+        if ($pelicula->estadoEliminacion == 0) {
+            $data = [
+                'message' => 'Película eliminada',
                 'status' => 404
             ];
             return response()->json($data, 404);

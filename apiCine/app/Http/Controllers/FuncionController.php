@@ -25,9 +25,9 @@ class FuncionController extends Controller
             "idioma" => "required",
             "fecha" => "required",
             "hora" => "required",
-            "precioAdulto" => ["required",'numeric', 'min:0'],
-            "precioNino" => ["required",'numeric', 'min:0'],
-            "precioTE" => ["required",'numeric', 'min:0']
+            "precioAdulto" => ["required", 'numeric', 'min:0'],
+            "precioNino" => ["required", 'numeric', 'min:0'],
+            "precioTE" => ["required", 'numeric', 'min:0']
         ]);
 
         if ($validator->fails()) {
@@ -52,12 +52,11 @@ class FuncionController extends Controller
                 "precioTE" => $request->precioTE
             ]);
 
-            
+
             $pelicula = Pelicula::find($request->codPelicula);
 
             $pelicula->enCartelera = 1;
-            $pelicula->save(); 
-            
+            $pelicula->save();
         } catch (Exception $error) {
             $data = [
                 'message' => 'Error al crear la función: ' . $error->getMessage(),
@@ -87,19 +86,26 @@ class FuncionController extends Controller
     }
 
     // Un index que además de la información de las funciones muestra el nombre de la película, la imagen y la sucursal
-    public function indexDetallado(){
+    public function indexDetallado()
+    {
         $funciones = [];
 
-        foreach(Funcion::all() as $funcion){
+        foreach (Funcion::all() as $funcion) {
             $pelicula = Pelicula::find($funcion->codPelicula);
-            $funcion->titulo = $pelicula->nombre;
-            $funcion->image = $pelicula->imagen;
 
-            $sala = Sala::find($funcion->codSala);
-            $sucursal = Sucursal::find($sala->codSucursal);
-            $funcion->sucursal = $sucursal->sucursal;
+            if ($pelicula->estadoEliminacion == 1) {
+                $funcion->titulo = $pelicula->nombre;
+                $funcion->image = $pelicula->imagen;
 
-            $funciones[] = $funcion;
+                $sala = Sala::find($funcion->codSala);
+                if($sala->enCartalera == 1){
+                    $sucursal = Sucursal::find($sala->codSucursal);
+                    $funcion->sucursal = $sucursal->sucursal;
+    
+                    $funciones[] = $funcion;
+                }
+                
+            }
         }
 
         $data = [
@@ -110,13 +116,14 @@ class FuncionController extends Controller
     }
 
     //Función para editar funciones
-    public function indexEdit(){
+    public function indexEdit()
+    {
         $funciones = Funcion::join('peliculas', 'funciones.codPelicula', '=', 'peliculas.codPelicula')
-                    ->join('salas','funciones.codSala','=','salas.codSala')
-                    ->join('sucursales','salas.codSucursal','=','sucursales.codSucursal')
-                    ->select('funciones.*','peliculas.nombre','sucursales.sucursal')
-                    ->whereRaw("STR_TO_DATE(CONCAT(funciones.fecha, ' ', funciones.hora), '%Y-%m-%d %H:%i:%s') > ?", [Carbon::now('America/El_Salvador')])
-                    ->get();
+            ->join('salas', 'funciones.codSala', '=', 'salas.codSala')
+            ->join('sucursales', 'salas.codSucursal', '=', 'sucursales.codSucursal')
+            ->select('funciones.*', 'peliculas.nombre', 'sucursales.sucursal')
+            ->whereRaw("STR_TO_DATE(CONCAT(funciones.fecha, ' ', funciones.hora), '%Y-%m-%d %H:%i:%s') > ?", [Carbon::now('America/El_Salvador')])
+            ->get();
         $data = [
             'funciones' => $funciones,
             'status' => 200
@@ -137,13 +144,13 @@ class FuncionController extends Controller
             ];
             return response()->json($data, 404);
         }
-        
+
         $asientos = [];
 
-        foreach($compras as $compra){
+        foreach ($compras as $compra) {
             $asientosCompra = Asiento::all()->where('codCompra', $compra->codCompra);
 
-            foreach($asientosCompra as $asiento){
+            foreach ($asientosCompra as $asiento) {
                 $asientos[] = $asiento->numButaca;
             }
         }
@@ -248,9 +255,9 @@ class FuncionController extends Controller
             "idioma" => "required",
             "fecha" => "required",
             "hora" => "required",
-            "precioAdulto" => ["required",'numeric', 'min:0'],
-            "precioNino" => ["required",'numeric', 'min:0'],
-            "precioTE" => ["required",'numeric', 'min:0']
+            "precioAdulto" => ["required", 'numeric', 'min:0'],
+            "precioNino" => ["required", 'numeric', 'min:0'],
+            "precioTE" => ["required", 'numeric', 'min:0']
         ]);
 
         if ($validator->fails()) {
@@ -271,9 +278,9 @@ class FuncionController extends Controller
         $funcion->precioNino = $request->precioNino;
         $funcion->precioTE = $request->precioTE;
 
-        try{
+        try {
             $funcion->save();
-        }catch(Exception $error){
+        } catch (Exception $error) {
             $data = [
                 'message' => 'Error al actualizar la función: ' . $error->getMessage(),
                 'status' => 500
