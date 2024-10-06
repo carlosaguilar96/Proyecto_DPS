@@ -20,6 +20,7 @@ import PerfilUser from './PerfilUser';
 import ModificarFuncion from './EditFuncion';
 import ModificarSala from './EditSala';
 import ModificarAdministrador from './EditAdmin';
+import CambiarContraAdmin from './CambiarContraAdmin';
 import AñadirFuncion from './AddFuncion';
 import AñadirSala from './AddSala';
 import AñadirAdministrador from './AddAdmin';
@@ -488,6 +489,10 @@ export default function Login() {
                   drawerIcon: ({ color }) => (<Icon name="edit" size={20} color={color} />)
                 }} />
             ) : <></>}
+            <Drawer.Screen name="Cambiar Contraseña" component={CambiarContraAdmin}
+              options={{
+                drawerIcon: ({ color }) => (<Icon name="person" size={20} color={color} />)
+              }} />
             <Drawer.Screen name="Cerrar Sesión" options={{
               drawerIcon: ({ color }) => (<Icon name="logout" size={20} color={color} />),
 
