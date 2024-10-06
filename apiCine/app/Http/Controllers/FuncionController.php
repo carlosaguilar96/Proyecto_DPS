@@ -250,14 +250,8 @@ class FuncionController extends Controller
             return response()->json($data, 404);
         }
         $validator = Validator::make($request->all(), [
-            "codPelicula" => "required",
-            "codSala" => "required",
-            "idioma" => "required",
             "fecha" => "required",
             "hora" => "required",
-            "precioAdulto" => ["required", 'numeric', 'min:0'],
-            "precioNino" => ["required", 'numeric', 'min:0'],
-            "precioTE" => ["required", 'numeric', 'min:0']
         ]);
 
         if ($validator->fails()) {
@@ -269,14 +263,8 @@ class FuncionController extends Controller
 
             return response()->json($data, 400);
         }
-        $funcion->codPelicula = $request->codPelicula;
-        $funcion->codSala = $request->codSala;
-        $funcion->idioma = $request->idioma;
         $funcion->fecha = $request->fecha;
         $funcion->hora = $request->hora;
-        $funcion->precioAdulto = $request->precioAdulto;
-        $funcion->precioNino = $request->precioNino;
-        $funcion->precioTE = $request->precioTE;
 
         try {
             $funcion->save();
