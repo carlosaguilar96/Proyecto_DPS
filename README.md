@@ -17,6 +17,7 @@ Enlace: https://trello.com/invite/b/64c03ef2cd393c82c63f5e42/ATTI67ecbb07d577790
 Enlace: https://www.figma.com/design/8Kqi38FRhuuhb65F0PPwoj/Cine?node-id=0-1&t=Z5Af17YmYkXMnGWK-0
 
 **Manual Técnico y Manual de Usuario**
+
 Enlace: https://drive.google.com/drive/folders/1WR_blR3tdDI0y5RQyJWHh-SivVNMtKrg?usp=sharing
 
 **Licencia Creative Commons**
