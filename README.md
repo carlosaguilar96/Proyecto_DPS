@@ -16,6 +16,12 @@ Enlace: https://trello.com/invite/b/64c03ef2cd393c82c63f5e42/ATTI67ecbb07d577790
 
 Enlace: https://www.figma.com/design/8Kqi38FRhuuhb65F0PPwoj/Cine?node-id=0-1&t=Z5Af17YmYkXMnGWK-0
 
+**Manual de Usuario**
+El PDF ha sido subido a este repositorio de GitHub.
+
+**Manual Técnico**
+El PDF ha sido subido a este repositorio de GitHub.
+
 **Licencia Creative Commons**
 
 Aplicación móvil genérica para la reserva, compra y gestión de los boletos a las funciones disponibles de un cine © 2024 está licenciada bajo la  ATRIBUCIÓN/RECONOCIMIENTO-NOCOMERCIAL-SINDERIVADOS 4.0 INTERNACIONAL (CC BY-NC-ND 4.0) 
