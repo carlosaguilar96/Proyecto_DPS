@@ -62,6 +62,7 @@ const Dulceria = () => {
         renderItem={renderItem}
         keyExtractor={(item) => item.codProducto}
         scrollEnabled={false}
+        listEmptyComponent={<Text>Sin productos agregados</Text>}
       />
     </ScrollView>
 

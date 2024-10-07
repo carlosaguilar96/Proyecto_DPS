@@ -10,6 +10,7 @@ use App\Models\Funcion;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 use Exception;
+date_default_timezone_set('America/El_Salvador');
 
 class PeliculaController extends Controller
 {
@@ -109,7 +110,7 @@ class PeliculaController extends Controller
     {
 
         $peliculas = [];
-        $fechaHoy = Carbon::now('America/El_Salvador');
+        $fechaHoy = date('Y-m-d H:i:s');
         $funciones = [];
 
         if ($id == -1) {
@@ -150,8 +151,7 @@ class PeliculaController extends Controller
 
             $fechaCombinada = Carbon::createFromFormat('Y-m-d H:i:s', "$fechaPelicula $horaPelicula");
             $resta = $fechaCombinada->diffInMinutes($fechaHoy);
-
-            if ($resta > 0)
+            if ($resta < 0)
                 $codigosPeliculas[] = $funcion->codPelicula;
         }
         $codigosPeliculas = array_unique($codigosPeliculas); // Se filtran los repetidos
@@ -182,7 +182,7 @@ class PeliculaController extends Controller
     public function mostrarEstrenos($id)
     {
         $peliculas = [];
-        $fechaHoy = Carbon::now('America/El_Salvador');
+        $fechaHoy = date('Y-m-d H:i:s');
         $funciones = [];
         $estrenos = [];
 
@@ -215,7 +215,6 @@ class PeliculaController extends Controller
         }
 
         $codigosPeliculas = [];
-        $restas = [];
         foreach ($funciones as $funcion) {
 
             // Revisa que la función no haya ocurrido ya
@@ -225,9 +224,8 @@ class PeliculaController extends Controller
             $fechaCombinada = Carbon::createFromFormat('Y-m-d H:i:s', "$fechaPelicula $horaPelicula");
             $resta = $fechaCombinada->diffInMinutes($fechaHoy);
 
-            if ($resta > 0){
+            if ($resta < 0)
                 $codigosPeliculas[] = $funcion->codPelicula;
-            } 
         }
         $codigosPeliculas = array_unique($codigosPeliculas); // Se filtran los repetidos
 
@@ -283,6 +281,7 @@ class PeliculaController extends Controller
         }
         $data = [
             'pelicula' => $pelicula,
+            'otro' => date_default_timezone_get(),
             'status' => 200
         ];
         return response()->json($data, 200);
