@@ -109,7 +109,7 @@ class PeliculaController extends Controller
     {
 
         $peliculas = [];
-        $fechaHoy = Carbon::now();
+        $fechaHoy = Carbon::now('America/El_Salvador');
         $funciones = [];
 
         if ($id == -1) {
@@ -140,6 +140,8 @@ class PeliculaController extends Controller
             return response()->json($data, 404);
         }
 
+        $codigosPeliculas = [];
+
         foreach ($funciones as $funcion) {
 
             // Revisa que la función no haya ocurrido ya
@@ -147,7 +149,7 @@ class PeliculaController extends Controller
             $horaPelicula = Carbon::parse($funcion->hora)->format('H:i:s');
 
             $fechaCombinada = Carbon::createFromFormat('Y-m-d H:i:s', "$fechaPelicula $horaPelicula");
-            $resta = $fechaHoy->diffInMinutes($fechaCombinada);
+            $resta = $fechaCombinada->diffInMinutes($fechaHoy);
 
             if ($resta > 0)
                 $codigosPeliculas[] = $funcion->codPelicula;
@@ -180,7 +182,7 @@ class PeliculaController extends Controller
     public function mostrarEstrenos($id)
     {
         $peliculas = [];
-        $fechaHoy = Carbon::now();
+        $fechaHoy = Carbon::now('America/El_Salvador');
         $funciones = [];
         $estrenos = [];
 
@@ -212,6 +214,8 @@ class PeliculaController extends Controller
             return response()->json($data, 404);
         }
 
+        $codigosPeliculas = [];
+        $restas = [];
         foreach ($funciones as $funcion) {
 
             // Revisa que la función no haya ocurrido ya
@@ -219,10 +223,11 @@ class PeliculaController extends Controller
             $horaPelicula = Carbon::parse($funcion->hora)->format('H:i:s');
 
             $fechaCombinada = Carbon::createFromFormat('Y-m-d H:i:s', "$fechaPelicula $horaPelicula");
-            $resta = $fechaHoy->diffInMinutes($fechaCombinada);
+            $resta = $fechaCombinada->diffInMinutes($fechaHoy);
 
-            if ($resta > 0)
+            if ($resta > 0){
                 $codigosPeliculas[] = $funcion->codPelicula;
+            } 
         }
         $codigosPeliculas = array_unique($codigosPeliculas); // Se filtran los repetidos
 
@@ -240,13 +245,6 @@ class PeliculaController extends Controller
             ];
             return response()->json($data, 404);
         }
-
-        $data = [
-            'peliculas' => $peliculas,
-            'status' => 200
-        ];
-
-        return response()->json($data, 200);
 
         foreach ($peliculas as $pelicula) {
             $fechaPelicula = Carbon::parse($pelicula->created_at);

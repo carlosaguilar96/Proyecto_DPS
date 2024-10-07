@@ -27,6 +27,7 @@ import AñadirAdministrador from './AddAdmin';
 import EditarCine from './EditarCine';
 import PantallaSeleccionAsientos from './SelectAsientos';
 import VistaPago from './VistaPago';
+import Dulceria from './Dulceria';
 
 LogBox.ignoreLogs([
   'Found screens with the same name nested inside one another',
@@ -378,6 +379,10 @@ export default function Login() {
               options={{
                 drawerIcon: ({ color }) => (<Icon name="movie" size={20} color={color} />)
               }} />
+            <Drawer.Screen name="Dulcería" component={Dulceria}
+              options={{
+                drawerIcon: ({ color }) => (<Icon name="fastfood" size={20} color={color} />)
+              }} />
             <Drawer.Screen
               name="Inicio sesion"
               component={Login}
@@ -411,7 +416,10 @@ export default function Login() {
               options={{
                 drawerIcon: ({ color }) => (<Icon name="movie" size={20} color={color} />)
               }} />
-
+            <Drawer.Screen name="Dulcería" component={Dulceria}
+              options={{
+                drawerIcon: ({ color }) => (<Icon name="fastfood" size={20} color={color} />)
+              }} />
             <Drawer.Screen
               name="Boletos"
               component={Boletos}
@@ -537,19 +545,19 @@ export default function Login() {
               <Image source={{ uri: `${API_URL}/img/${logo}` }} style={styles.img} />
             ) : <View />}
             <View style={styles.caja}>
-            <Modal
-        transparent={true} // Hace que el fondo del modal sea transparente
-        animationType="fade" // Tipo de animación al mostrar el modal
-        visible={loading} // Modal visible mientras `loading` sea true
-        onRequestClose={() => setLoading(false)} // Cierra el modal si se intenta cerrar
-      >
-        <View style={styles.modalBackground}>
-          <View style={styles.modalContainer}>
-            <ActivityIndicator size="large" color="#ffffff" />
-            <Text style={styles.loadingText}>Cargando...</Text>
-          </View>
-        </View>
-      </Modal>
+              <Modal
+                transparent={true} // Hace que el fondo del modal sea transparente
+                animationType="fade" // Tipo de animación al mostrar el modal
+                visible={loading} // Modal visible mientras `loading` sea true
+                onRequestClose={() => setLoading(false)} // Cierra el modal si se intenta cerrar
+              >
+                <View style={styles.modalBackground}>
+                  <View style={styles.modalContainer}>
+                    <ActivityIndicator size="large" color="#ffffff" />
+                    <Text style={styles.loadingText}>Cargando...</Text>
+                  </View>
+                </View>
+              </Modal>
               <Text style={styles.textcaja}>{mssgError ? mssgError : login ? 'LOG IN' : 'Registrarse'}</Text>
               <View style={styles.separator} />
               {restContra ? (
