@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Alert, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, Alert, StyleSheet, ScrollView, TouchableOpacity,ActivityIndicator, Modal } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
 import { API_URL } from '@env';
@@ -10,6 +10,7 @@ const AñadirSala = ({ navigation }) => {
   const [tipoSala, setTipoSala] = useState(-1);
   const [sucursales, setSucursales] = useState([]);
   const isFocused = useIsFocused();
+  const [loading, setLoading] = useState(false);
 
   const validar = () => {
 
@@ -28,10 +29,14 @@ const AñadirSala = ({ navigation }) => {
 
 
   const guardarSala = async () => {
+    setLoading(true);
     try {
+      console.log(API_URL);
+      console.log(API_URL);
       const response = await axios.post(`${API_URL}/api/salas/crearSala`, {
         sucursal: sucursal
       });
+      setLoading(false);
       Alert.alert('Registro exitoso', 'Sala creada correctamente');
       setSucursal(-1);
       setTipoSala(-1);
@@ -44,22 +49,28 @@ const AñadirSala = ({ navigation }) => {
         for (const campo in errores) {
           mensaje += `Error en ${campo}: ${errores[campo].join(', ')}`;
         }
+        setLoading(false);
         setMssgError(mensaje);
         return;
       } else if (error.request) {
+        setLoading(false);
         Alert.alert('Error', 'No hubo respuesta del servidor');
         return;
       } else {
+        setLoading(false);
         Alert.alert('Error', 'Error al hacer la solicitud ' + error);
         return;
       }
     }
+    setLoading(false);
   }
 
   const obtenerSucursales = async () => {
     try {
+      console.log(API_URL);
+      console.log(API_URL);
       const response = await axios.get(`${API_URL}/api/sucursales/index`);
-
+      
       if (response.data.sucursales.length != 0) {
 
         setSucursales(response.data.sucursales);
@@ -87,6 +98,19 @@ const AñadirSala = ({ navigation }) => {
 
   return (
     <ScrollView style={estilos.contenedor}>
+      <Modal
+                transparent={true} // Hace que el fondo del modal sea transparente
+                animationType="fade" // Tipo de animación al mostrar el modal
+                visible={loading} // Modal visible mientras `loading` sea true
+                onRequestClose={() => setLoading(false)} // Cierra el modal si se intenta cerrar
+              >
+                <View style={estilos.modalBackground}>
+                  <View style={estilos.modalContainer}>
+                    <ActivityIndicator size="large" color="#ffffff" />
+                    <Text style={estilos.loadingText}>Cargando...</Text>
+                  </View>
+                </View>
+              </Modal>
 
       <View style={estilos.formulario}>
         <Text>Sucursal:</Text>
@@ -174,6 +198,25 @@ const estilos = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
+  modalBackground: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Fondo oscuro y semi-transparente
+  },
+  modalContainer: {
+    width: 200,
+    height: 150,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#b30000', // Fondo del modal
+    borderRadius: 10,
+  },
+  loadingText: {
+    marginTop: 10,
+    color: '#ffffff', // Color del texto blanco
+    fontSize: 16,
+  }
 });
 
 export default AñadirSala;

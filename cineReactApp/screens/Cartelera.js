@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, FlatList, ScrollView, Modal, Button } from 'react-native';
+import { View, Text, Alert, StyleSheet, Image, TouchableOpacity, FlatList, ScrollView, Modal, Button } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import { useFocusEffect } from '@react-navigation/native';
 import { format, addDays, parseISO, isAfter } from 'date-fns';
@@ -103,6 +103,8 @@ export default function Cartelera() {
 
   const obtenerFunciones = async () => {
     try {
+      console.log(API_URL);
+      console.log(API_URL);
       const response = await axios.get(`${API_URL}/api/funciones/funcionesDetalladas`);
 
       if (response.data.funciones.length != 0)
@@ -143,6 +145,7 @@ export default function Cartelera() {
     }
     else {
       navigation.navigate('Boletos', { title, hora, idioma, sucursal, fecha, image, precioNino, precioAdulto, precioTE, codSala, codFuncion });
+      console.log(title);
     }
 
   }

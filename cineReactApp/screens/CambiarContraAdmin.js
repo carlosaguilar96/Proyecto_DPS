@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Modal, TextInput, Alert } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Modal, TextInput, Alert,ActivityIndicator } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ScrollView } from "react-native-gesture-handler";
 import axios from 'axios';
@@ -12,6 +12,7 @@ export default function CambiarContraAdmin() {
     const [contrasenaNueva, setContrasenaNueva] = useState('');
     const [confirmarContrasena, setConfirmarContrasena] = useState('');
     const [showModal, setShowModal] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const handleCambio = () => {
 
@@ -58,9 +59,12 @@ export default function CambiarContraAdmin() {
     };
 
     const obtenerInfoUsuario = async (user) => {
+        setLoading(true);
         try {
+            console.log(API_URL);
+            console.log(API_URL);
             const response = await axios.get(`${API_URL}/api/usuarios/show/${user}`);
-
+            setLoading(false);
             if (response.data.usuario.length != 0) {
 
                 setUsuarioinfo(response.data.usuario);
@@ -69,10 +73,12 @@ export default function CambiarContraAdmin() {
 
         } catch (error) {
             if (error.request) {
+                setLoading(false);
                 Alert.alert('Error', 'No hubo respuesta del servidor ');
                 console.log(error);
                 return;
             } else {
+                setLoading(false);
                 Alert.alert('Error', 'Error al hacer la solicitud');
                 return;
             }
@@ -81,14 +87,16 @@ export default function CambiarContraAdmin() {
     }
 
     const cambiarContra = async () => {
+        setLoading(true);
         try {
-
+            console.log(API_URL);
+            console.log(API_URL);
             const response = await axios.put(`${API_URL}/api/usuarios/cambiarPassword/${username}`, {
                 pwActual: contrasenaAnterior,
                 pwNueva: contrasenaNueva,
                 pwConfirmar: confirmarContrasena
             });
-
+            setLoading(false);
             Alert.alert('Mensaje', 'Cambio de contraseña exitoso');
             setShowModal(false);
             setConfirmarContrasena("");
@@ -103,13 +111,16 @@ export default function CambiarContraAdmin() {
                 for (const campo in errores) {
                     mensaje += `Error en ${campo}: ${errores[campo].join(', ')}`;
                 }
+                setLoading(false);
                 console.log(mensaje);
                 Alert.alert("Error", mensaje);
                 return;
             } else if (error.request) {
+                setLoading(false);
                 Alert.alert('Error', 'No hubo respuesta del servidor');
                 return;
             } else {
+                setLoading(false);
                 Alert.alert('Error', 'Error al hacer la solicitud ' + error);
                 return;
             }
@@ -122,6 +133,19 @@ export default function CambiarContraAdmin() {
 
     return (
         <ScrollView>
+            <Modal
+                transparent={true} // Hace que el fondo del modal sea transparente
+                animationType="fade" // Tipo de animación al mostrar el modal
+                visible={loading} // Modal visible mientras `loading` sea true
+                onRequestClose={() => setLoading(false)} // Cierra el modal si se intenta cerrar
+              >
+                <View style={estilos.modalBackgroundd}>
+                  <View style={estilos.modalContainerr}>
+                    <ActivityIndicator size="large" color="#ffffff" />
+                    <Text style={estilos.loadingTextt}>Cargando...</Text>
+                  </View>
+                </View>
+              </Modal>
             {usuarioinfo ? (
                 <View style={estilos.contenedor}>
                     <View style={estilos.tarjeta}>
@@ -287,4 +311,23 @@ const estilos = StyleSheet.create({
         color: 'white',
         textAlign: 'center',
     },
+    modalBackgroundd: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)', // Fondo oscuro y semi-transparente
+      },
+      modalContainerr: {
+        width: 200,
+        height: 150,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#b30000', // Fondo del modal
+        borderRadius: 10,
+      },
+      loadingTextt: {
+        marginTop: 10,
+        color: '#ffffff', // Color del texto blanco
+        fontSize: 16,
+      },
 });

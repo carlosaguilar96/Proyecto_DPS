@@ -42,6 +42,8 @@ const Inicio = () => {
 
   const obtenerCartelera = async () => {
     try {
+      console.log(API_URL);
+      console.log(API_URL);
       const response = await axios.get(`${API_URL}/api/peliculas/cartelera/${selectedCinema}`);
       if (response.data.peliculas.length != 0)
         setMovieData(response.data.peliculas);
@@ -61,6 +63,8 @@ const Inicio = () => {
 
   const obtenerEstrenos = async () => {
     try {
+      console.log(API_URL);
+      console.log(API_URL);
       const response = await axios.get(`${API_URL}/api/peliculas/estrenos/${selectedCinema}`);
 
       if (response.data.peliculas.length != 0)
@@ -81,6 +85,8 @@ const Inicio = () => {
 
   const obtenerMisionVision = async () => {
     try {
+      console.log(API_URL);
+      console.log(API_URL);
       const response = await axios.get(`${API_URL}/api/cines/index`);
 
       setMision(response.data.cine.mision);
@@ -138,6 +144,8 @@ const Inicio = () => {
 
   const obtenerSucursales = async () => {
     try {
+      console.log(API_URL);
+      console.log(API_URL);
       const response = await axios.get(`${API_URL}/api/sucursales/index`);
 
       if (response.data.sucursales.length != 0) {

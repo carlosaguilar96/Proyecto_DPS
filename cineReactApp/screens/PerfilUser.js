@@ -59,6 +59,8 @@ export default function PerfilUser() {
 
   const obtenerInfoUsuario = async (user) => {
     try {
+      console.log(API_URL);
+      console.log(API_URL);
       const response = await axios.get(`${API_URL}/api/usuarios/show/${user}`);
 
       if (response.data.usuario.length != 0) {
@@ -82,7 +84,8 @@ export default function PerfilUser() {
 
   const cambiarContra = async () =>{
     try {
-
+      console.log(API_URL);
+      console.log(API_URL);
       const response = await axios.put(`${API_URL}/api/usuarios/cambiarPassword/${username}`, {
         pwActual: contrasenaAnterior,
         pwNueva: contrasenaNueva,

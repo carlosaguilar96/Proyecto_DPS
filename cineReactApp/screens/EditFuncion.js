@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, FlatList, Modal, Button, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, FlatList, Modal, Button, Alert, ActivityIndicator } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { Funcion } from '../config/movieData';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -20,20 +20,26 @@ const ModificarFuncion = () => {
   const [fechaHora, setFechaHora] = useState('');
   const [funciones, setFunciones] = useState('');
   const isFocused = useIsFocused();
+  const [loading, setLoading] = useState(false);
 
   const obtenerFunciones = async () => {
+    setLoading(true);
     try {
-      
+      console.log(API_URL);
+      console.log(API_URL);
       const response = await axios.get(`${API_URL}/api/funciones/indexEditar`);
+      setLoading(false);
   
       if (response.data.funciones.length != 0)
         setFunciones(response.data.funciones);
   
     } catch (error) {
       if (error.request) {
+        setLoading(false);
         Alert.alert('Error', 'No hubo respuesta del servidor');
         return;
       } else {
+        setLoading(false);
         Alert.alert('Error', 'Error al hacer la solicitud');
         return;
       }
@@ -122,32 +128,44 @@ const ModificarFuncion = () => {
 
   const CambiarEstado = async () => {
     if(estado==1){
+      setLoading(true);
       try {
+        console.log(API_URL);
+        console.log(API_URL);
         const response = await axios.put(`${API_URL}/api/funciones/eliminarFuncion/${id}`);
+        setLoading(false);
         Alert.alert('Función eliminada', 'La función ha sido eliminada con éxito');
         setShowModalEstado(false);
         obtenerFunciones();
       } catch (error) {
         if (error.request) {
+          setLoading(false);
           Alert.alert('Error', 'No hubo respuesta del servidor');
           return;
         } else {
+          setLoading(false);
           Alert.alert('Error', 'Error al hacer la solicitud');
           return;
         }
       }
     }
     if(estado==0){
+      setLoading(true);
       try {
+        console.log(API_URL);
+        console.log(API_URL);
         const response = await axios.put(`${API_URL}/api/funciones/reactivarFuncion/${id}`);
+        setLoading(false);
         Alert.alert('Función reactivada', 'La función ha sido reactivada con éxito');
         setShowModalEstado(false);
         obtenerFunciones();
       } catch (error) {
         if (error.request) {
+          setLoading(false);
           Alert.alert('Error', 'No hubo respuesta del servidor');
           return;
         } else {
+          setLoading(false);
           Alert.alert('Error', 'Error al hacer la solicitud');
           return;
         }
@@ -189,19 +207,25 @@ const ModificarFuncion = () => {
 
   const editFuncion = async () => {
     //AQUI DEBERIA DE GUARDARSE EL CAMBIO DE EDICION las var son formattedDate y formattedTime
+    setLoading(true);
     try {
+      console.log(API_URL);
+      console.log(API_URL);
       const response = await axios.put(`${API_URL}/api/funciones/update/${id}`, {
         fecha: formattedDate,
         hora: formattedTime,
       });
+      setLoading(false);
       Alert.alert('Función actualizada', 'La función ha sido actualizada con éxito');
       setShowModal(false);
       obtenerFunciones();
     } catch (error) {
       if (error.request) {
+        setLoading(false);
         Alert.alert('Error', 'No hubo respuesta del servidor');
         return;
       } else {
+        setLoading(false);
         Alert.alert('Error', 'Error al hacer la solicitud');
         return;
       }
@@ -221,6 +245,19 @@ const ModificarFuncion = () => {
 
   return (
     <ScrollView>
+      <Modal
+                transparent={true} // Hace que el fondo del modal sea transparente
+                animationType="fade" // Tipo de animación al mostrar el modal
+                visible={loading} // Modal visible mientras `loading` sea true
+                onRequestClose={() => setLoading(false)} // Cierra el modal si se intenta cerrar
+              >
+                <View style={estilos.modalBackgroundd}>
+                  <View style={estilos.modalContainerr}>
+                    <ActivityIndicator size="large" color="#ffffff" />
+                    <Text style={estilos.loadingTextt}>Cargando...</Text>
+                  </View>
+                </View>
+              </Modal>
       <FlatListMovie Movie={funciones} />
 
       {/* Modal para seleccionar fecha y hora */}
@@ -418,6 +455,25 @@ const estilos = StyleSheet.create({
   modalButtons: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+  },
+  modalBackgroundd: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Fondo oscuro y semi-transparente
+  },
+  modalContainerr: {
+    width: 200,
+    height: 150,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#b30000', // Fondo del modal
+    borderRadius: 10,
+  },
+  loadingTextt: {
+    marginTop: 10,
+    color: '#ffffff', // Color del texto blanco
+    fontSize: 16,
   },
 });
 

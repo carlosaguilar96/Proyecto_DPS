@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity, Alert, Image, Keyboard } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity, Alert, Image, Keyboard,ActivityIndicator, Modal } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
@@ -13,6 +13,7 @@ const AñadirPelicula = ({navigation}) => {
   const [director, setDirector] = useState('');
   const [sinopsis, setSinopsis] = useState('');
   const [imagen, setImagen] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const manejarAñadirPelicula = () => {
 
@@ -77,13 +78,16 @@ const AñadirPelicula = ({navigation}) => {
     formData.append('genero', genero);
     formData.append('sinopsis', sinopsis);
 
+    setLoading(true);
     try {
+      console.log(API_URL);
+      console.log(API_URL);
       const response = await axios.post(`${API_URL}/api/peliculas/crearPelicula`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
-
+      setLoading(false);
       Alert.alert('Registro exitoso', 'Película agregada correctamente');
       limpiar();
       navigation.navigate("Menu Admin");
@@ -96,16 +100,20 @@ const AñadirPelicula = ({navigation}) => {
         for (const campo in errores) {
           mensaje += `Error en ${campo}: ${errores[campo].join(', ')}`;
         }
+        setLoading(false);
         Alert.alert('Error', mensaje);
         return;
       } else if (error.request) {
+        setLoading(false);
         Alert.alert('Error', 'No hubo respuesta del servidor ');
         return;
       } else {
+        setLoading(false);
         Alert.alert('Error', 'Error al hacer la solicitud ' + error);
         return;
       }
     }
+    setLoading(false);
   }
 
   const seleccionarImagen = async () => {
@@ -134,6 +142,19 @@ const AñadirPelicula = ({navigation}) => {
   return (
     <ScrollView style={estilos.contenedor}>
 
+              <Modal
+                transparent={true} // Hace que el fondo del modal sea transparente
+                animationType="fade" // Tipo de animación al mostrar el modal
+                visible={loading} // Modal visible mientras `loading` sea true
+                onRequestClose={() => setLoading(false)} // Cierra el modal si se intenta cerrar
+              >
+                <View style={estilos.modalBackground}>
+                  <View style={estilos.modalContainer}>
+                    <ActivityIndicator size="large" color="#ffffff" />
+                    <Text style={estilos.loadingText}>Cargando...</Text>
+                  </View>
+                </View>
+              </Modal>
 
       <View style={estilos.formulario}>
         <Text>Nombre:</Text>
@@ -259,6 +280,25 @@ const estilos = StyleSheet.create({
     width: 120,
     height: 120,
 
+  },
+  modalBackground: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Fondo oscuro y semi-transparente
+  },
+  modalContainer: {
+    width: 200,
+    height: 150,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#b30000', // Fondo del modal
+    borderRadius: 10,
+  },
+  loadingText: {
+    marginTop: 10,
+    color: '#ffffff', // Color del texto blanco
+    fontSize: 16,
   },
 });
 

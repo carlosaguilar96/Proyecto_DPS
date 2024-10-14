@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, FlatList,Button,Modal,Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, FlatList,Button,Modal,Alert,ActivityIndicator } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { Salas as Salass } from '../config/movieData';
 import axios from 'axios';
@@ -44,16 +44,21 @@ const ModificarSala = () => {
   const [Salas, setSalas] = useState([]);
   const isFocused = useIsFocused();
   const obtenerSalas = async () => {
+    setLoading(true);
     try {
+      console.log(API_URL);
+      console.log(API_URL);
       const response = await axios.get(`${API_URL}/api/salas/index`);
-  
+      setLoading(false);
       if (response.data.salas.length != 0)
         setSalas(response.data.salas);
     } catch (error) {
       if (error.request) {
+        setLoading(false);
         Alert.alert('Error', 'No hubo respuesta del servidor');
         return;
       } else {
+        setLoading(false);
         Alert.alert('Error', 'Error al hacer la solicitud');
         return;
       }
@@ -68,6 +73,7 @@ const ModificarSala = () => {
   const [modalVisible,setModalVisible] = useState('');
   const [id, setid] = useState(0);
   const [estado, setEstado] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   const handleModalOpen = (id, estado) =>{
     setModalVisible(true);
@@ -79,32 +85,44 @@ const ModificarSala = () => {
   
   const CambiarEstado = async () => {
     if(estado==1){
+      setLoading(true);
       try {
+        console.log(API_URL);
+        console.log(API_URL);
         const response = await axios.put(`${API_URL}/api/salas/eliminarSala/${id}`);
+        setLoading(false);
         Alert.alert('Sala eliminada', 'La sala ha sido eliminada con éxito');
         setModalVisible(false);
         obtenerSalas();
       } catch (error) {
         if (error.request) {
+          setLoading(false);
           Alert.alert('Error', 'No hubo respuesta del servidor');
           return;
         } else {
+          setLoading(false);
           Alert.alert('Error', 'Error al hacer la solicitud');
           return;
         }
       }
     }
     if(estado==0){
+      setLoading(true);
       try {
+        console.log(API_URL);
+        console.log(API_URL);
         const response = await axios.put(`${API_URL}/api/salas/reactivarSala/${id}`);
+        setLoading(false);
         Alert.alert('Sala reactivada', 'La sala ha sido reactivada con éxito');
         setModalVisible(false);
         obtenerSalas();
       } catch (error) {
         if (error.request) {
+          setLoading(false);
           Alert.alert('Error', 'No hubo respuesta del servidor');
           return;
         } else {
+          setLoading(false);
           Alert.alert('Error', 'Error al hacer la solicitud');
           return;
         }
@@ -162,6 +180,19 @@ const ModificarSala = () => {
  
   return (
     <ScrollView>
+       <Modal
+                transparent={true} // Hace que el fondo del modal sea transparente
+                animationType="fade" // Tipo de animación al mostrar el modal
+                visible={loading} // Modal visible mientras `loading` sea true
+                onRequestClose={() => setLoading(false)} // Cierra el modal si se intenta cerrar
+              >
+                <View style={estilos.modalBackgroundd}>
+                  <View style={estilos.modalContainerr}>
+                    <ActivityIndicator size="large" color="#ffffff" />
+                    <Text style={estilos.loadingTextt}>Cargando...</Text>
+                  </View>
+                </View>
+              </Modal>
     <FlatListSala Salas={salas} />
           <Modal
         animationType="slide"
@@ -296,6 +327,25 @@ const estilos = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  modalBackgroundd: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Fondo oscuro y semi-transparente
+  },
+  modalContainerr: {
+    width: 200,
+    height: 150,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#b30000', // Fondo del modal
+    borderRadius: 10,
+  },
+  loadingTextt: {
+    marginTop: 10,
+    color: '#ffffff', // Color del texto blanco
+    fontSize: 16,
   },
   
 });

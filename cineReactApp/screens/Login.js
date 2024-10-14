@@ -59,6 +59,8 @@ export default function Login() {
   const obtenerLogoCine = async () => {
 
     try {
+      console.log(API_URL);
+      console.log(API_URL);
       const response = await axios.get(`${API_URL}/api/cines/index`);
 
       setLogo(response.data.cine.logo_path);
@@ -123,9 +125,11 @@ export default function Login() {
       return;
     }
 
-
+    setLoading(true);
     //Ingreso del cliente a la BD
     try {
+      console.log(API_URL);
+      console.log(API_URL);
       const response = await axios.post(`${API_URL}/api/usuarios/crearCliente`, {
         nombreUsuario: username,
         contrasena: contra,
@@ -134,6 +138,7 @@ export default function Login() {
         apellidos: apellido,
         correoE: email,
       });
+      setLoading(false);
       Alert.alert('Registro exitoso', 'Usuario creado correctamente');
 
       const Nombreuser = {
@@ -160,28 +165,34 @@ export default function Login() {
         for (const campo in errores) {
           mensaje += `Error en ${campo}: ${errores[campo].join(', ')}`;
         }
+        setLoading(false);
         setMssgError(mensaje);
         return;
       } else if (error.request) {
+        setLoading(false);
         Alert.alert('Error', 'No hubo respuesta del servidor');
         return;
       } else {
+        setLoading(false);
         Alert.alert('Error', 'Error al hacer la solicitud');
         return;
       }
     }
+    setLoading(false);
   };
 
   const EntrarInvitado = async () => {
     const Nombreuser = {
       sesion: 1,
     };
+    setLoading(true);
     try {
       await AsyncStorage.setItem('Nombreuser', JSON.stringify(Nombreuser));
       console.log('Información del usuario almacenada correctamente');
     } catch (error) {
       console.log('Error al almacenar información del usuario:', error);
     }
+    setLoading(false);
     setMiVariable2(1);
     setIngreso(true);
     setMssgError('');
@@ -212,6 +223,8 @@ export default function Login() {
     }
     setLoading(true);
     try {
+      console.log(API_URL);
+      console.log(API_URL);
       const response = await axios.post(`${API_URL}/api/iniciarSesion`, {
         user: username,
         password: contra,
@@ -228,12 +241,15 @@ export default function Login() {
         setMssgError('');
 
       } else {
+        setLoading(false);
         setMssgError('Credenciales incorrectas.');
+        
         return;
       }
     } catch (error) {
       if (error.response) {
         if (error.response.data.status === 404) {
+          setLoading(false);
           setMssgError('Usuario no existe');
           return;
         }
@@ -242,13 +258,16 @@ export default function Login() {
         for (const campo in errores) {
           mensaje += `Error en ${campo}: ${errores[campo].join(', ')}`;
         }
+        setLoading(false);
         setMssgError(mensaje);
         return;
       } else if (error.request) {
+        setLoading(false);
         setMssgError('');
         Alert.alert('Error', 'No hubo respuesta del servidor');
         return;
       } else {
+        setLoading(false);
         setMssgError('');
         Alert.alert('Error', 'Error al hacer la solicitud');
         return;
@@ -300,6 +319,7 @@ export default function Login() {
 
   const cambioARestContra = () => {
     setRestContra(true);
+    setLogin(false);
     setMssgError("Restablecer contraseña");
     setUsername('');
   };
@@ -316,17 +336,21 @@ export default function Login() {
       setMssgError("Ingresar un nombre de usuario.");
       return;
     }
+    setLoading(true);
     try {
+      console.log(API_URL);
       const response = await axios.put(`${API_URL}/api/restablecerContra`, {
         user: username,
       });
       if (response.data.usuario) {
+        setLoading(false);
         Alert.alert('Restablecimiento de contraseña', 'Tu nueva contraseña ha sido enviada al correo. Recuerda cambiarla al ingresar.')
         cambioPantalla2();
       }
     } catch (error) {
       if (error.response) {
         if (error.response.data.status === 404) {
+          setLoading(false);
           setMssgError('Usuario no existe');
           return;
         }
@@ -335,6 +359,7 @@ export default function Login() {
         for (const campo in errores) {
           mensaje += `Error en ${campo}: ${errores[campo].join(', ')}`;
         }
+        setLoading(false);
         setMssgError(mensaje);
         return;
       } else if (error.request) {
@@ -541,7 +566,7 @@ export default function Login() {
         <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
           {/* Contenedor para el contenido principal */}
           <View style={styles.mainContent}>
-            {logo != "" ? (
+          {login && logo != "" ? (
               <Image source={{ uri: `${API_URL}/img/${logo}` }} style={styles.img} />
             ) : <View />}
             <View style={styles.caja}>
@@ -644,9 +669,6 @@ export default function Login() {
                       </TouchableOpacity>
                       <TouchableOpacity style={styles.button} onPress={() => EntrarInvitado()}>
                         <Text style={styles.buttonText}>Entrar como invitado</Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity style={styles.button}>
-                        <Text style={styles.buttonText}>Acceder con Google</Text>
                       </TouchableOpacity>
                     </>
                   ) : (

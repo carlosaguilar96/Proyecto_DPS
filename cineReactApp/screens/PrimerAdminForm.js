@@ -91,6 +91,7 @@ const PrimerAdminForm = ({ retornarLogin }) => {
         }
 
         try {
+            console.log(API_URL);
             const response = await axios.post(`${API_URL}/api/usuarios/crearAdministrador`, {
                 nombreUsuario: username,
                 contrasena: contra,

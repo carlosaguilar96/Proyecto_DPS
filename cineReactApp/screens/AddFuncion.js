@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity, Alert,ActivityIndicator, Modal } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { format, addDays, parseISO, parse } from 'date-fns';
@@ -23,6 +23,7 @@ const AñadirFuncion = ({ navigation }) => {
   const [salas, setSalas] = useState([]);
   const [salasEspecificas, setSalasEspecificas] = useState([]);
   const isFocused = useIsFocused();
+  const [loading, setLoading] = useState(false);
 
   const manejarAñadirFuncion = () => {
     if (sucursal == -1 || pelicula == -1 || sala == -1 || !horario || !precios.ninos || !precios.adultos || !precios.terceraEdad || idioma == "") {
@@ -36,10 +37,18 @@ const AñadirFuncion = ({ navigation }) => {
   };
 
   const guardarFuncion = async () => {
+    setLoading(true);
     try {
       const parseFecha = format(fecha, 'yyyy-MM-dd');
-      const parseHora = horario.toLocaleTimeString();
+      const parseHora = horario.toLocaleTimeString('es-ES', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false,  // Esto fuerza el formato de 24 horas
+      });
 
+      console.log(API_URL);
+      console.log(API_URL);
       const response = await axios.post(`${API_URL}/api/funciones/crearFuncion`, {
         codPelicula: pelicula,
         codSala: sala,
@@ -50,7 +59,7 @@ const AñadirFuncion = ({ navigation }) => {
         precioNino: precios.ninos,
         precioTE: precios.terceraEdad
       });
-
+      setLoading(false);
       Alert.alert('Registro exitoso', 'Función agregada correctamente');
 
       limpiar();
@@ -64,13 +73,16 @@ const AñadirFuncion = ({ navigation }) => {
         for (const campo in errores) {
           mensaje += `Error en ${campo}: ${errores[campo].join(', ')}`;
         }
-        console.log(mensaje);
-        Alert.alert("Error", mensaje);
+        setLoading(false);
+        console.log(error.response);
+        Alert.alert("Error");
         return;
       } else if (error.request) {
+        setLoading(false);
         Alert.alert('Error', 'No hubo respuesta del servidor');
         return;
       } else {
+        setLoading(false);
         Alert.alert('Error', 'Error al hacer la solicitud ' + error);
         return;
       }
@@ -88,9 +100,12 @@ const AñadirFuncion = ({ navigation }) => {
   }
 
   const obtenerSucursales = async () => {
+    setLoading(true);
     try {
+      console.log(API_URL);
+      console.log(API_URL);
       const response = await axios.get(`${API_URL}/api/sucursales/index`);
-
+      setLoading(false);
       if (response.data.sucursales.length != 0) {
 
         setSucursales(response.data.sucursales);
@@ -99,10 +114,12 @@ const AñadirFuncion = ({ navigation }) => {
 
     } catch (error) {
       if (error.request) {
+        setLoading(false);
         Alert.alert('Error', 'No hubo respuesta del servidor ');
         console.log(error);
         return;
       } else {
+        setLoading(false);
         Alert.alert('Error', 'Error al hacer la solicitud');
         return;
       }
@@ -110,19 +127,24 @@ const AñadirFuncion = ({ navigation }) => {
   }
 
   const obtenerPeliculas = async () => {
+    setLoading(true);
     try {
+      console.log(API_URL);
+      console.log(API_URL);
       const response = await axios.get(`${API_URL}/api/peliculas/indexD`);
-
+      setLoading(false);
       if (response.data.peliculas.length != 0) {
         setPeliculas(response.data.peliculas);
       }
 
     } catch (error) {
       if (error.request) {
+        setLoading(false);
         Alert.alert('Error', 'No hubo respuesta del servidor ');
         console.log(error);
         return;
       } else {
+        setLoading(false);
         Alert.alert('Error', 'Error al hacer la solicitud');
         console.log(error);
         return;
@@ -132,19 +154,23 @@ const AñadirFuncion = ({ navigation }) => {
 
 
   const obtenerSalas = async () => {
+    setLoading(true);
     try {
+      console.log(API_URL);
       const response = await axios.get(`${API_URL}/api/salas/indexD`);
-
+      setLoading(false);
       if (response.data.salas.length != 0) {
         setSalas(response.data.salas);
       }
 
     } catch (error) {
       if (error.request) {
+        setLoading(false);
         Alert.alert('Error', 'No hubo respuesta del servidor ');
         console.log(error);
         return;
       } else {
+        setLoading(false);
         Alert.alert('Error', 'Error al hacer la solicitud');
         return;
       }
@@ -191,7 +217,19 @@ const AñadirFuncion = ({ navigation }) => {
   }
   return (
     <ScrollView style={estilos.contenedor}>
-
+<Modal
+                transparent={true} // Hace que el fondo del modal sea transparente
+                animationType="fade" // Tipo de animación al mostrar el modal
+                visible={loading} // Modal visible mientras `loading` sea true
+                onRequestClose={() => setLoading(false)} // Cierra el modal si se intenta cerrar
+              >
+                <View style={estilos.modalBackgroundd}>
+                  <View style={estilos.modalContainerr}>
+                    <ActivityIndicator size="large" color="#ffffff" />
+                    <Text style={estilos.loadingTextt}>Cargando...</Text>
+                  </View>
+                </View>
+              </Modal>
       <View style={estilos.formulario}>
         <Text>Sucursal:</Text>
         <Picker
@@ -275,6 +313,7 @@ const AñadirFuncion = ({ navigation }) => {
           cancelTextIOS="Cancelar"
           confirmTextIOS="Confirmar"
           value={horario}
+          is24Hour={true}
         />
 
         <Text>Precio de las entradas:</Text>
@@ -368,6 +407,25 @@ const estilos = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  modalBackgroundd: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Fondo oscuro y semi-transparente
+  },
+  modalContainerr: {
+    width: 200,
+    height: 150,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#b30000', // Fondo del modal
+    borderRadius: 10,
+  },
+  loadingTextt: {
+    marginTop: 10,
+    color: '#ffffff', // Color del texto blanco
+    fontSize: 16,
   },
 });
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
@@ -31,6 +31,7 @@ export default function MenuAdmin() {
 
   const { setIndicadorCine } = route.params;
   const [menuUsado, setMenuUsado] = useState(menuOptions);
+
 
   const MenuButton = ({ item }) => {
     return (
@@ -68,6 +69,8 @@ export default function MenuAdmin() {
 
   const revisarAdmin = async () => {
     try {
+      console.log(API_URL);
+      console.log(API_URL);
       const response = await axios.get(`${API_URL}/api/cines/index`);
 
       let firstAdmin = response.data.cine.firstAdmin;

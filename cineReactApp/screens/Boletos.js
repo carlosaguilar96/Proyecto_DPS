@@ -74,6 +74,8 @@ export default function Boletos() {
 
   const obtenerAsientosOcupados = async () => {
     try {
+      console.log(API_URL);
+      console.log(API_URL);
       const response = await axios.get(`${API_URL}/api/funciones/devolverAsientos/${codFuncion}`);
 
       if (response.data.asientos.length != 0) {
@@ -124,7 +126,7 @@ export default function Boletos() {
           style={styles.moviePoster}
         />
         <View style={styles.movieInfo}>
-          <Text style={styles.titulo}>{title} {codFuncion}</Text>
+  
           <Text style={styles.subtitulo}>Fecha: {fecha}</Text>
           <Text style={styles.subtitulo}>Sucursal {sucursal} | {hora} | {idioma}</Text>
         </View>

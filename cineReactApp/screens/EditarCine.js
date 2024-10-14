@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Alert, StyleSheet, ScrollView, TouchableOpacity, Keyboard } from 'react-native';
+import { View, Text, TextInput, Alert, StyleSheet, ScrollView, TouchableOpacity, Keyboard,ActivityIndicator, Modal } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import { API_URL } from '@env';
@@ -9,10 +9,15 @@ const EditarCine = () => {
   const [vision, setVision] = useState("");
   const [mision, setMision] = useState("");
   const navigation = useNavigation();
+  const [loading, setLoading] = useState(false);
   
   const obtenerInfoCine = async () => {
+    setLoading(true);
     try {
+      console.log(API_URL);
+      console.log(API_URL);
       const response = await axios.get(`${API_URL}/api/cines/index`);
+      setLoading(false);
 
       setMision(response.data.cine.mision);
       setVision(response.data.cine.vision);
@@ -30,13 +35,15 @@ const EditarCine = () => {
       return;
     }
     else {
+      setLoading(true);
       try {
+        console.log(API_URL);
         const response = await axios.put(`${API_URL}/api/cines/update`, {
           nombreCine: nombreCine,
           mision: mision,
           vision: vision
         });
-
+        setLoading(false);
         Alert.alert("Mensaje", "Actualizado correctamente");
         navigation.navigate("Menu Admin");
 
@@ -47,12 +54,15 @@ const EditarCine = () => {
           for (const campo in errores) {
             mensaje += `Error en ${campo}: ${errores[campo].join(', ')}`;
           }
+          setLoading(false);
           Alert.alert('Error', mensaje);
           return;
         } else if (error.request) {
+          setLoading(false);
           Alert.alert('Error', 'No hubo respuesta del servidor');
           return;
         } else {
+          setLoading(false);
           Alert.alert('Error', 'Error al hacer la solicitud ' + error);
           return;
         }
@@ -67,6 +77,20 @@ const EditarCine = () => {
 
   return (
     <ScrollView style={estilos.contenedor}>
+      <Modal
+                transparent={true} // Hace que el fondo del modal sea transparente
+                animationType="fade" // Tipo de animación al mostrar el modal
+                visible={loading} // Modal visible mientras `loading` sea true
+                onRequestClose={() => setLoading(false)} // Cierra el modal si se intenta cerrar
+              >
+                <View style={estilos.modalBackground}>
+                  <View style={estilos.modalContainer}>
+                    <ActivityIndicator size="large" color="#ffffff" />
+                    <Text style={estilos.loadingText}>Cargando...</Text>
+                  </View>
+                </View>
+              </Modal>
+
 
       <View style={estilos.formulario}>
         <Text>Nombre del Cine:</Text>
@@ -155,6 +179,25 @@ const estilos = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  modalBackground: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Fondo oscuro y semi-transparente
+  },
+  modalContainer: {
+    width: 200,
+    height: 150,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#b30000', // Fondo del modal
+    borderRadius: 10,
+  },
+  loadingText: {
+    marginTop: 10,
+    color: '#ffffff', // Color del texto blanco
+    fontSize: 16,
   },
 });
 

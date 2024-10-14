@@ -13,6 +13,8 @@ const Dulceria = () => {
 
   const obtenerProductos = async () => {
     try {
+      console.log(API_URL);
+      console.log(API_URL);
       const response = await axios.get(`${API_URL}/api/productos/index`);
 
       if (response.data.productos.length != 0)

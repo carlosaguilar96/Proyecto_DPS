@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Image, Alert, Modal, ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import AsientosSeleccionados from '../assets/components/AsientoSeleccionados';
 import InformacionEntradas from '../assets/components/InformacionEntradas';
@@ -14,13 +14,16 @@ const VistaPago = ({ navigation, route }) => {
   const imagenURI = `${API_URL}/img/peliculas/${params.image}`;
   const [usuario, setUsuario] = useState("");
   const isFocused = useIsFocused();
+  const [loading, setLoading] = useState(false);
 
   const handleRealizarPago = (datosPago) => {
     realizarCompra(datosPago.numeroTarjeta);
   };
 
   const realizarCompra = async (cardID) =>{
+    setLoading(true);
     try {
+      console.log(API_URL);
       const response = await axios.post(`${API_URL}/api/compras/crearCompra`, {
         nombreUsuario: usuario,
         codFuncion: params.codFuncion,
@@ -30,6 +33,7 @@ const VistaPago = ({ navigation, route }) => {
         cardID: cardID,
         asientos: params.asientosSeleccionados
       });
+      setLoading(false);
       Alert.alert('Compra exitosa', 'Compra realizada correctamente');
       navigation.navigate("Inicio");
     } catch (error) {
@@ -39,12 +43,15 @@ const VistaPago = ({ navigation, route }) => {
         for (const campo in errores) {
           mensaje += `Error en ${campo}: ${errores[campo].join(', ')}`;
         }
+        setLoading(false);
         Alert.alert("Error",mensaje);
         return;
       } else if (error.request) {
+        setLoading(false);
         Alert.alert('Error', 'No hubo respuesta del servidor');
         return;
       } else {
+        setLoading(false);
         Alert.alert('Error', 'Error al hacer la solicitud' + error);
         return;
       }
@@ -67,6 +74,19 @@ const VistaPago = ({ navigation, route }) => {
 
   return (
     <ScrollView style={styles.container}>
+      <Modal
+                transparent={true} // Hace que el fondo del modal sea transparente
+                animationType="fade" // Tipo de animación al mostrar el modal
+                visible={loading} // Modal visible mientras `loading` sea true
+                onRequestClose={() => setLoading(false)} // Cierra el modal si se intenta cerrar
+              >
+                <View style={styles.modalBackgroundd}>
+                  <View style={styles.modalContainerr}>
+                    <ActivityIndicator size="large" color="#ffffff" />
+                    <Text style={styles.loadingTextt}>Cargando...</Text>
+                  </View>
+                </View>
+              </Modal>
       {/* Cabecera */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -168,6 +188,25 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#757575',
     marginBottom: 4,
+  },
+  modalBackgroundd: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Fondo oscuro y semi-transparente
+  },
+  modalContainerr: {
+    width: 200,
+    height: 150,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#b30000', // Fondo del modal
+    borderRadius: 10,
+  },
+  loadingTextt: {
+    marginTop: 10,
+    color: '#ffffff', // Color del texto blanco
+    fontSize: 16,
   },
 });
 

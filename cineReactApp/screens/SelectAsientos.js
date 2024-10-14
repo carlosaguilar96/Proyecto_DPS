@@ -62,6 +62,8 @@ const PantallaSeleccionAsientos = ({ navigation, route }) => {
 
   const obtenerAsientosOcupados = async () => {
     try {
+      console.log(API_URL);
+      console.log(API_URL);
       const response = await axios.get(`${API_URL}/api/funciones/devolverAsientos/${codFuncion}`);
 
       if (response.data.asientos.length != 0) {
@@ -104,7 +106,7 @@ const PantallaSeleccionAsientos = ({ navigation, route }) => {
       </View>
       
       <InfoPelicula
-        titulo={params.title}
+        titulo={params.titulo}
         sucursal={params.sucursal}
         horario={params.hora}
         dia={params.fecha}

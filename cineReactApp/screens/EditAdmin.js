@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView,FlatList, Modal,Button, Alert} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView,FlatList, Modal,Button, Alert, ActivityIndicator} from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { administrador } from '../config/movieData';
 import axios from 'axios';
@@ -13,19 +13,26 @@ const [id, setid] = useState(0);
 const [estado, setEstado] = useState(0);
 const [administradores, setAdministradores] = useState('');
 const isFocused = useIsFocused();
+const [loading, setLoading] = useState(false);
+
 
 const obtenerAdmins = async () => {
+  setLoading(true);
   try {
+    console.log(API_URL);
+    console.log(API_URL);
     const response = await axios.get(`${API_URL}/api/usuarios/indexAdmins`);
-
+    setLoading(false);
     if (response.data.usuarios.length != 0)
       setAdministradores(response.data.usuarios);
 
   } catch (error) {
     if (error.request) {
+      setLoading(false);
       Alert.alert('Error', 'No hubo respuesta del servidor');
       return;
     } else {
+      setLoading(false);
       Alert.alert('Error', 'Error al hacer la solicitud');
       return;
     }
@@ -46,32 +53,44 @@ const handleModalOpen = (id, estado) =>{
 
 const CambiarEstado = async () => {
   if(estado==1){
+    setLoading(true);
     try {
+      console.log(API_URL);
+      console.log(API_URL);
       const response = await axios.put(`${API_URL}/api/usuarios/eliminarUsuario/${id}`);
+      setLoading(false);
       Alert.alert('Administrador eliminado', 'El administrador ha sido eliminado con éxito');
       setModalVisible(false);
       obtenerAdmins();
     } catch (error) {
       if (error.request) {
+        setLoading(false);
         Alert.alert('Error', 'No hubo respuesta del servidor');
         return;
       } else {
+        setLoading(false);
         Alert.alert('Error', 'Error al hacer la solicitud');
         return;
       }
     }
   }
   if(estado==0){
+    setLoading(true);
     try {
+      console.log(API_URL);
+      console.log(API_URL);
       const response = await axios.put(`${API_URL}/api/usuarios/reactivarUsuario/${id}`);
+      setLoading(false);
       Alert.alert('Administrador reactivado', 'El administrador ha sido reactivado con éxito');
       setModalVisible(false);
       obtenerAdmins();
     } catch (error) {
       if (error.request) {
+        setLoading(false);
         Alert.alert('Error', 'No hubo respuesta del servidor');
         return;
       } else {
+        setLoading(false);
         Alert.alert('Error', 'Error al hacer la solicitud');
         return;
       }
@@ -122,6 +141,19 @@ const CambiarEstado = async () => {
  
   return (
     <ScrollView>
+      <Modal
+                transparent={true} // Hace que el fondo del modal sea transparente
+                animationType="fade" // Tipo de animación al mostrar el modal
+                visible={loading} // Modal visible mientras `loading` sea true
+                onRequestClose={() => setLoading(false)} // Cierra el modal si se intenta cerrar
+              >
+                <View style={estilos.modalBackgroundd}>
+                  <View style={estilos.modalContainerr}>
+                    <ActivityIndicator size="large" color="#ffffff" />
+                    <Text style={estilos.loadingTextt}>Cargando...</Text>
+                  </View>
+                </View>
+              </Modal>
     <FlatListAdmin Movie={administradores} />
             <Modal
           animationType="slide"
@@ -259,6 +291,25 @@ const estilos = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  modalBackgroundd: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Fondo oscuro y semi-transparente
+  },
+  modalContainerr: {
+    width: 200,
+    height: 150,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#b30000', // Fondo del modal
+    borderRadius: 10,
+  },
+  loadingTextt: {
+    marginTop: 10,
+    color: '#ffffff', // Color del texto blanco
+    fontSize: 16,
   },
 });
 
