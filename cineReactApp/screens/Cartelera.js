@@ -8,6 +8,7 @@ import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import { API_URL } from '@env';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useIsFocused } from '@react-navigation/native';
 
 //Esto agrupa las fuciones que vienen del DRAWER por sucursal,idioma y titulo, es para que no se renderizen varias cards con la misma peli
 const agruparTitle = (data) => {
@@ -98,6 +99,7 @@ export default function Cartelera() {
   const [Funcion, setFunciones] = useState([]);
   const [mensajeDra, setMensajeDra] = useState("Cargando ...");
   const [modalVisible, setModalVisible] = useState(false);
+  const isFocused = useIsFocused();
 
   const obtenerFunciones = async () => {
     try {
@@ -119,8 +121,10 @@ export default function Cartelera() {
   }
 
   useEffect(() => {
-    obtenerFunciones();
-  });
+    if (isFocused) {
+      obtenerFunciones();
+    }
+  }, [isFocused]);
 
   useFocusEffect(
     React.useCallback(() => {

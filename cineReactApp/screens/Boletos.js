@@ -6,6 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import Cabecera from '../assets/components/Cabecera';
 import { API_URL } from '@env';
 import axios from 'axios';
+import { useIsFocused } from '@react-navigation/native';
 
 export default function Boletos() {
   const route = useRoute();
@@ -17,6 +18,8 @@ export default function Boletos() {
   const [total, setTotal] = useState(0);
   const [cantidad, setCantidad] = useState(0);
   const [asientosOcupados, setAsientosOcupados] = useState([]);
+  const isFocused = useIsFocused();
+
 
   const handleNavigation = (title, idioma, hora, sucursal, fecha, image, childB, adultoB, abueB, total, sala, cantidad, funcion, childP, adultoP, abueP) => {
 
@@ -91,12 +94,11 @@ export default function Boletos() {
   }
 
   useEffect(() => {
-    obtenerAsientosOcupados();
-  }, []);
+    if (isFocused) {
+      obtenerAsientosOcupados();
+    }
+  }, [isFocused]);
 
-  useEffect(() => {
-    obtenerAsientosOcupados();
-  }, [route.params]);
 
   return (
     <View style={styles.fullContainer}>

@@ -3,11 +3,13 @@ import { View, Text, Alert, StyleSheet, ScrollView, TouchableOpacity } from 'rea
 import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
 import { API_URL } from '@env';
+import { useIsFocused } from '@react-navigation/native';
 
 const AñadirSala = ({ navigation }) => {
   const [sucursal, setSucursal] = useState(-1);
   const [tipoSala, setTipoSala] = useState(-1);
   const [sucursales, setSucursales] = useState([]);
+  const isFocused = useIsFocused();
 
   const validar = () => {
 
@@ -77,8 +79,11 @@ const AñadirSala = ({ navigation }) => {
   }
 
   useEffect(() => {
-    obtenerSucursales();
-  });
+    if (isFocused) {
+      obtenerSucursales();
+    }
+  }, [isFocused]);
+
 
   return (
     <ScrollView style={estilos.contenedor}>

@@ -9,12 +9,14 @@ import { AppContext } from '../assets/components/Context';
 import { Cupones } from '../config/movieData';
 import axios from 'axios';
 import { API_URL } from '@env';
+import { useIsFocused } from '@react-navigation/native';
 
 const { width } = Dimensions.get('window');
 const Inicio = () => {
   const navigation = useNavigation();
   const [selectedCinema, setSelectedCinema] = useState(-1);
   const [sucursales, setSucursales] = useState([]);
+  const isFocused = useIsFocused();
 
   // Referencias y estados para cada FlatList
   const flatListRef1 = useRef(null);
@@ -77,7 +79,7 @@ const Inicio = () => {
     }
   }
 
-  const obtenerMisionVision = async () =>{
+  const obtenerMisionVision = async () => {
     try {
       const response = await axios.get(`${API_URL}/api/cines/index`);
 
@@ -90,7 +92,7 @@ const Inicio = () => {
   }
   // Renderiza cada item en la lista
   const renderItem = ({ item, isEstreno }) => {
-    
+
     return (
       <MainContainer>
         <TouchableOpacity style={styles.cards} onPress={() => HandleEffect(item)}>
@@ -138,7 +140,7 @@ const Inicio = () => {
     try {
       const response = await axios.get(`${API_URL}/api/sucursales/index`);
 
-      if (response.data.sucursales.length != 0){
+      if (response.data.sucursales.length != 0) {
 
         let arregloT = response.data.sucursales;
         setSucursales(response.data.sucursales);
@@ -170,11 +172,13 @@ const Inicio = () => {
   }
 
   useEffect(() => {
-    obtenerCartelera();
-    obtenerMisionVision();
-    obtenerSucursales();
-    obtenerEstrenos();
-  }, []);
+    if (isFocused) {
+      obtenerCartelera();
+      obtenerMisionVision();
+      obtenerSucursales();
+      obtenerEstrenos();
+    }
+  }, [isFocused]);
 
   return (
     <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
@@ -186,7 +190,7 @@ const Inicio = () => {
             <Picker
               selectedValue={selectedCinema}
               style={styles.picker}
-              onValueChange={(itemValue) => {setSelectedCinema(itemValue)}}
+              onValueChange={(itemValue) => { setSelectedCinema(itemValue) }}
             >
               <Picker.Item label="Todas las sucursales" value={-1} />
               {sucursales.map((item) => (

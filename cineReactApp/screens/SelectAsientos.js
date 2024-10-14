@@ -8,12 +8,14 @@ import TotalYContinuar from '../assets/components/TotalContinuar';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { API_URL } from '@env';
 import axios from 'axios';
+import { useIsFocused } from '@react-navigation/native';
 
 const PantallaSeleccionAsientos = ({ navigation, route }) => {
   const [asientosSeleccionados, setAsientosSeleccionados] = useState([]);
   const [asientosOcupados, setAsientosOcupados] = useState([]);
   const { params } = route;
   const {codFuncion} = params;
+  const isFocused = useIsFocused();
 
   const filas = [
     ['A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8'],
@@ -80,12 +82,11 @@ const PantallaSeleccionAsientos = ({ navigation, route }) => {
   }
 
   useEffect(() => {
-    obtenerAsientosOcupados();
-  }, []);
+    if (isFocused) {
+      obtenerAsientosOcupados();
+    }
+  }, [isFocused]);
 
-  useEffect(() => {
-    obtenerAsientosOcupados();
-  }, [params]);
 
   return (
     <View style={styles.container}>

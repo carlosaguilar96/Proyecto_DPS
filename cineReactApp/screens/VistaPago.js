@@ -6,12 +6,14 @@ import InformacionEntradas from '../assets/components/InformacionEntradas';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import PagoTarjeta from '../assets/components/PagoTarjeta';
 import { API_URL } from '@env';
+import { useIsFocused } from '@react-navigation/native';
 import axios from 'axios';
 
 const VistaPago = ({ navigation, route }) => {
   const { params } = route;
   const imagenURI = `${API_URL}/img/peliculas/${params.image}`;
   const [usuario, setUsuario] = useState("");
+  const isFocused = useIsFocused();
 
   const handleRealizarPago = (datosPago) => {
     realizarCompra(datosPago.numeroTarjeta);
@@ -58,9 +60,11 @@ const VistaPago = ({ navigation, route }) => {
   }
 
   useEffect(() => {
-    obtenerUsuario();
-    
-  }, []);
+    if (isFocused) {
+      obtenerUsuario();
+    }
+  }, [isFocused]);
+
   return (
     <ScrollView style={styles.container}>
       {/* Cabecera */}
