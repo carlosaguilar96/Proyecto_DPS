@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { format, addDays, parseISO, parse } from 'date-fns';
 import { TextInputMask } from "react-native-masked-text";
 import axios from 'axios';
 import { API_URL } from '@env';
+import { useIsFocused } from '@react-navigation/native';
 
 const AñadirFuncion = ({ navigation }) => {
   const [sucursal, setSucursal] = useState(-1);
@@ -21,6 +22,7 @@ const AñadirFuncion = ({ navigation }) => {
   const [peliculas, setPeliculas] = useState([]);
   const [salas, setSalas] = useState([]);
   const [salasEspecificas, setSalasEspecificas] = useState([]);
+  const isFocused = useIsFocused();
 
   const manejarAñadirFuncion = () => {
     if (sucursal == -1 || pelicula == -1 || sala == -1 || !horario || !precios.ninos || !precios.adultos || !precios.terceraEdad || idioma == "") {
@@ -165,16 +167,28 @@ const AñadirFuncion = ({ navigation }) => {
   }
 
   useEffect(() => {
-    obtenerSucursales();
-    obtenerPeliculas();
-    obtenerSalas();
-  });
+    if (isFocused) {
+      obtenerSucursales();
+      obtenerPeliculas();
+      obtenerSalas();
+      console.log("Cargado");
+    }
+  }, [isFocused]);
 
   useEffect(() => {
     obtenerSalasDetallado();
 
   }, [sucursal]);
 
+  const confirmarFecha = (selectedDate) => {
+    setMostrarFechaPicker(false);
+    setFecha(selectedDate || fecha);
+  }
+
+  const confirmarHora = (selectedTime) => {
+    setMostrarHorarioPicker(false);
+    setHorario(selectedTime || horario);
+  }
   return (
     <ScrollView style={estilos.contenedor}>
 
@@ -228,38 +242,40 @@ const AñadirFuncion = ({ navigation }) => {
         </Picker>
 
         <Text>Fecha:</Text>
-        <TouchableOpacity onPress={() => setMostrarFechaPicker(true)}>
+        <TouchableOpacity onPress={() => { setMostrarFechaPicker(true); console.log("Hola"); }}>
           <Text style={estilos.entrada}>{format(fecha, 'yyyy-MM-dd')}</Text>
         </TouchableOpacity>
-        {mostrarFechaPicker && (
-          <DateTimePicker
-            value={fecha}
-            mode="date"
-            display="default"
-            onChange={(event, selectedDate) => {
-              setMostrarFechaPicker(false);
-              setFecha(selectedDate || fecha);
-            }}
-            style={estilos.entrada}
-          />
-        )}
+
+        <DateTimePickerModal
+
+          isVisible={mostrarFechaPicker}
+          mode="date"
+          onConfirm={confirmarFecha}
+          onCancel={() => setMostrarFechaPicker(false)}
+          locale="es_ES"
+          headerTextIOS="Elige la fecha"
+          cancelTextIOS="Cancelar"
+          confirmTextIOS="Confirmar"
+          value={fecha}
+
+        />
 
         <Text>Horario:</Text>
         <TouchableOpacity onPress={() => setMostrarHorarioPicker(true)}>
           <Text style={estilos.entrada}>{horario.toLocaleTimeString()}</Text>
         </TouchableOpacity>
-        {mostrarHorarioPicker && (
-          <DateTimePicker
-            value={horario}
-            mode="time"
-            display="default"
-            onChange={(event, selectedTime) => {
-              setMostrarHorarioPicker(false);
-              setHorario(selectedTime || horario);
-            }}
-            style={estilos.entrada}
-          />
-        )}
+
+        <DateTimePickerModal
+          isVisible={mostrarHorarioPicker}
+          mode="time"
+          onConfirm={confirmarHora}
+          onCancel={() => setMostrarHorarioPicker(false)}
+          locale="es_ES"
+          headerTextIOS="Elige la hora"
+          cancelTextIOS="Cancelar"
+          confirmTextIOS="Confirmar"
+          value={horario}
+        />
 
         <Text>Precio de las entradas:</Text>
         <View style={estilos.precioContainer}>

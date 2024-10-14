@@ -17,7 +17,6 @@ const Dulceria = () => {
 
       if (response.data.productos.length != 0)
         setProductos(response.data.productos);
-      console.log(response.data.productos);
     } catch (error) {
       if (error.request) {
         Alert.alert('Error', 'No hubo respuesta del servidor');
