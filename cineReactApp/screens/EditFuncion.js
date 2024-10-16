@@ -25,8 +25,6 @@ const ModificarFuncion = () => {
   const obtenerFunciones = async () => {
     setLoading(true);
     try {
-      console.log(API_URL);
-      console.log(API_URL);
       const response = await axios.get(`${API_URL}/api/funciones/indexEditar`);
       setLoading(false);
   
@@ -130,8 +128,6 @@ const ModificarFuncion = () => {
     if(estado==1){
       setLoading(true);
       try {
-        console.log(API_URL);
-        console.log(API_URL);
         const response = await axios.put(`${API_URL}/api/funciones/eliminarFuncion/${id}`);
         setLoading(false);
         Alert.alert('Función eliminada', 'La función ha sido eliminada con éxito');
@@ -152,8 +148,6 @@ const ModificarFuncion = () => {
     if(estado==0){
       setLoading(true);
       try {
-        console.log(API_URL);
-        console.log(API_URL);
         const response = await axios.put(`${API_URL}/api/funciones/reactivarFuncion/${id}`);
         setLoading(false);
         Alert.alert('Función reactivada', 'La función ha sido reactivada con éxito');
@@ -209,8 +203,6 @@ const ModificarFuncion = () => {
     //AQUI DEBERIA DE GUARDARSE EL CAMBIO DE EDICION las var son formattedDate y formattedTime
     setLoading(true);
     try {
-      console.log(API_URL);
-      console.log(API_URL);
       const response = await axios.put(`${API_URL}/api/funciones/update/${id}`, {
         fecha: formattedDate,
         hora: formattedTime,

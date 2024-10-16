@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { View, Text, Alert, StyleSheet, Image, TouchableOpacity, FlatList, ScrollView, Modal, Button } from 'react-native';
+import { View, Text, Alert, StyleSheet, Image, TouchableOpacity, FlatList, ScrollView, Modal, Button,ActivityIndicator } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import { useFocusEffect } from '@react-navigation/native';
 import { format, addDays, parseISO, isAfter } from 'date-fns';
@@ -100,22 +100,24 @@ export default function Cartelera() {
   const [mensajeDra, setMensajeDra] = useState("Cargando ...");
   const [modalVisible, setModalVisible] = useState(false);
   const isFocused = useIsFocused();
+  const [loading, setLoading] = useState(false);
 
   const obtenerFunciones = async () => {
+    setLoading(true);
     try {
-      console.log(API_URL);
-      console.log(API_URL);
       const response = await axios.get(`${API_URL}/api/funciones/funcionesDetalladas`);
 
       if (response.data.funciones.length != 0)
         setFunciones(response.data.funciones);
-
+      setLoading(false);
 
     } catch (error) {
       if (error.request) {
+        setLoading(false);
         Alert.alert('Error', 'No hubo respuesta del servidor');
         return;
       } else {
+        setLoading(false);
         Alert.alert('Error', 'Error al hacer la solicitud');
         return;
       }
@@ -294,6 +296,20 @@ export default function Cartelera() {
     <View style={{ flex: 1 }}>
       {miVariable !== 2 ? (
         <View style={styles.container}>
+          <Modal
+                transparent={true} // Hace que el fondo del modal sea transparente
+                animationType="fade" // Tipo de animación al mostrar el modal
+                visible={loading} // Modal visible mientras `loading` sea true
+                onRequestClose={() => setLoading(false)} // Cierra el modal si se intenta cerrar
+              >
+                <View style={styles.modalBackgroundd}>
+                  <View style={styles.modalContainerr}>
+                    <ActivityIndicator size="large" color="#ffffff" />
+                    <Text style={styles.loadingTextt}>Cargando...</Text>
+                  </View>
+                </View>
+              </Modal>
+
           {/*Vista desde DRAWER*/}
           <View style={styles.rowContainer}>
             <TouchableOpacity onPress={() => handleButtonPress('Hoy', DataToday)} style={[styles.button, selectedButton === 'Hoy' && styles.selectedButton]}>
@@ -327,6 +343,20 @@ export default function Cartelera() {
         (
           //vista principal desde el INICIO
           <ScrollView>
+            <Modal
+                transparent={true} // Hace que el fondo del modal sea transparente
+                animationType="fade" // Tipo de animación al mostrar el modal
+                visible={loading} // Modal visible mientras `loading` sea true
+                onRequestClose={() => setLoading(false)} // Cierra el modal si se intenta cerrar
+              >
+                <View style={styles.modalBackground}>
+                  <View style={styles.modalContainer}>
+                    <ActivityIndicator size="large" color="#ffffff" />
+                    <Text style={styles.loadingText}>Cargando...</Text>
+                  </View>
+                </View>
+              </Modal>
+
             <Text style={styles.sucursalTitle}>Hoy</Text>
             <View style={styles.cardMovie}>
               <FlatListInicio Movie={MovieToday} Dia="Hoy" />
@@ -489,6 +519,25 @@ const styles = StyleSheet.create({
   modalText: {
     marginBottom: 15,
     textAlign: 'center',
+  },
+  modalBackgroundd: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Fondo oscuro y semi-transparente
+  },
+  modalContainerr: {
+    width: 200,
+    height: 150,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#b30000', // Fondo del modal
+    borderRadius: 10,
+  },
+  loadingTextt: {
+    marginTop: 10,
+    color: '#ffffff', // Color del texto blanco
+    fontSize: 16,
   },
 
 });

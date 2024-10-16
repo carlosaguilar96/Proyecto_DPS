@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, FlatList, Alert } from 'react-native';
+import { View, Text, StyleSheet, Image, FlatList, Alert,ActivityIndicator, Modal } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import axios from 'axios';
 import { API_URL } from '@env';
@@ -10,20 +10,23 @@ const Dulceria = () => {
   const [estado, setEstado] = useState(0);
   const [productos, setProductos] = useState('');
   const isFocused = useIsFocused();
+  const [loading, setLoading] = useState(false);
 
   const obtenerProductos = async () => {
+    setLoading(true);
     try {
-      console.log(API_URL);
-      console.log(API_URL);
       const response = await axios.get(`${API_URL}/api/productos/index`);
 
       if (response.data.productos.length != 0)
         setProductos(response.data.productos);
+      setLoading(false);
     } catch (error) {
       if (error.request) {
+        setLoading(false);
         Alert.alert('Error', 'No hubo respuesta del servidor');
         return;
       } else {
+        setLoading(false);
         Alert.alert('Error', 'Error al hacer la solicitud');
         return;
       }
@@ -58,6 +61,19 @@ const Dulceria = () => {
  
   return (
     <ScrollView>
+      <Modal
+                transparent={true} // Hace que el fondo del modal sea transparente
+                animationType="fade" // Tipo de animación al mostrar el modal
+                visible={loading} // Modal visible mientras `loading` sea true
+                onRequestClose={() => setLoading(false)} // Cierra el modal si se intenta cerrar
+              >
+                <View style={estilos.modalBackground}>
+                  <View style={estilos.modalContainer}>
+                    <ActivityIndicator size="large" color="#ffffff" />
+                    <Text style={estilos.loadingText}>Cargando...</Text>
+                  </View>
+                </View>
+              </Modal>
       <FlatList
         data={productos}
         renderItem={renderItem}
@@ -108,6 +124,25 @@ const estilos = StyleSheet.create({
   descripcion: {
     marginTop: 10,
     textAlign: 'justify'
+  },
+  modalBackground: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Fondo oscuro y semi-transparente
+  },
+  modalContainer: {
+    width: 200,
+    height: 150,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#b30000', // Fondo del modal
+    borderRadius: 10,
+  },
+  loadingText: {
+    marginTop: 10,
+    color: '#ffffff', // Color del texto blanco
+    fontSize: 16,
   },
 
 

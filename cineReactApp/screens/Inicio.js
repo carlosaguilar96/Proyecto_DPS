@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useContext } from 'react';
-import { ScrollView, View, Text, Image, Dimensions, TouchableOpacity, FlatList, StyleSheet, Alert } from 'react-native';
+import { ScrollView, View, Text, Image, Dimensions, TouchableOpacity, FlatList, StyleSheet, Alert, ActivityIndicator, Modal } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import MainContainer from '../assets/components/MainContainer';
 import { Picker } from '@react-native-picker/picker';
@@ -35,26 +35,30 @@ const Inicio = () => {
 
   const [telefonos, setTelefonos] = useState("Cargando ... ");
 
+  const [loading, setLoading] = useState(false);
+
   const HandleEffect = (item) => {
     setMiVariable(2); // Cambia el valor de miVariable al hacer clic en la card
     navigation.navigate('Cartelera', { title: item.nombre });
   }
 
   const obtenerCartelera = async () => {
+    setLoading(true);
     try {
-      console.log(API_URL);
-      console.log(API_URL);
       const response = await axios.get(`${API_URL}/api/peliculas/cartelera/${selectedCinema}`);
       if (response.data.peliculas.length != 0)
         setMovieData(response.data.peliculas);
       else
         setMensaje("Sin películas añadidas");
+        setLoading(false);
     } catch (error) {
       if (error.request) {
+        setLoading(false);
         Alert.alert('Error', 'No hay películas disponibles');
         setSelectedCinema(-1);
         return;
       } else {
+        setLoading(false);
         Alert.alert('Error', 'Error al hacer la solicitud');
         return;
       }
@@ -62,21 +66,23 @@ const Inicio = () => {
   }
 
   const obtenerEstrenos = async () => {
+    setLoading(true);
     try {
-      console.log(API_URL);
-      console.log(API_URL);
       const response = await axios.get(`${API_URL}/api/peliculas/estrenos/${selectedCinema}`);
 
       if (response.data.peliculas.length != 0)
         setEstrenosData(response.data.peliculas);
       else
         setMensaje2("Sin estrenos añadidos");
+      setLoading(false);
 
     } catch (error) {
       if (error.request) {
+        setLoading(false);
         Alert.alert('Error', 'No hay estrenos disponibles');
         return;
       } else {
+        setLoading(false);
         Alert.alert('Error', 'Error al hacer la solicitud');
         return;
       }
@@ -85,8 +91,6 @@ const Inicio = () => {
 
   const obtenerMisionVision = async () => {
     try {
-      console.log(API_URL);
-      console.log(API_URL);
       const response = await axios.get(`${API_URL}/api/cines/index`);
 
       setMision(response.data.cine.mision);
@@ -143,9 +147,8 @@ const Inicio = () => {
   );
 
   const obtenerSucursales = async () => {
+    setLoading(true);
     try {
-      console.log(API_URL);
-      console.log(API_URL);
       const response = await axios.get(`${API_URL}/api/sucursales/index`);
 
       if (response.data.sucursales.length != 0) {
@@ -160,13 +163,16 @@ const Inicio = () => {
 
         setTelefonos(telefonos);
       }
+      setLoading(false);
 
     } catch (error) {
       if (error.request) {
+        setLoading(false);
         Alert.alert('Error', 'No hubo respuesta del servidor ');
         console.log(error);
         return;
       } else {
+        setLoading(false);
         Alert.alert('Error', 'Error al hacer la solicitud');
         return;
       }
@@ -190,6 +196,20 @@ const Inicio = () => {
 
   return (
     <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+      <Modal
+                transparent={true} // Hace que el fondo del modal sea transparente
+                animationType="fade" // Tipo de animación al mostrar el modal
+                visible={loading} // Modal visible mientras `loading` sea true
+                onRequestClose={() => setLoading(false)} // Cierra el modal si se intenta cerrar
+              >
+                <View style={styles.modalBackground}>
+                  <View style={styles.modalContainer}>
+                    <ActivityIndicator size="large" color="#ffffff" />
+                    <Text style={styles.loadingText}>Cargando...</Text>
+                  </View>
+                </View>
+              </Modal>
+
       <View style={styles.container}>
         {/* Sección de Selección de Cine */}
         <View style={styles.cinemaSelectionContainer}>
@@ -506,7 +526,26 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     paddingLeft: 15,
     marginTop: 10,
-  }
+  },
+  modalBackground: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Fondo oscuro y semi-transparente
+  },
+  modalContainer: {
+    width: 200,
+    height: 150,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#b30000', // Fondo del modal
+    borderRadius: 10,
+  },
+  loadingText: {
+    marginTop: 10,
+    color: '#ffffff', // Color del texto blanco
+    fontSize: 16,
+  },
 
 });
 

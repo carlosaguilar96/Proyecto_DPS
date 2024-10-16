@@ -67,8 +67,6 @@ const AñadirAdministrador = ({navigation}) => {
 
     setLoading(true);
     try {
-      console.log(API_URL);
-      console.log(API_URL);
       const response = await axios.post(`${API_URL}/api/usuarios/crearAdministrador`, {
         nombreUsuario: username,
         contrasena: contrasena,

@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, Alert,ActivityIndicator, Modal } from 'react-native';
 import { useRoute, useFocusEffect } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
@@ -19,6 +19,8 @@ export default function Boletos() {
   const [cantidad, setCantidad] = useState(0);
   const [asientosOcupados, setAsientosOcupados] = useState([]);
   const isFocused = useIsFocused();
+  const [loading, setLoading] = useState(false);
+
 
 
   const handleNavigation = (title, idioma, hora, sucursal, fecha, image, childB, adultoB, abueB, total, sala, cantidad, funcion, childP, adultoP, abueP) => {
@@ -73,9 +75,8 @@ export default function Boletos() {
   }, [childB, adultoB, abueB, precioNino, precioAdulto, precioTE]);
 
   const obtenerAsientosOcupados = async () => {
+    setLoading(true);
     try {
-      console.log(API_URL);
-      console.log(API_URL);
       const response = await axios.get(`${API_URL}/api/funciones/devolverAsientos/${codFuncion}`);
 
       if (response.data.asientos.length != 0) {
@@ -83,12 +84,14 @@ export default function Boletos() {
       }
       else
         setAsientosOcupados([]);
-
+      setLoading(false);
     } catch (error) {
       if (error.request) {
+        setLoading(false);
         Alert.alert('Error', 'No hubo respuesta del servidor');
         return;
       } else {
+        setLoading(false);
         Alert.alert('Error', 'Error al hacer la solicitud');
         return;
       }
@@ -104,6 +107,20 @@ export default function Boletos() {
 
   return (
     <View style={styles.fullContainer}>
+      <Modal
+                transparent={true} // Hace que el fondo del modal sea transparente
+                animationType="fade" // Tipo de animación al mostrar el modal
+                visible={loading} // Modal visible mientras `loading` sea true
+                onRequestClose={() => setLoading(false)} // Cierra el modal si se intenta cerrar
+              >
+                <View style={styles.modalBackground}>
+                  <View style={styles.modalContainer}>
+                    <ActivityIndicator size="large" color="#ffffff" />
+                    <Text style={styles.loadingText}>Cargando...</Text>
+                  </View>
+                </View>
+              </Modal>
+
       {/* Header */}
       <Cabecera titulo="Entradas" onBack={handleBack} />
 
@@ -126,9 +143,10 @@ export default function Boletos() {
           style={styles.moviePoster}
         />
         <View style={styles.movieInfo}>
-  
-          <Text style={styles.subtitulo}>Fecha: {fecha}</Text>
-          <Text style={styles.subtitulo}>Sucursal {sucursal} | {hora} | {idioma}</Text>
+          <Text style={styles.subtituloo}>{title}</Text>
+          <Text style={styles.subtitulo}>{fecha} | {hora}</Text>
+          <Text style={styles.subtitulo}>Sala {codSala} | Sucursal {sucursal}</Text>
+          <Text style={styles.subtitulo}>{idioma}</Text>
         </View>
       </View>
 
@@ -234,6 +252,10 @@ const styles = StyleSheet.create({
   subtitulo: {
     color: '#aaa',
     fontSize: 16,
+  },
+  subtituloo: {
+    color: '#fff',
+    fontSize: 20,
   },
   subtituloT: {
 
@@ -356,5 +378,24 @@ const styles = StyleSheet.create({
   progressItemActive: {
     borderBottomWidth: 4,
     borderBottomColor: '#fff',
+  },
+  modalBackground: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Fondo oscuro y semi-transparente
+  },
+  modalContainer: {
+    width: 200,
+    height: 150,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#b30000', // Fondo del modal
+    borderRadius: 10,
+  },
+  loadingText: {
+    marginTop: 10,
+    color: '#ffffff', // Color del texto blanco
+    fontSize: 16,
   },
 });

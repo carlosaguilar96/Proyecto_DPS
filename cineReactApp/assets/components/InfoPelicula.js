@@ -1,13 +1,15 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 
-const InfoPelicula = ({ titulo, sucursal, horario, dia, idioma, posterUri }) => {
+const InfoPelicula = ({ titulo, sucursal, horario, dia, idioma, posterUri, sala }) => {
   return (
     <View style={styles.container}>
       <Image source={{ uri: posterUri }} style={styles.poster} />
       <View style={styles.detalles}>
-        <Text style={styles.titulo}>{titulo}</Text>
-        <Text style={styles.subtitulo}>{sucursal} | {horario} | {dia} | {idioma}</Text>
+          <Text style={styles.subtituloo}>{titulo}</Text>
+          <Text style={styles.subtitulo}>{dia} | {horario}</Text>
+          <Text style={styles.subtitulo}>Sala {sala} | Sucursal {sucursal}</Text>
+          <Text style={styles.subtitulo}>{idioma}</Text>
       </View>
     </View>
   );
@@ -38,6 +40,10 @@ const styles = StyleSheet.create({
   subtitulo: {
     color: '#aaa',
     fontSize: 14,
+  },
+  subtituloo: {
+    color: '#fff',
+    fontSize: 20,
   },
 });
 

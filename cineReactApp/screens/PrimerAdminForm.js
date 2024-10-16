@@ -1,5 +1,5 @@
 import react, { useState } from "react";
-import { View, StyleSheet, Text, TextInput, Alert, Keyboard, FlatList, TouchableOpacity, Image } from "react-native";
+import { View, StyleSheet, Text, TextInput, Alert, Keyboard, FlatList, TouchableOpacity, Image,ActivityIndicator, Modal } from "react-native";
 import { TextInputMask } from "react-native-masked-text";
 import * as ImagePicker from 'expo-image-picker';
 import axios from 'axios';
@@ -31,6 +31,8 @@ const PrimerAdminForm = ({ retornarLogin }) => {
     const [codCine, setCodCine] = useState();
     const [sucursales, setSucursales] = useState([]);
     const [bandera, setBandera] = useState(true);
+
+    const [loading, setLoading] = useState(false);
 
     const validarEmail = (email) => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -89,9 +91,8 @@ const PrimerAdminForm = ({ retornarLogin }) => {
             setMssgError('Las contraseñas no coinciden.');
             return;
         }
-
+        setLoading(true);
         try {
-            console.log(API_URL);
             const response = await axios.post(`${API_URL}/api/usuarios/crearAdministrador`, {
                 nombreUsuario: username,
                 contrasena: contra,
@@ -100,6 +101,7 @@ const PrimerAdminForm = ({ retornarLogin }) => {
                 apellidos: apellido,
                 correoE: email,
             });
+            setLoading(false);
             Alert.alert('Registro exitoso', 'Administrador creado correctamente');
             limpiarAdmin();
             setEtapa(2); // Se continúa a la siguiente etapa
@@ -111,12 +113,15 @@ const PrimerAdminForm = ({ retornarLogin }) => {
                 for (const campo in errores) {
                     mensaje += `Error en ${campo}: ${errores[campo].join(', ')}`;
                 }
+                setLoading(false);
                 setMssgError(mensaje);
                 return;
             } else if (error.request) {
+                setLoading(false);
                 Alert.alert('Error', 'No hubo respuesta del servidor');
                 return;
             } else {
+                setLoading(false);
                 Alert.alert('Error', 'Error al hacer la solicitud ' + error);
                 return;
             }
@@ -193,14 +198,14 @@ const PrimerAdminForm = ({ retornarLogin }) => {
         formData.append('mision', mision);
         formData.append('vision', vision);
         formData.append('firstAdmin', username);
-
+        setLoading(true);
         try {
             const response = await axios.post(`${API_URL}/api/cines/crearCine`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
             });
-
+            setLoading(false);
             setCodCine(response.data.cine.codCine);
             Alert.alert('Registro exitoso', 'Cine creado correctamente');
             limpiarCine();
@@ -212,13 +217,16 @@ const PrimerAdminForm = ({ retornarLogin }) => {
                 for (const campo in errores) {
                     mensaje += `Error en ${campo}: ${errores[campo].join(', ')}`;
                 }
+                setLoading(false);
                 setMssgError(mensaje);
                 return;
             } else if (error.request) {
+                setLoading(false);
                 Alert.alert('Error', 'No hubo respuesta del servidor ');
                 console.log(error.message);
                 return;
             } else {
+                setLoading(false);
                 Alert.alert('Error', 'Error al hacer la solicitud ' + error);
                 return;
             }
@@ -280,7 +288,7 @@ const PrimerAdminForm = ({ retornarLogin }) => {
 
     // Registro de la sucursal en la BD
     const registrarSucursal = async (sucursal) => {
-
+        setLoading(true);
         try {
             const response = await axios.post(`${API_URL}/api/sucursales/crearSucursal`, {
                 codCine: codCine,
@@ -288,7 +296,7 @@ const PrimerAdminForm = ({ retornarLogin }) => {
                 ubicacion: sucursal.ubicacion,
                 telefono: sucursal.telefono
             });
-
+            setLoading(false);
             Alert.alert('Registro exitoso', 'Sucursal añadida exitosamente');
 
         } catch (error) {
@@ -300,12 +308,15 @@ const PrimerAdminForm = ({ retornarLogin }) => {
                 for (const campo in errores) {
                     mensaje += `Error en ${campo}: ${errores[campo].join(', ')}`;
                 }
+                setLoading(false);
                 setMssgError(mensaje);
                 return;
             } else if (error.request) {
+                setLoading(false);
                 Alert.alert('Error', 'No hubo respuesta del servidor');
                 return;
             } else {
+                setLoading(false);
                 Alert.alert('Error', 'Error al hacer la solicitud ' + error);
                 return;
             }
@@ -332,6 +343,20 @@ const PrimerAdminForm = ({ retornarLogin }) => {
     }
     return (
         <View style={styles.center}>
+            <Modal
+                transparent={true} // Hace que el fondo del modal sea transparente
+                animationType="fade" // Tipo de animación al mostrar el modal
+                visible={loading} // Modal visible mientras `loading` sea true
+                onRequestClose={() => setLoading(false)} // Cierra el modal si se intenta cerrar
+              >
+                <View style={styles.modalBackground}>
+                  <View style={styles.modalContainer}>
+                    <ActivityIndicator size="large" color="#ffffff" />
+                    <Text style={styles.loadingText}>Cargando...</Text>
+                  </View>
+                </View>
+              </Modal>
+
 
             <View style={styles.caja}>
                 <Text style={styles.textCaja}>{titulo}</Text>
@@ -575,4 +600,23 @@ const styles = StyleSheet.create({
         shadowRadius: 1,
         elevation: 1,
     },
+    modalBackground: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)', // Fondo oscuro y semi-transparente
+      },
+      modalContainer: {
+        width: 200,
+        height: 150,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#b30000', // Fondo del modal
+        borderRadius: 10,
+      },
+      loadingText: {
+        marginTop: 10,
+        color: '#ffffff', // Color del texto blanco
+        fontSize: 16,
+      },
 });

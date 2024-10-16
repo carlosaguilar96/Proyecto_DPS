@@ -31,8 +31,6 @@ const AñadirSala = ({ navigation }) => {
   const guardarSala = async () => {
     setLoading(true);
     try {
-      console.log(API_URL);
-      console.log(API_URL);
       const response = await axios.post(`${API_URL}/api/salas/crearSala`, {
         sucursal: sucursal
       });
@@ -66,9 +64,8 @@ const AñadirSala = ({ navigation }) => {
   }
 
   const obtenerSucursales = async () => {
+    setLoading(true);
     try {
-      console.log(API_URL);
-      console.log(API_URL);
       const response = await axios.get(`${API_URL}/api/sucursales/index`);
       
       if (response.data.sucursales.length != 0) {
@@ -76,13 +73,16 @@ const AñadirSala = ({ navigation }) => {
         setSucursales(response.data.sucursales);
 
       }
+      setLoading(false);
 
     } catch (error) {
       if (error.request) {
+        setLoading(false);
         Alert.alert('Error', 'No hubo respuesta del servidor ');
         console.log(error);
         return;
       } else {
+        setLoading(false);
         Alert.alert('Error', 'Error al hacer la solicitud');
         return;
       }

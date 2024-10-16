@@ -23,8 +23,6 @@ export default function App() {
   let verificarAdmin = async () => {
     try {
       const response = await axios.get(`${API_URL}/api/usuarios/indexAdmins`);
-
-      console.log(response.data.usuarios.length);
       if (response.data.usuarios.length == 0) 
         setHayAdmin(false);
 

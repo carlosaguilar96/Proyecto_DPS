@@ -46,8 +46,6 @@ const ModificarSala = () => {
   const obtenerSalas = async () => {
     setLoading(true);
     try {
-      console.log(API_URL);
-      console.log(API_URL);
       const response = await axios.get(`${API_URL}/api/salas/index`);
       setLoading(false);
       if (response.data.salas.length != 0)
@@ -87,8 +85,6 @@ const ModificarSala = () => {
     if(estado==1){
       setLoading(true);
       try {
-        console.log(API_URL);
-        console.log(API_URL);
         const response = await axios.put(`${API_URL}/api/salas/eliminarSala/${id}`);
         setLoading(false);
         Alert.alert('Sala eliminada', 'La sala ha sido eliminada con éxito');
@@ -109,8 +105,6 @@ const ModificarSala = () => {
     if(estado==0){
       setLoading(true);
       try {
-        console.log(API_URL);
-        console.log(API_URL);
         const response = await axios.put(`${API_URL}/api/salas/reactivarSala/${id}`);
         setLoading(false);
         Alert.alert('Sala reactivada', 'La sala ha sido reactivada con éxito');

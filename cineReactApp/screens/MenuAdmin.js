@@ -69,8 +69,6 @@ export default function MenuAdmin() {
 
   const revisarAdmin = async () => {
     try {
-      console.log(API_URL);
-      console.log(API_URL);
       const response = await axios.get(`${API_URL}/api/cines/index`);
 
       let firstAdmin = response.data.cine.firstAdmin;

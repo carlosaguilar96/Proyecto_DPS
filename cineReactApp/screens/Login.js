@@ -59,8 +59,6 @@ export default function Login() {
   const obtenerLogoCine = async () => {
 
     try {
-      console.log(API_URL);
-      console.log(API_URL);
       const response = await axios.get(`${API_URL}/api/cines/index`);
 
       setLogo(response.data.cine.logo_path);
@@ -128,8 +126,6 @@ export default function Login() {
     setLoading(true);
     //Ingreso del cliente a la BD
     try {
-      console.log(API_URL);
-      console.log(API_URL);
       const response = await axios.post(`${API_URL}/api/usuarios/crearCliente`, {
         nombreUsuario: username,
         contrasena: contra,
@@ -223,8 +219,6 @@ export default function Login() {
     }
     setLoading(true);
     try {
-      console.log(API_URL);
-      console.log(API_URL);
       const response = await axios.post(`${API_URL}/api/iniciarSesion`, {
         user: username,
         password: contra,
@@ -338,7 +332,6 @@ export default function Login() {
     }
     setLoading(true);
     try {
-      console.log(API_URL);
       const response = await axios.put(`${API_URL}/api/restablecerContra`, {
         user: username,
       });

@@ -19,8 +19,6 @@ const [loading, setLoading] = useState(false);
 const obtenerPeliculas = async () => {
   setLoading(true);
   try {
-    console.log(API_URL);
-    console.log(API_URL);
     const response = await axios.get(`${API_URL}/api/peliculas/index`);
     setLoading(false);
     if (response.data.peliculas.length != 0)
@@ -89,7 +87,6 @@ useEffect(() => {
       if(estado==1){
         setLoading(true);
         try {
-          console.log(API_URL);
           const response = await axios.put(`${API_URL}/api/peliculas/eliminarPelicula/${id}`);
           setLoading(false);
           Alert.alert('Pelicula eliminada', 'La pelicula ha sido eliminada con éxito');
@@ -110,8 +107,6 @@ useEffect(() => {
       if(estado==0){
         setLoading(true);
         try {
-          console.log(API_URL);
-          console.log(API_URL);
           const response = await axios.put(`${API_URL}/api/peliculas/reactivarPelicula/${id}`);
           setLoading(false);
           Alert.alert('Pelicula reactivada', 'La pelicula ha sido reactivada con éxito');

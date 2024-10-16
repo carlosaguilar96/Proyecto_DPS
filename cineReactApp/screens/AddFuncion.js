@@ -47,8 +47,6 @@ const AñadirFuncion = ({ navigation }) => {
         hour12: false,  // Esto fuerza el formato de 24 horas
       });
 
-      console.log(API_URL);
-      console.log(API_URL);
       const response = await axios.post(`${API_URL}/api/funciones/crearFuncion`, {
         codPelicula: pelicula,
         codSala: sala,
@@ -102,8 +100,6 @@ const AñadirFuncion = ({ navigation }) => {
   const obtenerSucursales = async () => {
     setLoading(true);
     try {
-      console.log(API_URL);
-      console.log(API_URL);
       const response = await axios.get(`${API_URL}/api/sucursales/index`);
       setLoading(false);
       if (response.data.sucursales.length != 0) {
@@ -129,8 +125,6 @@ const AñadirFuncion = ({ navigation }) => {
   const obtenerPeliculas = async () => {
     setLoading(true);
     try {
-      console.log(API_URL);
-      console.log(API_URL);
       const response = await axios.get(`${API_URL}/api/peliculas/indexD`);
       setLoading(false);
       if (response.data.peliculas.length != 0) {
@@ -156,7 +150,6 @@ const AñadirFuncion = ({ navigation }) => {
   const obtenerSalas = async () => {
     setLoading(true);
     try {
-      console.log(API_URL);
       const response = await axios.get(`${API_URL}/api/salas/indexD`);
       setLoading(false);
       if (response.data.salas.length != 0) {
@@ -197,7 +190,6 @@ const AñadirFuncion = ({ navigation }) => {
       obtenerSucursales();
       obtenerPeliculas();
       obtenerSalas();
-      console.log("Cargado");
     }
   }, [isFocused]);
 
@@ -280,7 +272,7 @@ const AñadirFuncion = ({ navigation }) => {
         </Picker>
 
         <Text>Fecha:</Text>
-        <TouchableOpacity onPress={() => { setMostrarFechaPicker(true); console.log("Hola"); }}>
+        <TouchableOpacity onPress={() => { setMostrarFechaPicker(true); }}>
           <Text style={estilos.entrada}>{format(fecha, 'yyyy-MM-dd')}</Text>
         </TouchableOpacity>
 

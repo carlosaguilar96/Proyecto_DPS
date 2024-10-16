@@ -23,7 +23,6 @@ const VistaPago = ({ navigation, route }) => {
   const realizarCompra = async (cardID) =>{
     setLoading(true);
     try {
-      console.log(API_URL);
       const response = await axios.post(`${API_URL}/api/compras/crearCompra`, {
         nombreUsuario: usuario,
         codFuncion: params.codFuncion,
@@ -113,8 +112,8 @@ const VistaPago = ({ navigation, route }) => {
         <Image source={{ uri: imagenURI }} style={styles.poster} />
         <View style={styles.movieDetails}>
           <Text style={styles.movieTitle}>{params.title}</Text>
-          <Text style={styles.movieDetailsText}>Sucursal: {params.sucursal}</Text>
-          <Text style={styles.movieDetailsText}>{params.hora} | {params.fecha}</Text>
+          <Text style={styles.movieDetailsText}>{params.fecha} | {params.hora}</Text>
+          <Text style={styles.movieDetailsText}>Sala {params.sala} | Sucursal {params.sucursal}</Text>
           <Text style={styles.movieDetailsText}>{params.idioma}</Text>
         </View>
       </View>
@@ -183,6 +182,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 8,
+    color:'#757575',
   },
   movieDetailsText: {
     fontSize: 14,

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Alert } from 'react-native';
+import { View, StyleSheet, Alert,ActivityIndicator, Modal,Text } from 'react-native';
 import Cabecera from '../assets/components/Cabecera';
 import BarraProgreso from '../assets/components/BarraProgreso';
 import InfoPelicula from '../assets/components/InfoPelicula';
@@ -16,6 +16,7 @@ const PantallaSeleccionAsientos = ({ navigation, route }) => {
   const { params } = route;
   const {codFuncion} = params;
   const isFocused = useIsFocused();
+  const [loading, setLoading] = useState(false);
 
   const filas = [
     ['A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8'],
@@ -47,8 +48,8 @@ const PantallaSeleccionAsientos = ({ navigation, route }) => {
 
   const handleContinuar = () => {
     if (asientosSeleccionados.length == params.cantidad) {
-      const {title, sucursal, fecha, hora, idioma, total, cantidad, image, childP, childB, adultoP, adultoB, abueP, abueB, codFuncion} = params;
-      navigation.navigate("VistaPago", {title, sucursal, fecha, hora, idioma, total, cantidad, image, childP, childB, adultoP, adultoB, abueP, abueB, asientosSeleccionados, codFuncion} );
+      const {title, sucursal, fecha, hora, idioma, total, cantidad, image, childP, childB, adultoP, adultoB, abueP, abueB, codFuncion, sala} = params;
+      navigation.navigate("VistaPago", {title, sucursal, fecha, hora, idioma, total, cantidad, image, childP, childB, adultoP, adultoB, abueP, abueB, asientosSeleccionados, codFuncion, sala} );
 
       limpiar();
     }
@@ -61,9 +62,8 @@ const PantallaSeleccionAsientos = ({ navigation, route }) => {
   }
 
   const obtenerAsientosOcupados = async () => {
+    setLoading(true);
     try {
-      console.log(API_URL);
-      console.log(API_URL);
       const response = await axios.get(`${API_URL}/api/funciones/devolverAsientos/${codFuncion}`);
 
       if (response.data.asientos.length != 0) {
@@ -71,12 +71,15 @@ const PantallaSeleccionAsientos = ({ navigation, route }) => {
       }
       else
         setAsientosOcupados([]);
+        setLoading(false);
 
     } catch (error) {
       if (error.request) {
+        setLoading(false);
         Alert.alert('Error', 'No hubo respuesta del servidor');
         return;
       } else {
+        setLoading(false);
         Alert.alert('Error', 'Error al hacer la solicitud');
         return;
       }
@@ -92,6 +95,20 @@ const PantallaSeleccionAsientos = ({ navigation, route }) => {
 
   return (
     <View style={styles.container}>
+      <Modal
+                transparent={true} // Hace que el fondo del modal sea transparente
+                animationType="fade" // Tipo de animación al mostrar el modal
+                visible={loading} // Modal visible mientras `loading` sea true
+                onRequestClose={() => setLoading(false)} // Cierra el modal si se intenta cerrar
+              >
+                <View style={styles.modalBackground}>
+                  <View style={styles.modalContainer}>
+                    <ActivityIndicator size="large" color="#ffffff" />
+                    <Text style={styles.loadingText}>Cargando...</Text>
+                  </View>
+                </View>
+              </Modal>
+
 
       <View style={styles.progressBar}>
         <View style={styles.progressItem}>
@@ -106,12 +123,13 @@ const PantallaSeleccionAsientos = ({ navigation, route }) => {
       </View>
       
       <InfoPelicula
-        titulo={params.titulo}
+        titulo={params.title}
         sucursal={params.sucursal}
         horario={params.hora}
         dia={params.fecha}
         idioma={params.idioma}
         posterUri={imagenURI}
+        sala={params.sala}
       />
       <SeleccionAsientos
         filas={filas}
@@ -144,6 +162,25 @@ const styles = StyleSheet.create({
   progressItemActive: {
     borderBottomWidth: 4,
     borderBottomColor: '#fff',
+  },
+  modalBackground: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Fondo oscuro y semi-transparente
+  },
+  modalContainer: {
+    width: 200,
+    height: 150,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#b30000', // Fondo del modal
+    borderRadius: 10,
+  },
+  loadingText: {
+    marginTop: 10,
+    color: '#ffffff', // Color del texto blanco
+    fontSize: 16,
   },
 });
 

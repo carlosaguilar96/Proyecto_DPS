@@ -14,8 +14,6 @@ const EditarCine = () => {
   const obtenerInfoCine = async () => {
     setLoading(true);
     try {
-      console.log(API_URL);
-      console.log(API_URL);
       const response = await axios.get(`${API_URL}/api/cines/index`);
       setLoading(false);
 
@@ -37,7 +35,6 @@ const EditarCine = () => {
     else {
       setLoading(true);
       try {
-        console.log(API_URL);
         const response = await axios.put(`${API_URL}/api/cines/update`, {
           nombreCine: nombreCine,
           mision: mision,

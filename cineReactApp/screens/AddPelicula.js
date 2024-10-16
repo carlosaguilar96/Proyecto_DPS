@@ -80,8 +80,6 @@ const AñadirPelicula = ({navigation}) => {
 
     setLoading(true);
     try {
-      console.log(API_URL);
-      console.log(API_URL);
       const response = await axios.post(`${API_URL}/api/peliculas/crearPelicula`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -101,6 +99,7 @@ const AñadirPelicula = ({navigation}) => {
           mensaje += `Error en ${campo}: ${errores[campo].join(', ')}`;
         }
         setLoading(false);
+        console.log(error.response);
         Alert.alert('Error', mensaje);
         return;
       } else if (error.request) {

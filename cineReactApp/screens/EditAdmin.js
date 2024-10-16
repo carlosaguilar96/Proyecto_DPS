@@ -19,8 +19,6 @@ const [loading, setLoading] = useState(false);
 const obtenerAdmins = async () => {
   setLoading(true);
   try {
-    console.log(API_URL);
-    console.log(API_URL);
     const response = await axios.get(`${API_URL}/api/usuarios/indexAdmins`);
     setLoading(false);
     if (response.data.usuarios.length != 0)
@@ -55,8 +53,6 @@ const CambiarEstado = async () => {
   if(estado==1){
     setLoading(true);
     try {
-      console.log(API_URL);
-      console.log(API_URL);
       const response = await axios.put(`${API_URL}/api/usuarios/eliminarUsuario/${id}`);
       setLoading(false);
       Alert.alert('Administrador eliminado', 'El administrador ha sido eliminado con éxito');
@@ -77,8 +73,6 @@ const CambiarEstado = async () => {
   if(estado==0){
     setLoading(true);
     try {
-      console.log(API_URL);
-      console.log(API_URL);
       const response = await axios.put(`${API_URL}/api/usuarios/reactivarUsuario/${id}`);
       setLoading(false);
       Alert.alert('Administrador reactivado', 'El administrador ha sido reactivado con éxito');
